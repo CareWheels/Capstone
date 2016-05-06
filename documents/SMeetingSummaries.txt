@@ -1,0 +1,4 @@
+﻿Sponsor Meeting (5/4/16) :
+
+
+        The team met with Claude and Bill from CareWheels. In our initial meeting we received an introductory overview of our project. We viewed the sensor hardware, discussed design and functionality, talked about the servers used, and went over the MVP Objectives. The meeting closely followed the Capstone CareBank Map1.pdf given to the group.
