@@ -1,0 +1,70 @@
+
+May 9th,
+
+Infrastructure Check-in
+Everything seems good. 
+
+Brief Overview of Sponsor Meeting
+
+We will be using Cyclos because our sponsors invested a lot of time understanding that platform and has put a lot of effort to set up Cyclos server for us. 
+
+After we finish working on it, sponsors’ plan is to set up the server for other groups that want to run our apps.
+
+Sponsor will be available on the chat and email. If you have a question, then email it to Raven. We do not want to ask the same questions over and over from different members.
+ 
+For alerts, we will have to set up our own algorithms.
+
+We don’t need to handle the account creation. All of it can be handled on the server side by the admin.  
+
+How do we get people to check the app?
+
+Idea: Use the alarm API to send notification?
+
+We don’t have the use cases yet. Sponsors said they will send it tonight. 
+
+Issue: User’s graph, we are not sure if it possible to get the graph. Two potential solutions:
+Looking at the HTML browser version of sen.se. and pull the URL
+Have a button that launch the sen.se app
+
+If neither of those work, then we will have to generate it ourselves which take more developing time. If it doesn’t work, then we will push it out of MVP.
+Tool: D3JS visualization
+
+
+
+
+MVP
+We’re not submitting the MVP yet because of the new information. It should be done within this week.
+
+The up to date version will be up tomorrow on Google Doc. Everyone should be looking over it and checking if there is anything missing or needs to be edited. After that, we will pass it to Claude to see if he approves it. We will turn it in to Bart when both group admit it. 
+
+We should have use cases by tonight. Raven will forward the use cases once he gets it from the sponsors. Should get it by tonight. 
+
+Work Breakdown and Risk Management
+We didn’t have enough information yet.
+Work Breakdown: waiting for use cases
+
+Multi-Platform solutions: Ionic & Cordova vs Native Android
+https://docs.google.com/a/pdx.edu/document/d/1v1dyFZpfU-CRKTbJXkPcTjuJd4Z-iNv5jxCRdEtdkok/edit?usp=sharing
+Can’t make decision until we get the use cases.
+
+May 2nd,
+
+  1. Brief introduction: background, skills, and experiences.
+  2. Explained and assigned the 7 roles:
+     Assignment for initial roles. These roles are non-permanent and will be fairly short.
+        1) Requirements Lead               -   Paul Thompson
+        2) Sponsor Second Contact      -   Edward Phillips
+        3) Schedule Lead                      -   Zachary Mcginnis
+        4) IT infrastructure                     -   Christopher Asakawa
+        5) Backup Manager                   -   Brandon Allen
+        6) Risk Management Lead        -   Tony Tran
+        7) Archivist/Secretary        	-   Cuong Ngo
+     *Everyone should be helping the Leads with their documents*
+     We will be using Google Docs for document work.
+  3. Discussed communication
+     - Google Hangouts as primary communication
+     - Trello for Documents Leads to post tasks/issues they want to help with
+     - An email thread titled "Team Blog" where all blog posts should be sent.
+     - Everyone should have a personal Github and Google Hangouts
+        
+
