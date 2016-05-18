@@ -8,7 +8,7 @@ insert project objective here...
 
 ___
 
-###Table of Contents
+####Table of Contents
 - [Installation Instructions](#Installation)
     - Linux & Mac
     - Windows
@@ -21,7 +21,7 @@ ___
 
 ###Installation
 
-####Linux & Mac
+#####Linux & Mac
 1. Download and install node.js and npm [here](https://nodejs.org/en/download/). Node and npm is used to install
 the dependencies that ionic requires. Now make sure that the following is installed properly by running this 
 command in your terminal 
@@ -68,13 +68,13 @@ wish to have the project located at, then run the following command.
 $ git clone https://github.com/CareWheels/Capstone.git
 ```
 
-####Windows
+#####Windows
 1. Download and install node.js and npm [here](https://nodejs.org/en/download/)
 
 ---
 
-###Build And Run The Project With Ionic
-####Android Build
+####Build And Run The Project With Ionic
+#####Android Build
 If everything is setup properly then creating an apk with ionic is very easy. Simple just run this command
 ```
 $ ionic build android
@@ -82,12 +82,13 @@ $ ionic build android
 This will build the project and create an apk file called `android-demo.apk` file in
 `/platforms/android/build/outputs/apk`.
 
-####Emulate Android (optional Step)
-This step can be avoided by copying the apk onto your mobile android device. Just use 
-Ionic provides support to run an Android Virtual Devices(AVD) directly from the command line, however I would
-suggest using genymotion instead (especially if running on linux). Below is instructions for both options.
+#####Emulate Android (optional Step)
+This step can be avoided by copying the apk onto your mobile android device. Just use any android file explorer app,
+navigate to the apk location and use the app to install the app. Ionic provides support to run an Android Virtual 
+Devices(AVD) directly from the command line, however I would suggest using genymotion instead (especially if 
+running on linux). Below is instructions for both options.
 
-#####GenyMotion Setup
+######GenyMotion Setup
 In order to download genymotion, you need to create a free account with them 
 [here](https://www.genymotion.com/account/create/). Once logged in you can then download their android emulator 
 [here](https://www.genymotion.com/download/). After you installed genymotion, launch the program, and create an
@@ -96,7 +97,7 @@ android emulation device. Start the emulator and enter this into the console to 
 $ ionic run android
 ```
 
-#####AVD Setup
+######AVD Setup
 Android does not provide any default emulator, so we will need to create one. In the terminal run the command  
 ```
 $ android
