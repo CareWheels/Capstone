@@ -14,7 +14,7 @@ require('GrantType/AuthorizationCode.php');
 const CLIENT_ID     = '';
 const CLIENT_SECRET = '';
 const SCOPE         = 'devices.read';
-const REDIRECT_URI  = 'http://127.0.0.1:1234/index.php'; //url of this.php
+const REDIRECT_URI  = 'http://127.0.0.1:1234/src/index.php'; //url of this.php
 const GRANT_TYPE    = 'authorization_code';
 
 /* endpoints */
