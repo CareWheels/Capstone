@@ -32,7 +32,7 @@ echo <<<TAG
             </h4>
         </li>
         <li>
-            <form action="callback.php" method="post">
+            <form action="Callback.php" method="post">
                 <input id="authButton" type="submit" value="authenticate">
             </form>      
         </li>

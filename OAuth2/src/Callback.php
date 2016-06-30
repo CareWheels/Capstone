@@ -25,10 +25,10 @@ require('GrantType/IGrantType.php');
 require('GrantType/AuthorizationCode.php');
 
 /* parameters */
-const CLIENT_ID     = '';
-const CLIENT_SECRET = '';
+const CLIENT_ID     = 'EVgFXdqRIEl2oqOO8d2uh21I67KY5qDctK8Wnr9T';
+const CLIENT_SECRET = 'DxvYQoHNTqYbjwkJlGO2B41a';
 const SCOPE         = 'devices.read';
-const REDIRECT_URI  = 'http://127.0.0.1:1234/src/callback.php'; //url of this.php
+const REDIRECT_URI  = 'http://127.0.0.1:1234/src/Callback.php'; //url of this.php
 const GRANT_TYPE    = 'authorization_code';
 
 /* endpoints */
@@ -53,7 +53,8 @@ else {/* use the auth code to get the access and refresh tokens */
 
     $params = array('code' => $_GET['code'], 'redirect_uri' => REDIRECT_URI);
     $response = $client->getAccessToken(TOKEN_ENDPOINT, 'authorization_code', $params);
-
+    $access_token = $response["result"]["access_token"];
+    $refresh_token = $response["result"]["refresh_token"];
 
     echo <<<TAG
         <link rel="stylesheet" href="style.css">
@@ -68,10 +69,10 @@ else {/* use the auth code to get the access and refresh tokens */
 TAG;
 
     echo "access token: ";
-    print_r($response["result"]["access_token"]);
+    print_r($access_token);
     echo "<br><br>";
     echo "refresh token: ";
-    print_r($response["result"]["refresh_token"]);
+    print_r($refresh_token);
 
     echo <<<TAG
         <ul>   
@@ -82,14 +83,18 @@ TAG;
                 </h4>
             </li>
             <li>
-                <form action="index.php" method="post">
+                <form action="CareBank.php" method="post">
                     Username: <input type="text" name="username" required value=$username><br>
                     Password:&nbsp; <input type="password" name="password" required value=$password><br>
+                    <input type="hidden" name="access_token" value=$access_token>
+                    <input type="hidden" name="refresh_token" value=$refresh_token>
                     <input id="authButton" type="submit" value="authenticate">
                 </form>      
             </li>
         </ul>
 TAG;
+
+
 
 
 }
