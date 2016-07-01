@@ -5,9 +5,10 @@
  * Date: 6/29/16
  * Time: 11:35 AM
  */
+// Configure Cyclos and obtain an instance of LoginService
+require_once 'configureCyclos.php';
+$userService = new Cyclos\UserService();
 
-//require_once 'configureCyclos.php';
-//$userCustomFieldService = new Cyclos\UserCustomFieldService();
 
 //error state, echo error message then redirect back to step one.
 if (empty($_POST)) {
@@ -28,23 +29,50 @@ if (empty($_POST)) {
             </li>
         </ul>    
 TAG;
+    die();
 }
 
-// Set the parameters
-$params = new stdclass();
-$params->user = $_POST['username'];
-$params->password = $_POST['password'];
-$params->access_token = $_POST['access_token'];
-$params->refresh_token = $_POST['refresh_token'];
-$params->remoteAddress = $_SERVER['REMOTE_ADDR'];
+// Set the parameters for locator: used for finding the user id
+$locator = new stdClass();
+$locator->username = $_POST['username'];
+
+try {
+    // get the user id # from the 
+    $user = $userService->locate($locator);
+    print_r($user);
+    $user = get_object_vars($user);
+    $user = $user["id"]; // now $user == String of digits (id#)
+    
+    /*
+     * loads the specified user object and set the access
+     * and refresh tokens to the custom fields.
+     */
+    $result = $userService->load($user);
+
+    //TODO: need to add some error checking to make sure this index values are correct
+
+    $result->customValues[0]->stringValue = $_POST['access_token']; //index 0 = access token
+    $result->customValues[1]->stringValue = $_POST['refresh_token']; //index 1 = refresh token
+
+    //Testing
+/*    print_r($result);
+    echo "<br><br>";
+    print_r($result->customValues[0]);
+    echo "<br><br>";
+    print_r($result->customValues[1]);
+    echo "<br><br>";
+    print_r($result);
+    echo "<br><br>";*/
+
+    $result = $userService->save($result);
+    print_r($result);
 
 
-/*try{ //TODO: i need an id value to query with this.
-    $result = $userCustomFieldService->save($params);
 } catch (Cyclos\ConnectionException $e) {
     echo "Unable to connect to CareBank";
     die();
 } catch (Cyclos\ServiceException $e) {
     echo("Error while calling $e->service.$e->operation: $e->errorCode");
     die();
-}*/
+}
+
