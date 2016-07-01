@@ -1,13 +1,10 @@
 <?php
-
 /**
  * This php class handles all the views for this
  * oauth2 token retrieval and storage.
  * 
- * Created by PhpStorm.
- * User: asakawa
+ * Author: asakawa
  * Date: 7/1/16
- * Time: 9:18 AM
  */
 class Display
 {
@@ -100,7 +97,7 @@ TAG;
         </li>
             <li>
                 <form action="http://carebank.carewheels.org/?#login">
-                    <input class="button largeButton" type="submit" value="goto CareBank">
+                    <input class="button largeButton" type="submit" value="go to CareBank">
                 </form>      
             </li>
     </ul>
