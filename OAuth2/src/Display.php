@@ -57,6 +57,7 @@ TAG;
     }
     
     function tokenMessage ($access_token, $refresh_token) {
+        $username = '';
         echo <<<TAG
         <ul>
             <li id=logo></li>
@@ -75,7 +76,7 @@ TAG;
                 </h4>
             </li>
             <li>
-                <form action="CareBank.php" method="post">
+                <form action="setTokens.php" method="post">
                     Username: <input type="text" name="username" required value=$username><br>
                     <input type="hidden" name="access_token" value=$access_token>
                     <input type="hidden" name="refresh_token" value=$refresh_token>
