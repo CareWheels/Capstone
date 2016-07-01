@@ -1,14 +1,15 @@
 <!--
- * web page for OAuth2 client server
+ * web page for OAuth2 client server and CareBank token storage
  *
  * Author: Chris Asakawa
  * Date: 6/22/16
  *
  * Authentication Flow:
- *  1. homepage, user input username and password
+ *  1. Auth landing page, display message, go to callback
  *  2. redirect to sen.se auth page, returns code
  *  3. redirect to sen.se token page, returns tokens
- *  4. redirect to confirmation page
+ *  4. redirect to setTokens page, get username
+ *  5. save the tokens to careBank.
  -->
 
 <html>

@@ -1,3 +1,17 @@
+<!--
+ * web page for OAuth2 client server and CareBank token storage
+ *
+ * Author: Chris Asakawa
+ * Date: 6/22/16
+ *
+ * Authentication Flow:
+ *  1. Auth landing page, display message, go to callback
+ *  2. redirect to sen.se auth page, returns code
+ *  3. redirect to sen.se token page, returns tokens
+ *  4. redirect to setTokens page, get username
+ *  5. save the tokens to careBank.
+ -->
+
 <html>
 <head>
     <meta name="description" content="">
@@ -8,16 +22,12 @@
 </head>
 <body>
 <?php
-/**
- * Created by PhpStorm.
- * User: asakawa
- * Date: 6/29/16
- * Time: 11:35 AM
- */
-// Configure Cyclos and obtain an instance of LoginService
+// Configure Cyclos and obtain an instance of UserService
 require_once 'configureCyclos.php';
-require 'Display.php';
 $userService = new Cyclos\UserService();
+
+// require and obtain an instance of display
+require 'Display.php';
 $display = new Display();
 
 //error states, echo error message then redirect back to step one.
@@ -33,7 +43,7 @@ $locator = new stdClass();
 $locator->username = $_POST['username'];
 $user = '';
 
-try{
+try {
     // get the user id # from the
     $user = $userService->locate($locator);
     $user = get_object_vars($user);
@@ -45,29 +55,18 @@ try{
 }
 
 try {
-
-    
-    /*
-     * loads the specified user object and set the access
-     * and refresh tokens to the custom fields.
-     */
+    // loads the specified user object
     $result = $userService->load($user);
 
-
+    // set the custom field values
     $result->customValues[0]->stringValue = $_POST['access_token']; //index 0 = access token
     $result->customValues[1]->stringValue = $_POST['refresh_token']; //index 1 = refresh token
 
-    //Testing
-    print_r($result);
-    echo "<br><br>";
-    print_r($result->customValues[0]);
-    echo "<br><br>";
-    print_r($result->customValues[1]);
-    echo "<br><br>";
-    print_r($result);
-    echo "<br><br>";
+    // save the modified user object.
+    $result = $userService->save($result);
+
+    //display the success message
     $display->successMessage($_POST["username"]);
-    //$result = $userService->save($result);
 
 } catch (Cyclos\ConnectionException $e) {
     $display->errorMessage("Unable to connect to CareBank");
@@ -78,4 +77,3 @@ try {
 ?>
 </body>
 </html>
-
