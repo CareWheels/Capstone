@@ -20,27 +20,9 @@
 </head>
 <body>
 <?php
-
-echo <<<TAG
-    <ul>
-        <li id=logo></li>
-        <li>
-            <h4>
-                Welcome to the CareWheels authentication page. Lets
-                Authenticate with Sen.se, click the authenticate 
-                button to begin.
-            </h4>
-        </li>
-        <li>
-            <form action="Callback.php" method="post">
-                <input id="authButton" type="submit" value="authenticate">
-            </form>      
-        </li>
-    </ul>
-TAG;
-
-
-
+require('Display.php');
+$display = new Display();
+$display->welcomeMessage();
 ?>
 </body>
 </html>
