@@ -19,14 +19,26 @@ input {
     height: 100px;
     width: 250px;
 }
-#authButton {
+#errorMessage {
     position: relative;
-    width: 250px;
+    background-color: red;
+    color: white;
+    font-size: Large;
+    text-align: center;
+    margin-top: 20px;
+
+    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border: 1px solid #000000;
+}
+.button {
     height: 50px;
     margin-top: 20px;
     color: white;
     font-size: large;
     outline: none;
+    text-align: center;
 
     /* rounded corners */
     border-radius: 10px 10px 10px 10px;
@@ -48,7 +60,7 @@ input {
     background: linear-gradient(to bottom, rgba(194,236,255,1) 0%, rgba(33,144,171,1) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c2ecff', endColorstr='#2190ab', GradientType=0 );
 }
-#authButton:hover{
+.button:hover{
     background: rgba(255,255,255,1);
     background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(49,183,216,1) 100%);
     background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(49,183,216,1) 100%);
@@ -57,7 +69,7 @@ input {
     background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(49,183,216,1) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#31b7d8', GradientType=0 );
 }
-#authButton:active {
+.button:active {
     background: rgba(61,194,255,1);
     background: -moz-linear-gradient(top, rgba(61,194,255,1) 0%, rgba(23,101,120,1) 100%);
     background: -webkit-linear-gradient(top, rgba(61,194,255,1) 0%, rgba(23,101,120,1) 100%);
@@ -66,4 +78,18 @@ input {
     background: linear-gradient(to bottom, rgba(61,194,255,1) 0%, rgba(23,101,120,1) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3dc2ff', endColorstr='#176578', GradientType=0 );
 
+}
+.largeButton {
+    width: 250px;
+}
+.smallButton {
+    width: 120px;
+}
+.left {
+    position: absolute;
+    left: 50px;
+}
+.right {
+    position: absolute;
+    left: 180px;
 }
