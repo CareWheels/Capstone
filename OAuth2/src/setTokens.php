@@ -23,7 +23,7 @@
 <body>
 <?php
 // Configure Cyclos and obtain an instance of UserService
-require_once 'configureCyclos.php';
+require_once '../../configureCyclos.php';
 $userService = new Cyclos\UserService();
 
 // require and obtain an instance of display
@@ -58,9 +58,28 @@ try {
     // loads the specified user object
     $result = $userService->load($user);
 
+    // the custom fields are in an array, the index may change
+    // to solve this we loop through the array, until both 
+    // access token and refresh token fields are found.
+    $accessTokenIndex = $refreshTokenIndex = -1;
+    $customFieldsArray = $result->customValues;
+    for ($i = 0; $i < count($result->customValues); $i++){
+        if ($customFieldsArray[$i]->field->internalName == 'accessToken')
+            $accessTokenIndex = $i; 
+        if ($customFieldsArray[$i]->field->internalName == 'refreshToken')
+            $refreshTokenIndex = $i;
+        //if both tokens are found then break out of loop
+        if ($accessTokenIndex != -1 && $refreshTokenIndex != -1)
+            break;
+    }
+    //if either of the two tokens are not found then display error
+    if ($accessTokenIndex == -1 || $refreshTokenIndex == -1)
+        $display->errorMessage("token fields not found in CareBank.");
+
+
     // set the custom field values
-    $result->customValues[0]->stringValue = $_POST['access_token']; //index 0 = access token
-    $result->customValues[1]->stringValue = $_POST['refresh_token']; //index 1 = refresh token
+    $result->customValues[$accessTokenIndex]->stringValue = $_POST['access_token'];
+    $result->customValues[$refreshTokenIndex]->stringValue = $_POST['refresh_token'];
 
     // save the modified user object.
     $result = $userService->save($result);
