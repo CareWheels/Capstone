@@ -1,15 +1,10 @@
 <?php
-
 /*
-    Parameters
-	
-	username as string: username for login.
-	password as string: password for login.
-	usernametoupdate as string: username that will have their lastownershiptakentime custom field updated.
-    lastownershiptakentime as string: value to update lastownershiptakentime with, in the format
-                                      of YYYY/MM/DD HH:MM:SS	
+   Parameters
+   username as string: the login username.
+   password as string: the login password.
+   usernametofind as string: the user to find all of the current day's transactions for.
 */
-
 
 // Configure Cyclos and obtain an instance of LoginService
 require_once 'configureCyclos.php';
@@ -45,32 +40,16 @@ try {
         die();
 }
 
-$userService = new Cyclos\UserService();
-$locator = new stdclass();
-$locator->username = $_POST['usernametoupdate'];
-$user = $userService->locate($locator);
-$userInfo = $userService->load($user->id);
-
-for($x = 0; $x < count($userInfo->customValues); $x++) {
-
-    // Find the LastOwnershipTakenTime field
-    if($userInfo->customValues[$x]->field->internalName == 'LastOwnershipTakenTime') {
-
-         // Modify the string value in the last ownership take time custom field.
-         $userInfo->customValues[$x]->stringValue = $_POST['lastownershiptakentime'];
-
-         // Save the change in the user object to the Cyclos server.
-         $userService->save($userInfo);
-    }
-}
-
-// Request the updated user information from the Cyclos server
-// so we can confirm the field was updated.
-$userInfo = $userService->load($user->id);
+$transactionService = new Cyclos\TransactionService();
+$query = new stdclass();
+$query->owner = $_POST['usernametofind'];
+$query->period = array("begin"=> date("Y-m-d")."T00:00:00.000", "end" => date("Y-m-d")."T23:59:59.999");
+$query->pageSize = 9999;
+$transactionList = $transactionService->search($query);
 
 // Return the user object as json.
 header('Content-type: application/json');
-$json = json_encode( $userInfo );
+$json = json_encode( $transactionList );
 echo($json);
 
 ?>
