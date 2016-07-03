@@ -5,18 +5,19 @@
    username: username for login.
    password: password for login.
    usernametocredit: username of the user to credit.
+   usernametodebt: username of the user to debt, only needed for a transaction
+                   between two users.
    credits as float: Number of credits to credit the user.
    alertlevel as string: Any string to record the alert level of the monitored member,
                          such as "Blue", "Yellow", or "Red".
-
-   sensordataviewpayment a boolean as String: Records wether or not the crediting is occuring due to
+   callpayment a boolean as String: Records whether or not the crediting is occuring due to
+                         a call to a group member. Must be "True" or "False"!
+   sensordataviewpayment a boolean as String: Records whether or not the crediting is occuring due to
                          a detailed sensor screen viewing or not. Must be "True" or "False"!
-
-   membersummarypayment a boolean as String: Records wether or not the crediting is occuring due to
+   membersummarypayment a boolean as String: Records whether or not the crediting is occuring due to
                                              a member summary screen viewing or not. Must be "True"
                                              or "False"!
 */
-
 
 // Configure Cyclos and obtain an instance of LoginService
 require_once 'configureCyclos.php';
@@ -56,7 +57,19 @@ $transactionService = new Cyclos\TransactionService();
 $paymentService = new Cyclos\PaymentService();
 
 try {
-    $data = $transactionService->getPaymentData('SYSTEM', array('username' => $_POST['usernametocredit']));
+
+    if($_POST['callpayment'] == "True") {
+      $callPaymentValue = True;
+      $usernameToDebt = array('username' => $_POST['usernametodebt']);
+      $description = "User payment for call to a member.";
+    }
+    else {
+     $callPaymentValue = False;
+     $usernameToDebt = 'SYSTEM';
+     $description = "System payment to user.";
+    }
+
+    $data = $transactionService->getPaymentData($usernameToDebt, array('username' => $_POST['usernametocredit']));
 
     $memberSummaryPayment_field = new stdclass();
     $memberSummaryPayment_field->field = array('internalName' => 'MemberSummaryPayment');
@@ -82,6 +95,10 @@ try {
 
     $sensorDataViewPayment_field->booleanValue = $sensorDataPaymentValue;
 
+    $callPayment_field = new stdclass();
+    $callPayment_field->field = array('internalName' => 'CallPayment');
+    $callPayment_field->booleanValue = $callPaymentValue;
+
     $alertLevel_field = new stdclass();
     $alertLevel_field->field = array('internalName' => 'AlertLevel');
     $alertLevel_field->stringValue = $_POST['alertlevel'];
@@ -91,8 +108,8 @@ try {
     $parameters->to = $data->to;
     $parameters->type = $data->paymentTypes[0];
     $parameters->amount = $_POST['credits'];
-    $parameters->customValues = array($memberSummaryPayment_field, $sensorDataViewPayment_field, $sensorDataViewPayment_field, $alertLevel_field);
-    $parameters->description = "System payment to user";
+    $parameters->customValues = array($memberSummaryPayment_field, $sensorDataViewPayment_field, $sensorDataViewPayment_field, $callPayment_field, $alertLevel_field);
+    $parameters->description = $description;
 
     $paymentResult = $paymentService->perform($parameters);
     if ($paymentResult->authorizationStatus == 'PENDING_AUTHORIZATION') {
