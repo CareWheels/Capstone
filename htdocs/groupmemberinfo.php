@@ -1,13 +1,22 @@
 <?php
 
+/*
+   Parameters
+   username as string: username for login.
+   password as string: password for login.
+   groupinternalname as string: internal name of group to find members of.   
+
+*/
+
+
 // Configure Cyclos and obtain an instance of LoginService
 require_once 'configureCyclos.php';
 $loginService = new Cyclos\LoginService();
 
 // Set the parameters
 $params = new stdclass();
-$params->user = array("principal" => $_GET['username']);
-$params->password = $_GET['password'];
+$params->user = array("principal" => $_POST['username']);
+$params->password = $_POST['password'];
 $params->remoteAddress = $_SERVER['REMOTE_ADDR'];
 
 // Perform the login
@@ -34,12 +43,12 @@ try {
         die();
 }
 
-$groupInternalName = array($_GET['groupinternalname']);
+$groupInternalName = array($_POST['groupinternalname']);
 
 $userService = new Cyclos\UserService();
 $query = new stdclass();
 $query->groups = $groupInternalName;
-$query->pageSize = 5;
+$query->pageSize = 9999;
 $page = $userService->search($query);
 
 $groupMemberArray = array();

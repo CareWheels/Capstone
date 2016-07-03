@@ -1,5 +1,13 @@
 <?php
 
+/*
+    Parameters
+	
+	username as string: username for login.
+	password as string: password for login.
+	usernametofind as string: username to find the user information for.
+*/
+
 // Configure Cyclos and obtain an instance of LoginService
 require_once 'configureCyclos.php';
 $loginService = new Cyclos\LoginService();
