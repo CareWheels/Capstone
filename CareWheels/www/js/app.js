@@ -23,6 +23,9 @@ app.run(function($ionicPlatform) {
   });
 })
 
+//Call to the UserInfo custom rest endpoint, which logs user in and then returns all the field data of another user as $scope.data;
+//or one of the following error messages: "Missing username / password", "Invalid username / password", "Your access is blocked by 
+//exceeding invalid login attempts", or a default catch "Error while performing login: errorCode".
 app.controller("UserRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
   $scope.url = 'http://carebank.carewheels.org:8080/userinfo.php';
   $scope.fetch = function(userIn, passIn, tofindIn) {
@@ -30,16 +33,16 @@ app.controller("UserRestController", function($scope, $http, $log, $httpParamSer
     $scope.response = null;
     $http({
       url:$scope.url, 
-      method:'POST',
-      data: $httpParamSerializerJQLike({
+      method:'POST',    //all our custom REST endpoints have been designed to use POST
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
         username:userIn, 
         password:passIn, 
         usernametofind:tofindIn        
       }), 
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
       }
-    }).then(function(response) {
+    }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
         $scope.status = response.status;
         $scope.data = response.data;
       }, function(response) {
@@ -49,6 +52,9 @@ app.controller("UserRestController", function($scope, $http, $log, $httpParamSer
   };
 });
 
+//Call to the UpdateUserReminders endpoint, which logs a user in and updates all three of a user's (does not have to be the same user)
+//reminder slots in the format HH:MM:SS. Returns same login errors as UserRestController. The contents of a reminder slot 
+//are cleared by passing in '' rather than a string of the correct format.
 app.controller("ReminderRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
   $scope.url = 'http://carebank.carewheels.org:8080/updateuserreminders.php';
   $scope.fetch = function(userIn, passIn, toUpdate, rem1, rem2, rem3) {
@@ -56,8 +62,8 @@ app.controller("ReminderRestController", function($scope, $http, $log, $httpPara
     $scope.response = null;
     $http({
       url:$scope.url, 
-      method:'POST',
-      data: $httpParamSerializerJQLike({
+      method:'POST',    //all our custom REST endpoints have been designed to use POST
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
         username:userIn, 
         password:passIn, 
         usernametoupdate:toUpdate,
@@ -66,9 +72,9 @@ app.controller("ReminderRestController", function($scope, $http, $log, $httpPara
         reminder3:rem3        
       }), 
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
       }
-    }).then(function(response) {
+    }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
         $scope.status = response.status;
         $scope.data = response.data;
       }, function(response) {
