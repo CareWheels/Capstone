@@ -3,9 +3,9 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('careWheels', ['ionic'])
+var app = angular.module('careWheels', ['ionic'])
 
-.run(function($ionicPlatform) {
+app.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     if(window.cordova && window.cordova.plugins.Keyboard) {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -23,27 +23,51 @@ angular.module('careWheels', ['ionic'])
   });
 })
 
-.controller("UserRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+app.controller("UserRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
   $scope.url = 'http://carebank.carewheels.org:8080/userinfo.php';
-  $scope.fetch = function() {
+  $scope.fetch = function(userIn, passIn, tofindIn) {
     $scope.code = null;
     $scope.response = null;
-    $scope.params = {
-      username:'test', 
-      password:'test123', 
-      usernametofind:'test7'
-    };
     $http({
       url:$scope.url, 
       method:'POST',
-      params: $scope.params
-      /*Looking over the documentation more, I do not believe this service is needed, but I'm leaving it in so
-      we have it if I'm wrong...
-      
-      , params: $httpParamSerializerJQLike({username: 'test', password: 'test123', usernametofind: 'test7'}), 
+      data: $httpParamSerializerJQLike({
+        username:userIn, 
+        password:passIn, 
+        usernametofind:tofindIn        
+      }), 
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
-      }*/
+      }
+    }).then(function(response) {
+        $scope.status = response.status;
+        $scope.data = response.data;
+      }, function(response) {
+        $scope.data = response.data || "Request failed";
+        $scope.status = response.status;
+    })
+  };
+});
+
+app.controller("ReminderRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+  $scope.url = 'http://carebank.carewheels.org:8080/updateuserreminders.php';
+  $scope.fetch = function(userIn, passIn, toUpdate, rem1, rem2, rem3) {
+    $scope.code = null;
+    $scope.response = null;
+    $http({
+      url:$scope.url, 
+      method:'POST',
+      data: $httpParamSerializerJQLike({
+        username:userIn, 
+        password:passIn, 
+        usernametoupdate:toUpdate,
+        reminder1:rem1,
+        reminder2:rem2,
+        reminder3:rem3        
+      }), 
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     }).then(function(response) {
         $scope.status = response.status;
         $scope.data = response.data;
