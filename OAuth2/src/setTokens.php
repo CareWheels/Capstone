@@ -31,7 +31,7 @@ require 'Display.php';
 $display = new Display();
 
 //error states, echo error message then redirect back to step one.
-if (!isset($_POST['username']))
+if (!isset($_POST['careBankUsername']) || !isset($_POST['senseUsername']))
     $display->errorMessage("Username not set, please go back a page 
                          and re-enter the user name or restart.");
 if (!isset($_POST['access_token']) || !isset($_POST['refresh_token']))
@@ -40,8 +40,9 @@ if (!isset($_POST['access_token']) || !isset($_POST['refresh_token']))
 
 // Set the parameters for locator: used for finding the user id
 $locator = new stdClass();
-$locator->username = $_POST['username'];
+$locator->username = $_POST['careBankUsername'];
 $user = '';
+
 
 try {
     // get the user id # from the
@@ -61,25 +62,27 @@ try {
     // the custom fields are in an array, the index may change
     // to solve this we loop through the array, until both 
     // access token and refresh token fields are found.
-    $accessTokenIndex = $refreshTokenIndex = -1;
+    $accessTokenIndex = $refreshTokenIndex = $senseUserIndex = -1;
     $customFieldsArray = $result->customValues;
     for ($i = 0; $i < count($result->customValues); $i++){
         if ($customFieldsArray[$i]->field->internalName == 'accessToken')
             $accessTokenIndex = $i; 
         if ($customFieldsArray[$i]->field->internalName == 'refreshToken')
             $refreshTokenIndex = $i;
+        if ($customFieldsArray[$i]->field->internalName == 'SenseUsername')
+            $senseUserIndex = $i;
         //if both tokens are found then break out of loop
-        if ($accessTokenIndex != -1 && $refreshTokenIndex != -1)
+        if ($accessTokenIndex != -1 && $refreshTokenIndex != -1 && $senseUserIndex != -1)
             break;
     }
     //if either of the two tokens are not found then display error
     if ($accessTokenIndex == -1 || $refreshTokenIndex == -1)
         $display->errorMessage("token fields not found in CareBank.");
 
-
     // set the custom field values
     $result->customValues[$accessTokenIndex]->stringValue = $_POST['access_token'];
     $result->customValues[$refreshTokenIndex]->stringValue = $_POST['refresh_token'];
+    $result->customValues[$senseUserIndex]->stringValue = $_POST['senseUsername'];
 
     // save the modified user object.
     $result = $userService->save($result);
