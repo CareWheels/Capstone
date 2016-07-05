@@ -54,7 +54,7 @@ TAG;
     }
     
     function tokenMessage ($access_token, $refresh_token) {
-        $username = '';
+        $CareBankUsername = $SenseUsername = '';
         echo <<<TAG
         <ul>
             <li id=logo></li>
@@ -69,12 +69,14 @@ TAG;
                 <h4>
                     Lets proceed with storing these tokens in
                     the care bank. Please enter the user's 
-                    CareBank username.
+                    CareBank username and corresponding 
+                    Sen.se account username.
                 </h4>
             </li>
             <li>
                 <form action="setTokens.php" method="post">
-                    Username: <input type="text" name="username" required value=$username><br>
+                    CareBank Username: <input type="text" name="careBankUsername" required value=$CareBankUsername><br>
+                    Sen.se Username: <input type="text" name="senseUsername" required value=$SenseUsername><br>
                     <input type="hidden" name="access_token" value=$access_token>
                     <input type="hidden" name="refresh_token" value=$refresh_token>
                     <input class="button largeButton" type="submit" value="store tokens">
@@ -91,15 +93,21 @@ TAG;
         <li id=logo></li>
         <li>
             <h4>
-                Success! tokens stored successfully. 
+                Success! tokens stored successfully. Go to the CareBank
+                site, or logout of Sen.se.
             </h4>
                <b>$username</b> now has access to the CareWheels App.
         </li>
-            <li>
-                <form action="http://carebank.carewheels.org/?#login">
-                    <input class="button largeButton" type="submit" value="go to CareBank">
-                </form>      
-            </li>
+        <li>
+            <form action="https://sen.se/logout">
+                <input class="button smallButton left" type="submit" value="logout">
+            </form>      
+        </li>
+        <li>
+            <form action="http://carebank.carewheels">
+                <input class="button smallButton right" type="submit" value="CareBank">
+            </form>      
+        </li>
     </ul>
 TAG;
     }
