@@ -83,3 +83,30 @@ app.controller("ReminderRestController", function($scope, $http, $log, $httpPara
     })
   };
 });
+
+//Call to the Group Member Info custom rest endpoint
+app.controller("GroupRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+  $scope.url = 'http://carebank.carewheels.org:8080/groupmemberinfo.php';
+  $scope.fetch = function(userIn, passIn, groupName) {
+    $scope.code = null;
+    $scope.response = null;
+    $http({
+      url:$scope.url, 
+      method:'POST',    //all our custom REST endpoints have been designed to use POST
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
+        username:userIn, 
+        password:passIn, 
+        groupInternalName:groupName
+      }), 
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+      }
+    }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
+        $scope.status = response.status;
+        $scope.data = response.data;
+      }, function(response) {
+        $scope.data = response.data || "Request failed";
+        $scope.status = response.status;
+    })
+  };
+});

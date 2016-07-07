@@ -29,13 +29,18 @@
       </ion-header-bar>
       <ion-content>
           <!-- sample rest function calls -->
-        <div ng-controller="UserRestController">
+        <!-- <div ng-controller="UserRestController">
           <button id="fetchbtn" ng-click="fetch('test','test123','test7')">UserInfo</button><br>
           <pre>http status code: {{status}}</pre>
           <pre>http response data: {{data}}</pre>
-        </div>
-        <div ng-controller="ReminderRestController">
+        </div> -->
+        <!-- <div ng-controller="ReminderRestController">
           <button id="fetchbtn" ng-click="fetch('test','test123','test','14:00:00','15:00:00','')">Reminders</button><br>
+          <pre>http status code: {{status}}</pre>
+          <pre>http response data: {{data}}</pre>
+        </div> -->
+        <div ng-controller="GroupRestController">
+          <button id="fetchbtn" ng-click="fetch('testbilly','testbilly','CareWheel 1')">UserInfo</button><br>
           <pre>http status code: {{status}}</pre>
           <pre>http response data: {{data}}</pre>
         </div>
