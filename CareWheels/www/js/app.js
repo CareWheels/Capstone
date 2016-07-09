@@ -118,7 +118,7 @@ app.controller("GroupRestController", function($scope, $http, $log, $httpParamSe
 
 // Nothing seems to verify whether or not this is working. I don't know what more can be done.
 app.controller("OwnershipRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
-  $scope.url = 'http://carebank.carewheels.org:8080/updatelastownershiptakentime.php';
+  $scope.url = 'https://carebank.carewheels.org:8443/updatelastownershiptakentime.php';
   $scope.fetch = function(userIn, passIn, toUpdate, ownershipTime) {
     $scope.code = null;
     $scope.response = null;
@@ -142,6 +142,34 @@ app.controller("OwnershipRestController", function($scope, $http, $log, $httpPar
         $scope.status = response.status;
     })
   };
+
+  $scope.test = function(userIn, passIn, toUpdate) {
+    $scope.code = null;
+    $scope.response = null;
+    $scope.ownershipTime = "2016/07/09 15:30:00";
+    $http({
+      url:$scope.url,
+      method:'POST',
+      data:$httpParamSerializerJQLike({
+        username:userIn,
+        password:passIn,
+        usernametoupdate:toUpdate,
+        lastownershiptakentime:$scope.ownershipTime,
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then(function(response) {
+      $scope.status = response.status;
+      $scope.data = response.data;
+      $scope.value = response.data.customValues[6].stringValue;
+      $scope.pass = ($scope.value === $scope.ownershipTime);
+    }, function(response) {
+      $scope.data = response.data || "Request failed";
+      $scope.status = response.status;
+    })
+  };
+
 });
 
 
