@@ -1,9 +1,11 @@
 <?php
+
 /*
-   Parameters
-   username as string: the login username.
-   password as string: the login password.
-   usernametofind as string: the user to find all of the current day's transactions for.
+    Parameters
+	
+	username as string: username for login.
+	password as string: password for login.
+	usernametofind as string: username to find the user information for.
 */
 
 // Configure Cyclos and obtain an instance of LoginService 
@@ -16,12 +18,6 @@ $params->user = array("principal" => $_POST['username']);
 $params->password = $_POST['password'];
 $params->remoteAddress = $_SERVER['REMOTE_ADDR'];
 http_response_code(400);
-
-if(empty($_POST['usernametofind'])) {
-    echo("usernametofind cannot be blank.");
-    die();
-}
-
 
 // Perform the login
 try {
@@ -47,22 +43,42 @@ try {
 	die();
 }
 
-$transactionService = new Cyclos\TransactionService();
-$query = new stdclass();
-$query->owner = $_POST['usernametofind'];
-$query->period = array("begin"=> date("Y-m-d")."T00:00:00.000", "end" => date("Y-m-d")."T23:59:59.999");
-$query->pageSize = 9999;
+$userService = new Cyclos\UserService();
+$locator = new stdclass();
+$locator->username = $_POST['usernametofind'];
+
 try {
-    $transactionList = $transactionService->search($query);
+    $user = $userService->locate($locator);
+    $userInfo = $userService->load($user->id);
 } catch (Cyclos\ServiceException $e) {
-    echo("Error while performing transaction search: {$e->errorCode}");
+    echo("Error while performing user search: {$e->errorCode}");
+    die();
+}
+
+$groupInternalName = $userInfo->group->internalName;
+$query = new stdclass();
+$query->groups = $groupInternalName;
+$query->pageSize = 9999;
+
+try {
+    $page = $userService->search($query);
+
+    $groupMemberArray = array();
+
+    for($x = 0; $x < count($page->pageItems); $x++) {
+
+        $user = $userService->load($page->pageItems[$x]->id);
+        array_push($groupMemberArray, $user);
+    }
+}  catch (Cyclos\ServiceException $e) {
+    echo("Error while performing group search: {$e->errorCode}");
     die();
 }
 
 // Return the user object as json.
 http_response_code(200);
 header('Content-type: application/json');
-$json = json_encode( $transactionList );
+$json = json_encode( $groupMemberArray );
 echo($json);
 
 ?>
