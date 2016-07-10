@@ -46,15 +46,11 @@
           <pre>http status code: {{status}}</pre>
           <!-- <pre>http response data: {{data}}</pre> -->
         </div>
-        <div ng-controller="UserAndGroupRestController">
-          <button id="fetchbtn" ng-click="fetch('test','test123','groupmember')">UserInfo of Test Group</button><br>
-          <pre>http status code: {{status}}</pre>
-          <pre>http response data: {{data}}</pre>
-        </div>
+
         <div ng-controller="ReminderRestController">
           <button id="fetchbtn" ng-click="fetch('test','test123','test','14:00:00','15:00:00','')">Reminders</button><br>
           <pre>http status code: {{status}}</pre>
-          <pre>http response data: {{data}}</pre>
+          <!-- <pre>http response data: {{data}}</pre> -->
         </div>
         <div ng-controller="GroupRestController">
           <button id="fetchbtn" ng-click="fetch('testbilly','testbilly','CareWheel 1')">UserInfo</button><br>
@@ -69,17 +65,40 @@
           <!-- <pre>http response data: {{data}}</pre> -->
         </div>
         <!-- gets the LastOwnershipTakenTime custom field of target member -->
-        <div ng-controller="GetOwnershipRestController">
-          <button id="fetchbtn" ng-click="fetch('testbilly','testbilly','testbilly')">GetLastOwnershipTakenTime</button><br>
+        <div ng-controller="UserRestController">
+          <button id="fetchbtn" ng-click="getLastOwnershipTimeForUser('b_test_1','password','b_test_1')">GetLastOwnershipTakenTime</button><br>
           <pre>http status code: {{status}}</pre>
-          <!-- <pre>http response data: {{data}}</pre> -->
+          <pre>http response data: {{lastOwnershipTime}}</pre>
         </div>
+        <!-- gets info of Test Group from groupmember -->
+        <div ng-controller="UserAndGroupRestController">
+          <button id="fetchbtn" ng-click="fetch('test','test123','groupmember')">UserInfo of Test Group</button><br>
+          <pre>http status code: {{status}}</pre>
+          <pre>http response data: {{data}}</pre>
+        </div>
+
         <!-- tests the UpdateLastOwnershipTakenTime endpoint for a new user -->
         <div ng-controller="OwnershipRestController">
-          <button id="fetchbtn" ng-click="test('b_test_1', 'password', 'b_test_1')">TestUpdateLastOwnership</button><br>
+          <button id="fetchbtn" ng-click="test()">TestUpdateLastOwnership</button><br>
           <pre>http status code: {{status}}</pre>
           <pre>sent value: {{ownershipTime}}</pre>
           <pre>returned field value: {{value}}</pre>
+          <pre>passed: {{pass}}</pre>
+        </div>
+
+        <!-- Tests UpdateLastOwnershipTakenTime enpoint for b_test_1 with incorrect password -->
+        <div ng-controller="OwnershipRestController">
+          <button id="fetchbtn" ng-click="test_passError()">TestUpdateLastOwnership_BadPass</button><br>
+          <pre>http status code: {{status}}</pre>
+          <pre>Returned Error: {{error}}</pre>
+          <pre>passed: {{pass}}</pre>
+        </div>
+
+        <!-- Tests UpdateLastOwnershipTakenTime endpoint for b_test_1 with blank timestamp -->
+        <div ng-controller="OwnershipRestController">
+          <button id="fetchbtn" ng-click="test_blankTime()">TestUpdateLastOwnership_BlankTime</button><br>
+          <pre>http status code: {{status}}</pre>
+          <pre>Returned Error: {{error}}</pre>
           <pre>passed: {{pass}}</pre>
         </div>
       </ion-content>
