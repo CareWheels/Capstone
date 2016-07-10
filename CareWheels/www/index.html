@@ -88,6 +88,14 @@
           <pre>Returned Error: {{error}}</pre>
           <pre>passed: {{pass}}</pre>
         </div>
+
+        <!-- Tests UpdateLastOwnershipTakenTime endpoint for b_test_1 with blank timestamp -->
+        <div ng-controller="OwnershipRestController">
+          <button id="fetchbtn" ng-click="test_blankTime()">TestUpdateLastOwnership_BlankTime</button><br>
+          <pre>http status code: {{status}}</pre>
+          <pre>Returned Error: {{error}}</pre>
+          <pre>passed: {{pass}}</pre>
+        </div>
       </ion-content>
     </ion-pane>
   </body>

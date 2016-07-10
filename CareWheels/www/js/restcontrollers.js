@@ -33,7 +33,7 @@ app.controller("UserRestController", function($scope, $http, $log, $httpParamSer
 
   //test verifies returned json contains expected values using a correct username and password combination
   $scope.test = function() {
-    
+
   };
 
 });
@@ -195,6 +195,34 @@ app.controller("OwnershipRestController", function($scope, $http, $log, $httpPar
       $scope.error = response.data || "Request failed";
       $scope.status = response.status;
       $scope.pass = ($scope.error == "Invalid username / password");
+    })
+  };
+
+  // verifies response for a lastownershiptakentime value of empty string.
+  $scope.test_blankTime = function() {
+    var userIn = "b_test_1";
+    var passIn = "password";
+    var ownershipTime = "";
+    $http({
+      url:$scope.url,
+      method: 'POST',
+      data:$httpParamSerializerJQLike({
+        username:userIn,
+        password:passIn,
+        usernametoupdate:userIn,
+        lastownershiptakentime:ownershipTime
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then(function(response) {
+      $scope.status = response.status;
+      $scope.error = response.data;
+      $scope.pass = ($scope.error == "lastownershiptakentime cannot be blank.");
+    }, function(response) {
+      $scope.status = response.status;
+      $scope.error = response.data;
+      $scope.pass = ($scope.error == "lastownershiptakentime cannot be blank.");
     })
   };
 
