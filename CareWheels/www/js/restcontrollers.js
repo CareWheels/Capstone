@@ -29,6 +29,30 @@ app.controller("UserRestController", function($scope, $http, $log, $httpParamSer
     })
   };
 
+  // function will get the lastOwnershipTakenTime value for a specified user.
+  $scope.getLastOwnershipTimeForUser = function(userIn, passIn, toFindIn) {
+    $scope.response = null;
+    $http({
+      url:$scope.url,
+      method: 'POST',
+      data: $httpParamSerializerJQLike({
+        username:userIn,
+        password:passIn,
+        usernametofind:toFindIn
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then(function(response) {
+      $scope.status = response.status;
+      $scope.lastOwnershipTime = response.data.customValues[6].stringValue;
+    }, function(response) {
+      $scope.status = response.status;
+      $scope.lastOwnershipTime = "0000/00/00 00:00:00";
+      $log.warn(response.data);
+    })
+  };
+
 /*** Test functions for userInfo.php enpoint ***/
 
   //test verifies returned json contains expected values using a correct username and password combination

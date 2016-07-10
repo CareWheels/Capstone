@@ -65,10 +65,10 @@
           <!-- <pre>http response data: {{data}}</pre> -->
         </div>
         <!-- gets the LastOwnershipTakenTime custom field of target member -->
-        <div ng-controller="GetOwnershipRestController">
-          <button id="fetchbtn" ng-click="fetch('testbilly','testbilly','testbilly')">GetLastOwnershipTakenTime</button><br>
+        <div ng-controller="UserRestController">
+          <button id="fetchbtn" ng-click="getLastOwnershipTimeForUser('b_test_1','password','b_test_1')">GetLastOwnershipTakenTime</button><br>
           <pre>http status code: {{status}}</pre>
-          <!-- <pre>http response data: {{data}}</pre> -->
+          <pre>http response data: {{lastOwnershipTime}}</pre>
         </div>
 
 
