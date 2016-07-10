@@ -10,16 +10,7 @@
                                       of HH:MM:SS	
 */
 
-// Configure Cyclos and obtain an instance of LoginService 
-require_once 'configureCyclos.php';
-$loginService = new Cyclos\LoginService();
-
-// Set the parameters
-$params = new stdclass();
-$params->user = array("principal" => $_POST['username']);
-$params->password = $_POST['password'];
-$params->remoteAddress = $_SERVER['REMOTE_ADDR'];
-http_response_code(400);
+include('login.php');
 
 // Perform the login
 try {
