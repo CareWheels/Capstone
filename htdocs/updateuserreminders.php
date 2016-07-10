@@ -3,7 +3,7 @@
 /*
     Parameters
 	
-	username as string: username for login.
+	username as string:  username for login.
 	password as string: password for login.
 	usernametoupdate as string: username that will have their user reminder custom fields updated.
     reminder1, reminder2, reminder3 as strings: value to update these custom fields with, in the format
