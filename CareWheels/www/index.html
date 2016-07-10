@@ -46,11 +46,15 @@
           <pre>http status code: {{status}}</pre>
           <!-- <pre>http response data: {{data}}</pre> -->
         </div>
-
+        <div ng-controller="UserAndGroupRestController">
+          <button id="fetchbtn" ng-click="fetch('test','test123','groupmember')">UserInfo of Test Group</button><br>
+          <pre>http status code: {{status}}</pre>
+          <pre>http response data: {{data}}</pre>
+        </div>
         <div ng-controller="ReminderRestController">
           <button id="fetchbtn" ng-click="fetch('test','test123','test','14:00:00','15:00:00','')">Reminders</button><br>
           <pre>http status code: {{status}}</pre>
-          <!-- <pre>http response data: {{data}}</pre> -->
+          <pre>http response data: {{data}}</pre>
         </div>
         <div ng-controller="GroupRestController">
           <button id="fetchbtn" ng-click="fetch('testbilly','testbilly','CareWheel 1')">UserInfo</button><br>

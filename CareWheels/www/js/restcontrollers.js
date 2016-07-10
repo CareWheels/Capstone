@@ -205,3 +205,34 @@ app.controller("GetOwnershipRestController", function($scope, $http, $log, $http
   };
 });
 
+//Call to the UserAndGroupmemberInfo custom rest endpoint, which logs user in and then returns all the field data of all users in their group as $scope.data;
+//or one of the following error messages: "Missing username / password", "Invalid username / password", "Your access is blocked by 
+//exceeding invalid login attempts", or a default catch "Error while performing login: errorCode" or "Error while performing group search".
+app.controller("UserAndGroupRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+  $scope.url = 'https://carebank.carewheels.org:8443/userandgroupmemberinfo.php';
+  $scope.fetch = function(userIn, passIn, tofindIn) {
+    $scope.code = null;
+    $scope.response = null;
+    $http({
+      url:$scope.url, 
+      method:'POST',    //all our custom REST endpoints have been designed to use POST
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
+        username:userIn, 
+        password:passIn, 
+        usernametofind:tofindIn        
+      }), 
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+      }
+    }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
+        $scope.status = response.status;
+        $scope.data = response.data;
+      }, function(response) {
+        $scope.data = response.data || "Request failed";
+        $scope.status = response.status;
+        if(response.status!=200){
+          $log.warn($scope.data);
+        }
+    })
+  };
+});
