@@ -23,6 +23,9 @@ app.controller("UserRestController", function($scope, $http, $log, $httpParamSer
       }, function(response) {
         $scope.data = response.data || "Request failed";
         $scope.status = response.status;
+        if(response.status!=200){
+          $log.warn($scope.data);
+        }
     })
   };
 });
@@ -55,6 +58,9 @@ app.controller("ReminderRestController", function($scope, $http, $log, $httpPara
       }, function(response) {
         $scope.data = response.data || "Request failed";
         $scope.status = response.status;
+        if(response.status!=200){
+          $log.warn($scope.data);
+        }
     })
   };
 });
@@ -82,6 +88,9 @@ app.controller("GroupRestController", function($scope, $http, $log, $httpParamSe
       }, function(response) {
         $scope.data = response.data || "Request failed";
         $scope.status = response.status;
+        if(response.status!=200){
+          $log.warn($scope.data);
+        }
     })
   };
 });
@@ -115,6 +124,9 @@ app.controller("OwnershipRestController", function($scope, $http, $log, $httpPar
       }, function(response) {
         $scope.data = response.data || "Request failed";
         $scope.status = response.status;
+        if(response.status!=200){
+          $log.warn($scope.data);
+        }
     })
   };
 
@@ -146,7 +158,6 @@ app.controller("OwnershipRestController", function($scope, $http, $log, $httpPar
   };
 
 });
-
 
 //This doesn't work at all. I don't know the solution. Looking at the JSON string that returns, there is no instance of 
 //"LastOwnershipTakenTime":XXXX/XX/XX XX:XX:XX anywhere in the string. There are several instances of "id":xxx..xx, so I 
@@ -187,6 +198,10 @@ app.controller("GetOwnershipRestController", function($scope, $http, $log, $http
       }, function(response) {
         $scope.data = response.data || "Request failed";
         $scope.status = response.status;
+        if(response.status!=200){
+          $log.warn($scope.data);
+        }
     })
   };
 });
+
