@@ -70,12 +70,22 @@
           <pre>http status code: {{status}}</pre>
           <!-- <pre>http response data: {{data}}</pre> -->
         </div>
+
+
         <!-- tests the UpdateLastOwnershipTakenTime endpoint for a new user -->
         <div ng-controller="OwnershipRestController">
-          <button id="fetchbtn" ng-click="test('b_test_1', 'password', 'b_test_1')">TestUpdateLastOwnership</button><br>
+          <button id="fetchbtn" ng-click="test()">TestUpdateLastOwnership</button><br>
           <pre>http status code: {{status}}</pre>
           <pre>sent value: {{ownershipTime}}</pre>
           <pre>returned field value: {{value}}</pre>
+          <pre>passed: {{pass}}</pre>
+        </div>
+
+        <!-- Tests UpdateLastOwnershipTakenTime enpoint for b_test_1 with incorrect password -->
+        <div ng-controller="OwnershipRestController">
+          <button id="fetchbtn" ng-click="test_passError()">TestUpdateLastOwnership_BadPass</button><br>
+          <pre>http status code: {{status}}</pre>
+          <pre>Returned Error: {{error}}</pre>
           <pre>passed: {{pass}}</pre>
         </div>
       </ion-content>

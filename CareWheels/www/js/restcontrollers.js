@@ -28,6 +28,14 @@ app.controller("UserRestController", function($scope, $http, $log, $httpParamSer
         }
     })
   };
+
+/*** Test functions for userInfo.php enpoint ***/
+
+  //test verifies returned json contains expected values using a correct username and password combination
+  $scope.test = function() {
+    
+  };
+
 });
 
 //Call to the UpdateUserReminders endpoint, which logs a user in and updates all three of a user's (does not have to be the same user)
@@ -130,7 +138,12 @@ app.controller("OwnershipRestController", function($scope, $http, $log, $httpPar
     })
   };
 
-  $scope.test = function(userIn, passIn, toUpdate) {
+/*** Test Functions for UpdateLastOwnershipTakenTime enpoint ***/
+  
+  //Verifies the returned json contains updated lastownershiptakentime value sent in the request.
+  $scope.test = function() {
+    var userIn = "b_test_1";
+    var passIn = "password";
     $scope.code = null;
     $scope.response = null;
     $scope.ownershipTime = "2016/07/09 15:30:00";
@@ -140,7 +153,7 @@ app.controller("OwnershipRestController", function($scope, $http, $log, $httpPar
       data:$httpParamSerializerJQLike({
         username:userIn,
         password:passIn,
-        usernametoupdate:toUpdate,
+        usernametoupdate:userIn,
         lastownershiptakentime:$scope.ownershipTime,
       }),
       headers: {
@@ -154,6 +167,34 @@ app.controller("OwnershipRestController", function($scope, $http, $log, $httpPar
     }, function(response) {
       $scope.data = response.data || "Request failed";
       $scope.status = response.status;
+    })
+  };
+
+  // verifies request returned error 'Invalid username / password'
+  $scope.test_passError = function() {
+    var userIn = "b_test_1";
+    var passIn = "passwor";
+    $scope.code = null;
+    $scope.response = null;
+    $scope.ownershipTime = "2016/07/10 13:50:00";
+    $http({
+      url:$scope.url,
+      method: 'POST',
+      data:$httpParamSerializerJQLike({
+        username:userIn,
+        password:passIn,
+        usernametoupdate:userIn,
+        lastownershiptakentime:$scope.ownershipTime,
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then(function(response) {
+      $scope.status = response.status;
+    }, function(response) {
+      $scope.error = response.data || "Request failed";
+      $scope.status = response.status;
+      $scope.pass = ($scope.error == "Invalid username / password");
     })
   };
 
