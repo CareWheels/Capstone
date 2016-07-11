@@ -29,6 +29,8 @@ app.controller("UserRestController", function($scope, $http, $log, $httpParamSer
     })
   };
 
+  // function for retrieving a custom field value from the json object returned by the userInfo endpoint. If the custom
+  // value cannot be found, returns null.
   getCustomField = function(customFieldName, data) {
     for(var i = 0; i < data.customValues.length; i++) {
       if (data.customValues[i].field.internalName == customFieldName)
