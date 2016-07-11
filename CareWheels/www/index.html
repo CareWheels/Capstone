@@ -108,6 +108,15 @@
           <pre>Returned Error: {{error}}</pre>
           <pre>passed: {{pass}}</pre>
         </div>
+
+        <!-- Tests both dailytransactionhistory and credituser endpoints -->
+        <div ng-controller="CreditController">
+          <button id="credbtn" ng-click="creditUser('test', 'test123', '17.38', 'memberSummaryPayment', 'Yellow')">Credit user account function</button><br>
+          <pre>http status code for dailytransactionhistory.php post request: {{status}}</pre>
+          <pre>http response data for dailytransactionhistory.php post request: {{data}}</pre>
+          <pre>http status code for credituser.php post request: {{status2}}</pre>
+          <pre>http response data for credituser.php post request: {{data2}}</pre>
+        </div>
       </ion-content>
     </ion-pane>
   </body>
