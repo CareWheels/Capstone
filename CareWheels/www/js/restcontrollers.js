@@ -29,6 +29,14 @@ app.controller("UserRestController", function($scope, $http, $log, $httpParamSer
     })
   };
 
+  getCustomField = function(customFieldName, data) {
+    for(var i = 0; i < data.customValues.length; i++) {
+      if (data.customValues[i].field.internalName == customFieldName)
+        return data.customValues[i].stringValue;
+    }
+    return null;
+  }
+
   // function will get the lastOwnershipTakenTime value for a specified user.
   $scope.getLastOwnershipTimeForUser = function(userIn, passIn, toFindIn) {
     $scope.response = null;
@@ -45,7 +53,7 @@ app.controller("UserRestController", function($scope, $http, $log, $httpParamSer
       }
     }).then(function(response) {
       $scope.status = response.status;
-      $scope.lastOwnershipTime = response.data.customValues[6].stringValue;
+      $scope.lastOwnershipTime = getCustomField("LastOwnershipTakenTime", response.data);
     }, function(response) {
       $scope.status = response.status;
       $scope.lastOwnershipTime = "0000/00/00 00:00:00";
@@ -53,11 +61,32 @@ app.controller("UserRestController", function($scope, $http, $log, $httpParamSer
     })
   };
 
+
 /*** Test functions for userInfo.php enpoint ***/
 
   //test verifies returned json contains expected values using a correct username and password combination
-  $scope.test = function() {
+  $scope.testValidUserPass = function() {
+    $scope.response = null;
+    var userIn = 'b_test_1';
+    var passIn = 'password';
+    var usernametofindIn = 'b_test_1';
+    $http({
+      url:$scope.url,
+      method: 'POST',
+      data: $httpParamSerializerJQLike({
+        username:userIn,
+        password:passIn,
+        usernametofind:usernametofindIn
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then(function(response) {
+      $scope.status = response.status;
+      $scope.pass = ($scope.status == 200);
+    }, function(response){
 
+    })
   };
 
 });

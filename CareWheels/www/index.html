@@ -77,6 +77,13 @@
           <pre>http response data: {{data}}</pre>
         </div>
 
+        <!-- Tests the userInfo endpoint for a user b_test_1 with valid username and password -->
+        <div ng-controller="UserRestController">
+          <button id="fetchbtn" ng-click="testValidUserPass()">Test_GetUser_ValidUserPass</button><br>
+          <pre>http status code: {{status}}</pre>
+          <pre>Passed: {{pass}}</pre>
+        </div>
+
         <!-- tests the UpdateLastOwnershipTakenTime endpoint for a new user -->
         <div ng-controller="OwnershipRestController">
           <button id="fetchbtn" ng-click="test()">TestUpdateLastOwnership</button><br>
