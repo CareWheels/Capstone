@@ -117,6 +117,13 @@
           <pre>http status code for credituser.php post request: {{status2}}</pre>
           <pre>http response data for credituser.php post request: {{data2}}</pre>
         </div>
+        <div ng-controller="CreditControllerByDebit">
+          <button id="creddebbtn" ng-click="debitUser('test', 'test123', 'Ben', '10', 'memberSummaryPayment', 'Yellow')">Debit user account function</button><br>
+          <pre>http status code for dailytransactionhistory.php post request: {{status}}</pre>
+          <pre>http response data for dailytransactionhistory.php post request: {{data}}</pre>
+          <pre>http status code for credituser.php post request: {{status2}}</pre>
+          <pre>http response data for credituser.php post request: {{data2}}</pre>
+        </div>
       </ion-content>
     </ion-pane>
   </body>
