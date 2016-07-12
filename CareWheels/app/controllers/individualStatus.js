@@ -1,3 +1,7 @@
 /**
- * Created by asakawa on 7/12/16.
+ * CareWheels - Individual Status Controller
+ *
  */
+angular.module('careWheels', []).controller('individualStatus', function($scope){
+
+});

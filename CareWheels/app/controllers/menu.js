@@ -1,3 +1,8 @@
 /**
- * Created by asakawa on 7/12/16.
+ * CareWheels - Menu Controller
+ *
  */
+angular.module('careWheels', []).controller('menuController', function($scope){
+
+});
+

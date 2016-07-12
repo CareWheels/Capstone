@@ -1,3 +1,7 @@
 /**
- * Created by asakawa on 7/12/16.
+ * CareWheels - Login Controller
+ *
  */
+angular.module('careWheels', []).controller('loginController', function($scope){
+
+});
