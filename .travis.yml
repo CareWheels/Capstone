@@ -17,9 +17,8 @@ env:
   CXX=g++-4.8
 
 install:
-  - npm install -g gulp bower cordova ionic
+  - npm install -g cordova ionic
   - npm install
-  - bower update
 
 before_script:
   - wget http://dl.google.com/android/android-sdk_r24.4-linux.tgz
