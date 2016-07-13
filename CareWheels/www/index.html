@@ -30,19 +30,27 @@
       </ion-header-bar>
       <ion-content>
 
-        <!-- Tests data retrieval/GET request from sen.se api -->
+         <!-- Tests Web Workers status   --> 
         <div ng-controller="DownloadController">
-          <button id="fetchbtn" ng-click="RequestData()">Get Sen.se Data</button><br>
-          <pre>http status code for GET data request: {{status}}</pre>
-          <pre>http response data for GET data request: {{data}}</pre>
+
+          <button id="fetchDbtn" ng-click="getData()">Start Download</button>
+          <pre>http status code: {{status}}</pre>
+          <pre>http response data: {{data}}</pre>
+          <pre>result data: {{downloadResult}}</pre>
+
+          <button id="stopDbtn" ng-click="stopData()">Stop Download</button>
+          <pre>result data: {{downloadStopResult}}</pre>
+
+          <button id="fetchRbtn" ng-click="refreshExpiredToken()">Refresh Expired Token</button>
+          <pre>http status code: {{refreshStatus}}</pre>
+          <pre>http response data: {{refreshData}}</pre>
+          <pre>result data: {{refreshResult}}</pre>
+
+          <button id="stopRbtn" ng-click="stopExpiredToken()">Stop Refresh Expired Token</button>
+          <pre>result data: {{stopResult}}</pre>
+
         </div>
 
-        <!-- Tests POST request for obtaining refreshed access token   -->
-        <div ng-controller="DownloadController">
-          <button id="fetchbtn" ng-click="RefreshExpiredToken()">Refresh Expired Sen.se Token</button><br>
-          <pre>http status code for refresh post request: {{status2}}</pre>
-          <pre>http response data for refresh post request: {{data2}}</pre>
-        </div>
       </ion-content>
     </ion-pane>
   </body>
