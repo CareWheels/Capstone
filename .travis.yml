@@ -21,6 +21,7 @@ install:
   - npm install
 
 before_script:
+  - cd CareWheels
   - wget http://dl.google.com/android/android-sdk_r24.4-linux.tgz
   - tar -xvf android-sdk_r24.4-linux.tgz
   - echo y | ./android-sdk-linux/tools/android update sdk --no-ui --all --filter platform-tools
@@ -33,7 +34,6 @@ before_script:
   - export PATH=${PATH}:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/23.0.2
 
 script:
-  - cd CareWheels
   - ionic state reset
   - ionic platform remove android
   - ionic platform add android
