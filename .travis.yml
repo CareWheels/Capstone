@@ -17,9 +17,9 @@ env:
   CXX=g++-4.8
 
 install:
-  - npm install -g gulp bower cordova ionic
+  - cd CareWheels
+  - npm install -g cordova ionic
   - npm install
-  - bower update
 
 before_script:
   - wget http://dl.google.com/android/android-sdk_r24.4-linux.tgz
@@ -34,9 +34,7 @@ before_script:
   - export PATH=${PATH}:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/23.0.2
 
 script:
-  - cd CareWheels
   - ionic state reset
   - ionic platform remove android
   - ionic platform add android
   - ionic build android
-  - ls ionic info
