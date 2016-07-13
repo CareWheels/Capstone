@@ -18,6 +18,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CareWheels Authentication</title>
     <link rel="stylesheet" href="style.css">
+    <script>
+        window.onload = function(){
+            //lets log out of sen.se before we proceed, opens url "sen.se/logout" in a new tab
+            var senseWindow = window.open("https://sen.se/logout", "sen.se logout"); //logout before
+
+            senseWindow.addEventListener('onunload', function () {
+               senseWindow.close();
+            });
+            
+            //closes window after 3 seconds
+/*          setTimeout(function(){
+                senseWindow.close();
+            }, 3000);*/
+        }
+    </script>
 </head>
 <body>
 <?php
