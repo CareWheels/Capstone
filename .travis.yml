@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - "4.4.4"
+before_install:
+    - npm install -g cordova ionic
+install:
+    # install node dependencies
+    - npm install
+script:
+    # reload the plugins
+    - ionic state reset
+    - ionic platform add android
+    - ionic build android
