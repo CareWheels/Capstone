@@ -21,6 +21,12 @@
     <!-- your app's js -->
     <script src="js/app.js"></script>
 
+    <!-- ng-webWorker js -->
+    <script src="js/ng-webworker.js"></script>
+    <script src="js/ng-webworker.min.js"></script>
+    <script src="js/worker_wrapper.js"></script>
+    <script src="js/worker_wrapper.min.js"></script>
+
   </head>
   <body ng-app="careWheels">
 
@@ -31,8 +37,12 @@
       <ion-content>
 
          <!-- Tests Web Workers status   --> 
-        <div ng-controller="DownloadController">
+        <div ng-controller="WorkerCtrl">
 
+          <button id="testbtn" ng-click="test()">Test worker</button>
+          <pre>result data: {{testresult}}</pre>
+
+<!--
           <button id="fetchDbtn" ng-click="getData()">Start Download</button>
           <pre>http status code: {{status}}</pre>
           <pre>http response data: {{data}}</pre>
@@ -48,7 +58,7 @@
 
           <button id="stopRbtn" ng-click="stopExpiredToken()">Stop Refresh Expired Token</button>
           <pre>result data: {{stopResult}}</pre>
-
+-->
         </div>
 
       </ion-content>
