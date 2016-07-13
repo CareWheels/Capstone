@@ -21,11 +21,10 @@
     <!-- your app's js -->
     <script src="js/app.js"></script>
 
-    <!-- ng-webWorker js -->
-    <script src="js/ng-webworker.js"></script>
-    <script src="js/ng-webworker.min.js"></script>
-    <script src="js/worker_wrapper.js"></script>
-    <script src="js/worker_wrapper.min.js"></script>
+    <!-- angular-worker js -->
+    <script src="js/angular-workers.js"></script>
+    <script src="js/angular-workers.min.js"></script>
+
 
   </head>
   <body ng-app="careWheels">
@@ -37,29 +36,23 @@
       <ion-content>
 
          <!-- Tests Web Workers status   --> 
-        <div ng-controller="WorkerCtrl">
+     <div ng-controller="WorkerCtrl">
 
-          <button id="testbtn" ng-click="test()">Test worker</button>
-          <pre>result data: {{testresult}}</pre>
+          <div class="starter-template">
+        <h1 id="title">HTML5 WebWorkers with angular-worker</h1>
+        <p class="lead">Using webworkers with angular environment, but in an isolated context</p>
+         </div>
 
-<!--
-          <button id="fetchDbtn" ng-click="getData()">Start Download</button>
-          <pre>http status code: {{status}}</pre>
-          <pre>http response data: {{data}}</pre>
-          <pre>result data: {{downloadResult}}</pre>
+              <h2>create new thread to work with $http</h2>
+              <button id= "btn1" ng-click="test()">Execute! »</button>
+              <p>{{data}}</p>
+              <p>{{status}}</p>
+              <p>{{update}}</p>
+                                      
 
-          <button id="stopDbtn" ng-click="stopData()">Stop Download</button>
-          <pre>result data: {{downloadStopResult}}</pre>
+  </div>
 
-          <button id="fetchRbtn" ng-click="refreshExpiredToken()">Refresh Expired Token</button>
-          <pre>http status code: {{refreshStatus}}</pre>
-          <pre>http response data: {{refreshData}}</pre>
-          <pre>result data: {{refreshResult}}</pre>
 
-          <button id="stopRbtn" ng-click="stopExpiredToken()">Stop Refresh Expired Token</button>
-          <pre>result data: {{stopResult}}</pre>
--->
-        </div>
 
       </ion-content>
     </ion-pane>
