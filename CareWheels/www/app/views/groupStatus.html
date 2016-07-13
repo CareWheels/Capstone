@@ -17,13 +17,17 @@
   <!-- controller -->
   <script src="../controllers/groupStatus.js"></script>
 
+  <!-- my styling -->
   <link href="../../css/groupStatus.css" rel="stylesheet">
 
 
 
 </head>
 <body ng-app="careWheels" ng-controller="groupStatusController">
-  <!--content goes here-->
+<ion-pane>
+<ion-content>
+
+  <!-- user group element -->
   <ul id="userGroup">
     <li class="userSquare topLeft">
       <div class="userImage topLeft"></div>
@@ -40,5 +44,7 @@
     <li id="centerUser" class="userImage"></li>
   </ul>
 
+</ion-content>
+</ion-pane>
 </body>
 </html>
