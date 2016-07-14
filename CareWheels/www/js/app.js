@@ -38,10 +38,10 @@ app.controller('WorkerCtrl', function($scope, WorkerService) {
 // The URL must be absolute because of the URL blob specification  
 WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js");
 
-
-  //TODO:
-  //create "downloadData" and "refreshToken" functions (in the same manner as $scope.test)
-  $scope.test = function (arg) {
+  /////////////////////////////////////////////////////////////////////////////////////////
+  //DATA DOWNLOAD FUNCTION
+  /////////////////////////////////////////////////////////////////////////////////////////
+  $scope.DownloadData = function (arg) {
 
       /**
       // This contains the worker body.
@@ -54,22 +54,94 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       // But be aware that no state changes in the angular services in the worker are propagates to the main thread. Workers run in fully isolated contexts.
       // All communication must be performed through the output parameter.
    */
-  var workerPromise = WorkerService.createAngularWorker(['input', 'output', '$http', function (input, output, $http) {
+  var workerPromise = WorkerService.createAngularWorker(['input', 'output', '$http', '$httpParamSerializerJQLike', function (input, output, $http, $httpParamSerializerJQLike) {
 
     //TODO:
     //Pass appropriate params into angular worker $http request
-   var url = "http://jsonplaceholder.typicode.com/posts/1";
+    
     //access from server
-    var callback = function(){
-    //console.log(“url=”+input[‘url’]);
-    $http.get(url)
-    .success(function(response){
+    var downloadFunc = function(){
+    //var dataUrl = "http://jsonplaceholder.typicode.com/posts/1";
+    var dataUrl = "https://apis.sen.se/v2/feeds/";
+    $http({
+      url:dataUrl, 
+      method:'GET',    
+      data: $httpParamSerializerJQLike({   
+       //
+      }), 
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Bearer access-token'
+      }
+    }).then(function(response) {   
+        //
+            //received response, send to main thread
+        //NOTE: need to JSON.parse + stringify the response
+        //or else there will be an error as we attempt to 
+        //pass the response back to main thread
+        output.notify(JSON.parse(JSON.stringify(response)));
+        console.log("download func success", response);
+
+      }, function(response) {
+        //
+            //received response, send to main thread
+        //NOTE: need to JSON.parse + stringify the response
+        //or else there will be an error as we attempt to 
+        //pass the response back to main thread
+        output.notify(JSON.parse(JSON.stringify(response)));
+        console.log("download func fail", response);
+
+        }
+      )
+
     //received response, send to main thread
-    output.notify(response);
-    });
+    //output.notify(response);
     };
 
-    callback();
+
+    var refreshFunc = function(){
+    //var refreshUrl = "http://jsonplaceholder.typicode.com/posts/1";
+    var refreshUrl = "https://apis.sen.se/v2/oauth2/refresh/";
+    $http({
+      url:refreshUrl, 
+      method:'GET',    
+      data: $httpParamSerializerJQLike({   
+       //
+      }), 
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Bearer refresh-token'
+      }
+    }).then(function(response) {   
+        //
+            //received response, send to main thread
+        //NOTE: need to JSON.parse + stringify the response
+        //or else there will be an error as we attempt to 
+        //pass the response back to main thread
+        output.notify(JSON.parse(JSON.stringify(response)));
+        console.log("refresh func success", response);
+
+      }, function(response) {
+        //
+            //received response, send to main thread
+        //NOTE: need to JSON.parse + stringify the response
+        //or else there will be an error as we attempt to 
+        //pass the response back to main thread
+        output.notify(JSON.parse(JSON.stringify(response)));
+        console.log("refresh func fail", response);
+
+        }
+      )
+
+    //received response, send to main thread
+    //output.notify(response);
+    };
+
+    //run the functions
+    downloadFunc();
+    //TODO:
+    //Set up logic to only run refreshFunc if access-token == expired
+    refreshFunc();
 
   }]);
 
@@ -82,7 +154,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     workerPromise
       .then(function success(angularWorker) {
       //The input must be serializable
+      //console.log('reached');
       return angularWorker.run();
+      
     }, function error(reason) {
 
         console.log('callback error');
@@ -103,12 +177,11 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 
       }, function notify(update) {
         //handle update
-
         $scope.data = update.data;
         $scope.status = update.status;
         $scope.update = update;
         console.log(update);
+        console.log('reached notify');
       });
-
   };
 });
