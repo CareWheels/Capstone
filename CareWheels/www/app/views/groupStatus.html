@@ -27,11 +27,18 @@
 </head>
 <body ng-app="careWheels" ng-controller="groupStatusController">
 <ion-view>
-  <ion-header-bar class="bar-stable">
-    <h2 class="title">Group Status</h2>
-  </ion-header-bar>
+
+  <ion-nav-bar>
+    <ion-nav-buttons side="left">
+      <h2 class="title">Group Status</h2>
+      <!-- Toggle right side menu -->
+      <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+
+
   <!-- user group block: holds the -->
-  <ion-content>
+  <ion-content class="overflowHide">
     <ul id="userGroup">
       <li class="userSquare topLeft" ng-click="clickTopLeft()">
         <div class="userImage topLeft"></div>

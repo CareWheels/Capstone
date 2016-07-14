@@ -54,3 +54,8 @@ a{
   border: solid 1px grey;
   background-color: red;
 }
+
+.overflowHide{
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
