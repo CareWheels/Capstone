@@ -1,4 +1,4 @@
-var app = angular.module('careWheels', ['ionic', 'login.controllers', 'login.services'])
+var app = angular.module('careWheels', ['ionic', 'loginController', 'loginService'])
 
 app.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -16,7 +16,7 @@ app.run(function($ionicPlatform) {
   $stateProvider.state('login', {
     url: '/login',
     templateUrl: 'templates/login.html',
-    controller: 'LoginCtrl'
+    controller: 'loginController'
   });
 
   $stateProvider.state('test', {
