@@ -27,49 +27,68 @@
 </head>
 <body ng-app="careWheels" ng-controller="groupStatusController">
 <ion-view>
+  <ion-side-menus>
+    <ion-side-menu-content>
+      <ion-nav-bar>
+        <ion-nav-buttons side="left">
+          <h2 class="title">Group Status</h2>
+          <!-- Toggle right side menu -->
+          <button ng-click="toggleRight()" menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+        </ion-nav-buttons>
+      </ion-nav-bar>
 
-  <ion-nav-bar>
-    <ion-nav-buttons side="left">
-      <h2 class="title">Group Status</h2>
-      <!-- Toggle right side menu -->
-      <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
-    </ion-nav-buttons>
-  </ion-nav-bar>
+      <!-- user group block: holds the -->
+      <ion-content class="overflowHide">
+        <ul id="userGroup">
+          <li class="userSquare topLeft" ng-click="clickTopLeft()">
+            <div id="topLeftRed" class="alertOverlay red"></div>
+            <div id="topLeftYellow" class="alertOverlay yellow"></div>
+            <div class="userImage topLeft"></div>
+          </li>
+          <li class="userSquare topRight" ng-click="clickTopRight()">
+            <div class="userImage topRight"></div>
+          </li>
+          <li class="userSquare bottomLeft"  ng-click="clickBottomLeft()">
+            <div class="userImage bottomLeft"></div>
+          </li>
+          <li class="userSquare bottomRight"  ng-click="clickBottomRight()">
+            <div class="userImage bottomRight"></div>
+          </li>
+          <li class="userImage centerUser" ng-click="clickCenter()"></li>
+        </ul>
+
+        <ul id="careBankBlock" ng-click="clickCareBank()">
+          <li id="careBankHeader" class="smallBorder">CareBank</li>
+          <li id="careBankData" class="smallBorder">
+            <div class="careBankDetail careBankCredits">
+              <h3>Credits</h3>
+              <h3><b>{{group.credits}}</b></h3>
+            </div>
+            <div class="careBankDetail careBankDebits">
+              <h3>Debits</h3>
+              <h3><b>{{group.debits}}</b></h3>
+            </div>
+          </li>
+        </ul>
+      </ion-content>
+
+    </ion-side-menu-content>
 
 
-  <!-- user group block: holds the -->
-  <ion-content class="overflowHide">
-    <ul id="userGroup">
-      <li class="userSquare topLeft" ng-click="clickTopLeft()">
-        <div class="userImage topLeft"></div>
-      </li>
-      <li class="userSquare topRight" ng-click="clickTopRight()">
-        <div class="userImage topRight"></div>
-      </li>
-      <li class="userSquare bottomLeft"  ng-click="clickBottomLeft()">
-        <div class="userImage bottomLeft"></div>
-      </li>
-      <li class="userSquare bottomRight"  ng-click="clickBottomRight()">
-        <div class="userImage bottomRight"></div>
-      </li>
-      <li class="userImage centerUser" ng-click="clickCenter()"></li>
-    </ul>
 
-    <ul id="careBankBlock" ng-click="clickCareBank()">
-      <li id="careBankHeader" class="smallBorder">CareBank</li>
-      <li id="careBankData" class="smallBorder">
-        <div class="careBankDetail careBankCredits">
-          <h3>Credits</h3>
-          <h3><b>{{group.credits}}</b></h3>
-        </div>
-        <div class="careBankDetail careBankDebits">
-          <h3>Debits</h3>
-          <h3><b>{{group.debits}}</b></h3>
-        </div>
-      </li>
-    </ul>
+    <ion-side-menu side="right">
+      <ion-list>
+        <ion-item>home</ion-item>
+      </ion-list>
+      <ion-list>
+        <ion-item>group</ion-item>
+      </ion-list>
+      <ion-list>
+        <ion-item>etc</ion-item>
+      </ion-list>
+    </ion-side-menu>
+  </ion-side-menus>
 
-  </ion-content>
 </ion-view>
 </body>
 </html>
