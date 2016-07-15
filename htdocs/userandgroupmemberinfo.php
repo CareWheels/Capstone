@@ -37,7 +37,14 @@ try {
 
         $user = $userService->load($page->pageItems[$x]->id);
         $userImages = $userImageService->_list($user->id);
-        $user->photoUrl = "https://carebank.carewheels.org/content/images/user/".$userImages[0]->key;
+        
+        if(!empty($userImages)) {
+          $user->photoUrl = "https://carebank.carewheels.org/content/images/user/".$userImages[0]->key;
+        }
+        else {
+          $user->photoUrl = null;
+        }
+        
         array_push($groupMemberArray, $user);
     }
 }  catch (Cyclos\ServiceException $e) {
