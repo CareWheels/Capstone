@@ -4,7 +4,7 @@
  */
 
 angular.module('careWheels', ['ionic'])
-  .controller('groupStatusController', function($scope, $ionicSideMenuDelegate){
+  .controller('groupStatusController', function($scope){
 
   $scope.group = {
     username:'test01',
@@ -38,9 +38,6 @@ angular.module('careWheels', ['ionic'])
   };
   $scope.clickCareBank = function(){
     console.log('clicked carebank');
-  };
-  $scope.toggleRightSideMenu = function() {
-    $ionicSideMenuDelegate.toggleRight();
   };
 
 
