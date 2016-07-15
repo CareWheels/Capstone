@@ -16,6 +16,7 @@ $userService = new Cyclos\UserService();
 $query = new stdclass();
 $query->groups = $groupInternalName;
 $query->pageSize = 9999;
+$userImageService = new Cyclos\UserImageService();
 
 try {
     $page = $userService->search($query);
@@ -25,6 +26,8 @@ try {
     for($x = 0; $x < count($page->pageItems); $x++) {
     
         $user = $userService->load($page->pageItems[$x]->id);
+        $userImages = $userImageService->_list($user->id);
+        $user->photoUrl = "https://carebank.carewheels.org/content/images/user/".$userImages[0]->key;
         array_push($groupMemberArray, $user);
     }
 }  catch (Cyclos\ServiceException $e) {
