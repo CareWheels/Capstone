@@ -24,27 +24,32 @@ app.run(function($ionicPlatform) {
 })
 
 app.controller("NotificationController", function($scope, $log, $cordovaLocalNotification){
-  //   $scope.Init_Notifs = function() {
-  //   Notif_File = something;
-  //   if(Notif_File==null){
-  //     Create_Notif(10, 0, 0, 1);
-  //     Create_Notif(14, 0, 0, 2);
-  //     Create_Notif(19, 0, 0, 3);
-  //     //make Notif_File
-  //     //save notifs to file
-  //   } else {
-  //     //set notifs to file values
-  //   }
-  // }
+  function Time() {this.hours=0; this.minutes=0; this.seconds=0;};
+  $scope.data = angular.fromJson(window.localStorage['Reminders']);
+  $scope.Init_Notifs = function() {
+    if($scope.data){
+      $scope.data;
+      $scope.data[0] = new Time();
+      $scope.data[1] = new Time();
+      $scope.data[2] = new Time();
+      $scope.Create_Notif(10,0,0,1);
+      $scope.Create_Notif(14,0,0,2);
+      $scope.Create_Notif(19,0,0,3);
+    } else {
+      $log.warn("in else");
+      if($scope.data[0]) $scope.Create_Notif($scope.data[0].hours,$scope.data[0].minutes,$scope.data[0].seconds,1);
+      if($scope.data[1]) $scope.Create_Notif($scope.data[1].hours,$scope.data[1].minutes,$scope.data[1].seconds,2);
+      if($scope.data[2]) $scope.Create_Notif($scope.data[2].hours,$scope.data[2].minutes,$scope.data[2].seconds,3);
+    }
+    $log.warn($scope.data[0]);
+  }
 
   $scope.Create_Notif = function(hours=0, minutes=0, seconds=0, reminderNum=0){
-    $log.warn("Successfully called");
     if(reminderNum==0){
-      $cordovaLocalNotification.add({
+      $cordovaLocalNotification.schedule({
         id: reminderNum,
         message: "There are red alert(s) on your CareWheel!",
         title: "CareWheels",
-        autoCancel: true,
         sound: null
       }).then(function() {
         $log.warn("Alert notification has been set");
@@ -52,28 +57,31 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
     } else if(reminderNum <4){
       var time = new Date();
       time.setHours(hours);
+      $scope.data[reminderNum-1].hours = hours;
       time.setMinutes(minutes);
+      $scope.data[reminderNum-1].minutes = minutes;
       time.setSeconds(seconds);
+      $scope.data[reminderNum-1].seconds = seconds;
 
-      $cordovaLocalNotification.add({
-        id: reminderNum,
-        firstAt: time,
-        every: "day",
-        message: "Reminder " + reminderNum + ": Please check in with your CareWheel!",
-        title: "CareWheels",
-        autoCancel: true,
-        sound: null
-      }).then(function() {
-        $log.warn("Notification" + reminderNum + "has been set to " + time.getUTCTime());
-      });    
+      window.localStorage['Reminders'] = angular.toJson($scope.data);
+      // $cordovaLocalNotification.schedule({
+      //   id: reminderNum,
+      //   firstAt: time,
+      //   every: "day",
+      //   message: "Reminder " + reminderNum + ": Please check in with your CareWheel!",
+      //   title: "CareWheels",
+      //   sound: null
+      // }).then(function() {
+      //   $log.warn("Notification" + reminderNum + "has been set to " + time.getUTCTime());
+      // });    
     } else {
-      $log.warn("Attempted to create notification for id #" + reminderNum);
+      $log.warn("Incorrect attempt to create notification for id #" + reminderNum);
     }
   };
 
-  // $scope.Delete_Notif = function(id){
-  //   $cordovaLocalNotification.clear(id, function() {
-  //       $log.warn(id + " is done");
-  //   });
-  // }
+  $scope.Delete_Notif = function(id){
+    $cordovaLocalNotification.clear(id, function() {
+        $log.warn(id + " is deleted");
+    });
+  }
 });
