@@ -54,61 +54,22 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       // But be aware that no state changes in the angular services in the worker are propagates to the main thread. Workers run in fully isolated contexts.
       // All communication must be performed through the output parameter.
    */
-  var workerPromise = WorkerService.createAngularWorker(['input', 'output', '$http', '$httpParamSerializerJQLike', function (input, output, $http, $httpParamSerializerJQLike) {
-    var uname = 'test';
-    var pword = 'test123';
+
+    //********************************************
     //TODO:
-    //Pass appropriate params into angular worker $http request
+    //Serialize params into 'input' before creating worker. eg. groupMembername, access-token, refresh-token, senseID
+    //will be obtained from groupmember array object in memory (from login)
+    //********************************************
 
-    /////////////////////////////////////////////////////////////////////////////////////////
-    //GET ACCESS AND REFRESH TOKEN FOR GROUP MEMBER WITHIN CYCLOS SERVER
-    //-before downloadFunc can run, we need to obtain the groupmembers' access-token and
-    //refresh-token from cyclos
-    //-this requires a request to the server
-    //-we will return the refresh and access tokens, so that they may be used in the 
-    //downloadFunc and (possibly) refreshFunc functions
-    /////////////////////////////////////////////////////////////////////////////////////////
-    var getTokens = function() {
-    var gname = 'test';
-    //var getTokenUrl = "http://jsonplaceholder.typicode.com/posts/1";
-    var getTokenUrl = "https://carebank.carewheels.org:8443/groupmemberinfo.php";
-    $http({
-      url:getTokenUrl, 
-      method:'POST',    
-      data: $httpParamSerializerJQLike({   
-      username: uname,
-      password: pword,
-      //usernametofind: gname
-      groupinternalname: gname
-
-      }), 
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    }).then(function(response) {   
-        //
-        console.log("getTokens func success", response);
-          return response; 
-      }, function(response) {
-        //
-        console.log("getTokens func fail", response);
-        }
-      )
-    }
-
+  var workerPromise = WorkerService.createAngularWorker(['input', 'output', '$http', '$httpParamSerializerJQLike', function (input, output, $http, $httpParamSerializerJQLike) {
 
     ///////////////////////////////////////////////////////////////////////////
     //FUNCTION
-    //Calls getTokens
     //Attempts sen.se download
     //if expired token error, calls refreshToken function
     //$http request to sen.se with access token to attempt to retrieve feed data
     ///////////////////////////////////////////////////////////////////////////
     var downloadFunc = function(){
-
-    var getTokenResponse = getTokens(); //add parameters to getTokens()
-    // var accessToken = JSON.parse(JSON.stringify(response.customField.accesstoken))
-    // var refreshToken = JSON.parse(JSON.stringify(response.customField.refreshtoken))
 
     //var dataUrl = "http://jsonplaceholder.typicode.com/posts/1";
     var dataUrl = "https://apis.sen.se/v2/feeds/";
@@ -172,8 +133,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       url:refreshUrl, 
       method:'POST',    
       data: $httpParamSerializerJQLike({
-       // send old tokens   
-       //accesstoken: accessToken,
+        //
        //refreshtoken: refreshToken
       }), 
       headers: {
@@ -181,39 +141,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         'Authorization': 'Bearer refresh-token'
       }
     }).then(function(response) {
-        //parse success response and save new tokens
-        //var newAccessToken = JSON.parse(JSON.stringify(response));
-        //var newRefreshToken = JSON.parse(JSON.stringify(response));
 
-        //var storeTokenUrl = "http://jsonplaceholder.typicode.com/posts/2";
-        var storeTokenUrl = "https://carebank.carewheels.org:8443/groupmemberinfo.php";
-        $http({
-          url:storeTokenUrl, 
-          method:'POST',    
-          data: $httpParamSerializerJQLike({
-          //attempt to send and save new tokens
-          //username:username,
-          //password:password,
-          //accesstoken:newAccessToken,
-          //refreshtoken:newRefreshToken
-          }), 
-          headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-          }
-          }).then(function(response) {   
-          //
-          //output.notify(JSON.parse(JSON.stringify(response)));
-          console.log("store token in cyclos success", response);
-
-          }, function(response) {
-          //
-          //output.notify(JSON.parse(JSON.stringify(response)));
-          console.log("store token in cyclos fail", response);
-            return response; //exit function
-          })
-          //after cyclos http request
-          //output.notify(JSON.parse(JSON.stringify(response)));
-          console.log("sen.se refresh request success", response);
+        //output.notify(JSON.parse(JSON.stringify(response)));
+        console.log("sen.se refresh request success", response);
 
       }, function(response) {
         //
@@ -223,9 +153,6 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 
         }
       )
-
-    //received response, send to main thread
-    //output.notify(response);
     };
 
 /*
@@ -240,7 +167,7 @@ from design doc
 
     downloadFunc();
     //refreshFunc();
-    //getTokens();
+
   }]);
 
 
@@ -280,6 +207,11 @@ from design doc
         $scope.update = update;
         console.log(update);
         console.log('reached notify');
+        //*******************************************
+        //TODO:
+        //json parse update for appropriate feed data
+        //save to localStorage
+        //*******************************************
       });
   };
 });
