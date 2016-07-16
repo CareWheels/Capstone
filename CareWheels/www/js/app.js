@@ -27,7 +27,8 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
   function Time() {this.hours=0; this.minutes=0; this.seconds=0;};
   $scope.data = angular.fromJson(window.localStorage['Reminders']);
   $scope.Init_Notifs = function() {
-    if($scope.data){
+    if(!$scope.data){
+      $log.warn("in if");
       $scope.data;
       $scope.data[0] = new Time();
       $scope.data[1] = new Time();
@@ -41,7 +42,7 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
       if($scope.data[1]) $scope.Create_Notif($scope.data[1].hours,$scope.data[1].minutes,$scope.data[1].seconds,2);
       if($scope.data[2]) $scope.Create_Notif($scope.data[2].hours,$scope.data[2].minutes,$scope.data[2].seconds,3);
     }
-    $log.warn($scope.data[0]);
+    $log.warn($scope.data[1]);
   }
 
   $scope.Create_Notif = function(hours=0, minutes=0, seconds=0, reminderNum=0){
@@ -62,18 +63,18 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
       $scope.data[reminderNum-1].minutes = minutes;
       time.setSeconds(seconds);
       $scope.data[reminderNum-1].seconds = seconds;
-
       window.localStorage['Reminders'] = angular.toJson($scope.data);
-      // $cordovaLocalNotification.schedule({
-      //   id: reminderNum,
-      //   firstAt: time,
-      //   every: "day",
-      //   message: "Reminder " + reminderNum + ": Please check in with your CareWheel!",
-      //   title: "CareWheels",
-      //   sound: null
-      // }).then(function() {
-      //   $log.warn("Notification" + reminderNum + "has been set to " + time.getUTCTime());
-      // });    
+
+      $cordovaLocalNotification.schedule({
+        id: reminderNum,
+        firstAt: time,
+        every: "day",
+        message: "Reminder " + reminderNum + ": Please check in with your CareWheel!",
+        title: "CareWheels",
+        sound: null
+      }).then(function() {
+        $log.warn("Notification" + reminderNum + "has been set to " + time.getUTCTime());
+      });    
     } else {
       $log.warn("Incorrect attempt to create notification for id #" + reminderNum);
     }
