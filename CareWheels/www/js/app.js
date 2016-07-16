@@ -28,7 +28,6 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
   $scope.data = angular.fromJson(window.localStorage['Reminders']);
   $scope.Init_Notifs = function() {
     if(!$scope.data){
-      $log.warn("in if");
       $scope.data;
       $scope.data[0] = new Time();
       $scope.data[1] = new Time();
@@ -37,12 +36,11 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
       $scope.Create_Notif(14,0,0,2);
       $scope.Create_Notif(19,0,0,3);
     } else {
-      $log.warn("in else");
       if($scope.data[0]) $scope.Create_Notif($scope.data[0].hours,$scope.data[0].minutes,$scope.data[0].seconds,1);
       if($scope.data[1]) $scope.Create_Notif($scope.data[1].hours,$scope.data[1].minutes,$scope.data[1].seconds,2);
       if($scope.data[2]) $scope.Create_Notif($scope.data[2].hours,$scope.data[2].minutes,$scope.data[2].seconds,3);
     }
-    $log.warn($scope.data[1]);
+    $log.warn($scope.data[0]);
   }
 
   $scope.Create_Notif = function(hours=0, minutes=0, seconds=0, reminderNum=0){
@@ -84,5 +82,6 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
     $cordovaLocalNotification.clear(id, function() {
         $log.warn(id + " is deleted");
     });
+    $scope.data[id] = null;
   }
 });
