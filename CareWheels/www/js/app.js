@@ -23,45 +23,51 @@ app.run(function($ionicPlatform) {
   });
 })
 
+//Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
 app.controller("NotificationController", function($scope, $log, $cordovaLocalNotification){
   function Time() {this.hours=0; this.minutes=0; this.seconds=0;};
-  $scope.data = angular.fromJson(window.localStorage['Reminders']);
+  $scope.data = angular.fromJson(window.localStorage['Reminders']);   //needs to be called outside the functions so it persists for all of them
+
+  //To be called during app startup after login; retrieves saved alert times (if they exist) or creates default alerts (if they don't) 
+  //and calls Create_Notif for each of them
   $scope.Init_Notifs = function() {
-    if(!$scope.data){
-      $scope.data;
+    if(!$scope.data){   //have notifications been initialized before?
+      $scope.data;    //data param needs to be initialized before indices can be added
       $scope.data[0] = new Time();
       $scope.data[1] = new Time();
       $scope.data[2] = new Time();
-      $scope.Create_Notif(10,0,0,1);
+      $scope.Create_Notif(10,0,0,1);  //these correspond to the pre-chosen default alarm times
       $scope.Create_Notif(14,0,0,2);
       $scope.Create_Notif(19,0,0,3);
-    } else {
+    } else {    //need to check if each reminder, as any/all of them could be deleted by user
       if($scope.data[0]) $scope.Create_Notif($scope.data[0].hours,$scope.data[0].minutes,$scope.data[0].seconds,1);
       if($scope.data[1]) $scope.Create_Notif($scope.data[1].hours,$scope.data[1].minutes,$scope.data[1].seconds,2);
       if($scope.data[2]) $scope.Create_Notif($scope.data[2].hours,$scope.data[2].minutes,$scope.data[2].seconds,3);
     }
-    $log.warn($scope.data[0]);
+    $log.log("Notifications initialized: " + $scope.data);
   }
 
+  //Schedules a local notification and, if it is a reminder, saves a record of it to local storage. reminderNum must be <4
+  //or it will log an error and schedule no notifications.
   $scope.Create_Notif = function(hours=0, minutes=0, seconds=0, reminderNum=0){
-    if(reminderNum==0){
-      $cordovaLocalNotification.schedule({
+    if(reminderNum==0){   //is notif a red alert?
+      $cordovaLocalNotification.schedule({    //omitting 'at' and 'every' params means it occurs once, immediately
         id: reminderNum,
         message: "There are red alert(s) on your CareWheel!",
         title: "CareWheels",
-        sound: null
+        sound: null   //should be updated to freeware sound
       }).then(function() {
-        $log.warn("Alert notification has been set");
+        $log.log("Alert notification has been set");
       });
-    } else if(reminderNum <4){
-      var time = new Date();
-      time.setHours(hours);
+    } else if(reminderNum <4){    //is notif a user reminder?
+      var time = new Date();    //defaults to current date/time
+      time.setHours(hours);     //update 
       $scope.data[reminderNum-1].hours = hours;
       time.setMinutes(minutes);
       $scope.data[reminderNum-1].minutes = minutes;
       time.setSeconds(seconds);
       $scope.data[reminderNum-1].seconds = seconds;
-      window.localStorage['Reminders'] = angular.toJson($scope.data);
+      window.localStorage['Reminders'] = angular.toJson($scope.data);   //save $scope.data so new reminder is remembered
 
       $cordovaLocalNotification.schedule({
         id: reminderNum,
@@ -69,19 +75,24 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
         every: "day",
         message: "Reminder " + reminderNum + ": Please check in with your CareWheel!",
         title: "CareWheels",
-        sound: null
+        sound: null   //same, hopefully a different sound than red alerts
       }).then(function() {
-        $log.warn("Notification" + reminderNum + "has been set to " + time.getUTCTime());
+        $log.log("Notification" + reminderNum + "has been scheduled for " + time.getUTCTime() + ", daily");
       });    
     } else {
       $log.warn("Incorrect attempt to create notification for id #" + reminderNum);
     }
   };
 
+  //Unschedules a local notification; clears its index if it is a user reminder (id 1-3). If id is invalid clear() will not
+  //throw errors. Delete_Notif(0) is technically valid but Red Alerts are one-time and instant so unscheduling them is unnecessary.
   $scope.Delete_Notif = function(id){
     $cordovaLocalNotification.clear(id, function() {
-        $log.warn(id + " is deleted");
+      $log.log(id + " is cleared");
     });
-    $scope.data[id] = null;
+    if(id==1||id==2||id==3){    //if deleted notif is a user reminder
+      $scope.data[id] = null;   //clear its index
+      window.localStorage['Reminders'] = angular.toJson($scope.data);   //and save $scope.data so deletiion is remembered
+    }
   }
 });
