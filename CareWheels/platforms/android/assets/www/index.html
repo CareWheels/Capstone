@@ -16,79 +16,92 @@
     <script src="lib/ionic/js/ionic.bundle.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
+    <script src="lib/ngCordova/dist/ng-cordova.min.js"></script>
     <script src="cordova.js"></script>
 
     <!-- your app's js -->
     <script src="js/app.js"></script>
     <script src="js/restcontrollers.js"></script>
-    <script src="js/loginController.js"></script>
-    <script src="js/loginServices.js"></script>
-
   </head>
   <body ng-app="careWheels" class="platform-android platform-cordova platform-webview">
-    <ion-nav-view>
-
-    </ion-nav-view>
-    <!-- <ion-pane>
+    <ion-pane>
       <ion-header-bar class="bar-stable">
         <h1 class="title">CareWheels Starter</h1>
       </ion-header-bar>
       <ion-content>
-          [>sample rest function calls<]
+        <ul>
+          <li><h5>temp dev buttons to link to the views</h5></li>
+          <li class="devButton">
+            <a href="app/views/login.html">Login</a>
+          </li>
+          <li class="devButton">
+            <a href="app/views/groupStatus.html">Group Status</a>
+          </li>
+          <li class="devButton">
+            <a href="app/views/individualStatus.html">Individual Status</a>
+          </li>
+          <li class="devButton">
+            <a href="app/views/menu.html">Menu</a>
+          </li>
+          <li class="devButton">
+            <a href="app/views/reminders.html">Reminders</a>
+          </li>
+        </ul>
+          <!-- sample rest function calls -->
         <div ng-controller="UserRestController">
           <button id="fetchbtn" ng-click="fetch('test','test123','test7')">Correct UserInfo</button><br>
           <pre>http status code: {{status}}</pre>
-          [><pre>http response data: {{data}}</pre><]
+          <!-- <pre>http response data: {{data}}</pre> -->
         </div>
         <div ng-controller="UserRestController">
           <button id="fetchbtn" ng-click="fetch('lockedout','locked','test7')">Wrong UserInfo</button><br>
           <pre>http status code: {{status}}</pre>
-          [><pre>http response data: {{data}}</pre><]
+          <!-- <pre>http response data: {{data}}</pre> -->
         </div>
         <div ng-controller="UserRestController">
           <button id="fetchbtn" ng-click="fetch('','locked','test7')">Missing UserInfo</button><br>
           <pre>http status code: {{status}}</pre>
-          [><pre>http response data: {{data}}</pre><]
+          <!-- <pre>http response data: {{data}}</pre> -->
         </div>
 
         <div ng-controller="ReminderRestController">
           <button id="fetchbtn" ng-click="fetch('test','test123','test','14:00:00','15:00:00','')">Reminders</button><br>
           <pre>http status code: {{status}}</pre>
-          [><pre>http response data: {{data}}</pre><]
+          <!-- <pre>http response data: {{data}}</pre> -->
         </div>
         <div ng-controller="GroupRestController">
           <button id="fetchbtn" ng-click="fetch('testbilly','testbilly','CareWheel 1')">UserInfo</button><br>
           <pre>http status code: {{status}}</pre>
-          [><pre>http response data: {{data}}</pre><]
+          <!-- <pre>http response data: {{data}}</pre> -->
         </div>
-        [>changes the LastOwnershipTakenTime custom field<]
-        [>Looking at the Cyclos Server: LastOwnershipTakenTime takes the form XXXX/XX/XX XX:XX:XX<]
+        <!-- changes the LastOwnershipTakenTime custom field -->
+        <!-- Looking at the Cyclos Server: LastOwnershipTakenTime takes the form XXXX/XX/XX XX:XX:XX -->
         <div ng-controller="OwnershipRestController">
           <button id="fetchbtn" ng-click="fetch('testbilly','testbilly','testbilly','2016/07/09 18:00:00')">LastOwnershipTakenTime</button><br>
           <pre>http status code: {{status}}</pre>
-          [><pre>http response data: {{data}}</pre><]
+          <!-- <pre>http response data: {{data}}</pre> -->
         </div>
-        [>gets the LastOwnershipTakenTime custom field of target member<]
+        <!-- gets the LastOwnershipTakenTime custom field of target member -->
         <div ng-controller="UserRestController">
           <button id="fetchbtn" ng-click="getLastOwnershipTimeForUser('b_test_1','password','b_test_1')">GetLastOwnershipTakenTime</button><br>
           <pre>http status code: {{status}}</pre>
           <pre>http response data: {{lastOwnershipTime}}</pre>
         </div>
-        [>gets info of Test Group from groupmember<]
+        <!-- gets info of Test Group from groupmember -->
         <div ng-controller="UserAndGroupRestController">
           <button id="fetchbtn" ng-click="fetch('test','test123','groupmember')">UserInfo of Test Group</button><br>
           <pre>http status code: {{status}}</pre>
           <pre>http response data: {{data}}</pre>
         </div>
 
-        [>Tests the userInfo endpoint for a user b_test_1 with valid username and password<]
+        <!-- Tests the userInfo endpoint for a user b_test_1 with valid username and password -->
         <div ng-controller="UserRestController">
           <button id="fetchbtn" ng-click="testValidUserPass()">Test_GetUser_ValidUserPass</button><br>
           <pre>http status code: {{status}}</pre>
           <pre>Passed: {{pass}}</pre>
         </div>
 
-        [>tests the UpdateLastOwnershipTakenTime endpoint for a new user<]
+        <!-- tests the UpdateLastOwnershipTakenTime endpoint for a new user -->
         <div ng-controller="OwnershipRestController">
           <button id="fetchbtn" ng-click="test()">TestUpdateLastOwnership</button><br>
           <pre>http status code: {{status}}</pre>
@@ -97,7 +110,7 @@
           <pre>passed: {{pass}}</pre>
         </div>
 
-        [>Tests UpdateLastOwnershipTakenTime enpoint for b_test_1 with incorrect password<]
+        <!-- Tests UpdateLastOwnershipTakenTime enpoint for b_test_1 with incorrect password -->
         <div ng-controller="OwnershipRestController">
           <button id="fetchbtn" ng-click="test_passError()">TestUpdateLastOwnership_BadPass</button><br>
           <pre>http status code: {{status}}</pre>
@@ -105,7 +118,7 @@
           <pre>passed: {{pass}}</pre>
         </div>
 
-        [>Tests UpdateLastOwnershipTakenTime endpoint for b_test_1 with blank timestamp<]
+        <!-- Tests UpdateLastOwnershipTakenTime endpoint for b_test_1 with blank timestamp -->
         <div ng-controller="OwnershipRestController">
           <button id="fetchbtn" ng-click="test_blankTime()">TestUpdateLastOwnership_BlankTime</button><br>
           <pre>http status code: {{status}}</pre>
@@ -113,7 +126,7 @@
           <pre>passed: {{pass}}</pre>
         </div>
 
-        [>Tests both dailytransactionhistory and credituser endpoints<]
+        <!-- Tests both dailytransactionhistory and credituser endpoints -->
         <div ng-controller="CreditController">
           <button id="credbtn" ng-click="creditUser('test', 'test123', '17.38', 'memberSummaryPayment', 'Yellow')">Credit user account function</button><br>
           <pre>http status code for dailytransactionhistory.php post request: {{status}}</pre>
@@ -129,6 +142,6 @@
           <pre>http response data for credituser.php post request: {{data2}}</pre>
         </div>
       </ion-content>
-    </ion-pane> -->
+    </ion-pane>
   </body>
 </html>

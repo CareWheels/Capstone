@@ -22,6 +22,7 @@ try {
     die();
 }
 
+$userImageService = new Cyclos\UserImageService();
 $groupInternalName = $userInfo->group->internalName;
 $query = new stdclass();
 $query->groups = $groupInternalName;
@@ -35,6 +36,15 @@ try {
     for($x = 0; $x < count($page->pageItems); $x++) {
 
         $user = $userService->load($page->pageItems[$x]->id);
+        $userImages = $userImageService->_list($user->id);
+        
+        if(!empty($userImages)) {
+          $user->photoUrl = "https://carebank.carewheels.org/content/images/user/".$userImages[0]->key;
+        }
+        else {
+          $user->photoUrl = null;
+        }
+        
         array_push($groupMemberArray, $user);
     }
 }  catch (Cyclos\ServiceException $e) {
