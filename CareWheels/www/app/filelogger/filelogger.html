@@ -1,0 +1,26 @@
+<ion-view title="File Logger">
+  <ion-content padding="true">
+    <ion-list>
+      <button class="button button-block button-positive" ng-click="initLogCurrentDate()">Init log to current date
+      </button>
+
+      <form ng-submit="initLogCustomDate()">
+        <div class="list ">
+          <div class="item item-input-inset">
+            <label class="item item-input-wrapper">
+              <!--<span class="input-label">Custom Date</span>-->
+              <input type="text" placeholder="yyyy-MM-dd" ng-model="inputDate.text">
+            </label>
+            <button type="submit" class="button button-positive">Init log to custom date
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <button class="button button-block button-positive" ng-click="someLog()">Generate Log</button>
+      <button class="button button-block button-positive" ng-click="viewLog()">View Log</button>
+      <button class="button button-block button-positive" ng-click="logFileInfo()">Log file information</button>
+      <button class="button button-block button-positive" ng-click="deleteLogFile()">Delete Log File</button>
+    </ion-list>
+  </ion-content>
+</ion-view>
