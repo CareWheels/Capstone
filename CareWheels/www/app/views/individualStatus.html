@@ -18,17 +18,11 @@
   <script src="../controllers/individualStatus.js"></script>
 
 </head>
-<body ng-app="careWheels" ng-controller="individualStatusController">
+<body ng-app="careWheels" ng-controller="individualStatusController" class="overflow-scroll">
 <ion-pane>
   <ion-nav-bar>
-    <ion-nav-back-button class="button">
-      <i class="ion-arrow-left-c"></i>
-    </ion-nav-back-button>
-      <!--
-    <h1 class="title">Shiftwiz.{{controllerCheck}}</h1> -->
     <h2 class="title">Sensor Status, Trevor</h2>
   </ion-nav-bar>
-<!-- <ion-view title="Trevor"> -->
   <ion-content>
     <div class="row header">
       <div class="col no_border col-25"></div>
@@ -38,7 +32,7 @@
     </div>
     <div class="row">
       <div class="col">12am</div>
-      <div class="col blue"></div>
+      <div class="col" ng-style="{'background-color': '{{trevor.0.status}}'}"></div>
       <div class="col yellow"></div>
       <div class="col blue"></div>
     </div>
