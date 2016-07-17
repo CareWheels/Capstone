@@ -8,7 +8,17 @@ angular.module('careWheels')
   .state('login', {
     url: '/login',
     templateUrl: 'app/views/login.html',
-    controller: 'loginController'
+    controller: 'loginController',
+    resolve: {
+          "auth": function($state, User) {
+                    var credentials = angular.fromJson(window.localStorage['loginCredentials']);
+
+                    if (credentials)
+                        return User.login(credentials.username, credentials.password, true);
+                    else
+                        $state.go('login');
+                }
+      }
   })
 
   .state('groupStatus', {
@@ -22,4 +32,5 @@ angular.module('careWheels')
     templateUrl: '../../templates/test.html',
   });
 
+  //$urlRouterProvider.otherwise('/groupStatus');
 })

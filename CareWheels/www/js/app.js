@@ -8,6 +8,9 @@ angular.module('careWheels', [
 
   //
   .run(function($ionicPlatform) {
+
+    window.localStorage['loginCredentials'] = null;
+
     $ionicPlatform.ready(function() {
       if(window.cordova && window.cordova.plugins.Keyboard) {
         cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -40,15 +43,13 @@ angular.module('careWheels', [
   // User factory
   .factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike) {
     var user = {};
-    window.localStorage['loginCredentials'] = null;
-
-    var credentials = angular.fromJson(window.localStorage['loginCredentials']);
+    //window.localStorage['loginCredentials'] = null;
 
     user.login = function(uname, passwd, rmbr) {
       if (rmbr)
         window.localStorage['loginCredentials'] = angular.toJson({"username":uname, "password":passwd});
 
-      $http({
+      return $http({
         url:API.userAndGroupInfo,
         method: 'POST',
         data: $httpParamSerializerJQLike({
@@ -62,16 +63,12 @@ angular.module('careWheels', [
       }).then(function(response) {
         //store user info
         //store groupMember info
+        GroupInfo = response.data;
         $state.go('groupStatus')
       }, function(response) {
         //present login failed
       })
     };
-
-    if (credentials)
-      user.login(credentials.username, credentials.password, true);
-    else
-      $state.go('login');
 
     return user;
   });

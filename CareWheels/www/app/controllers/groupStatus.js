@@ -4,6 +4,7 @@
  */
 
 angular.module('careWheels').controller('groupStatusController', function($scope){
+
   $scope.group = {
     username:'test01',
     topLeft:{
