@@ -6,10 +6,9 @@ angular.module('careWheels', [
   //contant definition for endpoint base url
   .constant('BASE_URL', 'https://carebank.carewheels.org:8443')
 
-  //
   .run(function($ionicPlatform) {
 
-    window.localStorage['loginCredentials'] = null;
+//    window.localStorage['loginCredentials'] = null;
 
     $ionicPlatform.ready(function() {
       if(window.cordova && window.cordova.plugins.Keyboard) {
@@ -41,13 +40,11 @@ angular.module('careWheels', [
   })
 
   // User factory
-  .factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike) {
+  .factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup) {
     var user = {};
     //window.localStorage['loginCredentials'] = null;
 
     user.login = function(uname, passwd, rmbr) {
-      if (rmbr)
-        window.localStorage['loginCredentials'] = angular.toJson({"username":uname, "password":passwd});
 
       return $http({
         url:API.userAndGroupInfo,
@@ -61,12 +58,18 @@ angular.module('careWheels', [
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       }).then(function(response) {
+        if (rmbr)
+          window.localStorage['loginCredentials'] = angular.toJson({"username":uname, "password":passwd});
         //store user info
         //store groupMember info
         GroupInfo = response.data;
         $state.go('groupStatus')
       }, function(response) {
         //present login failed
+        var alertPopup = $ionicPopup.alert({
+          title: 'Login failed!',
+          template: 'Please check your credentials!'
+        });
       })
     };
 
