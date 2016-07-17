@@ -1,7 +1,12 @@
 angular.module('careWheels', [
-  'ionic'
+  'ionic',
+  'ui.router'
 ])
+
+  //contant definition for endpoint base url
   .constant('BASE_URL', 'https://carebank.carewheels.org:8443')
+
+  //
   .run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
       if(window.cordova && window.cordova.plugins.Keyboard) {
@@ -13,10 +18,11 @@ angular.module('careWheels', [
       }
     });
   })
+
   // API factory for making all php endpoints globally accessible.
   .factory('API', function(BASE_URL) {
     var api = {
-      userAndGroupInfo:     BASE_URL + '/userandgroupinfo.php',
+      userAndGroupInfo:     BASE_URL + '/userandgroupmemberinfo.php',
       userInfo:             BASE_URL + '/userinfo.php',
       updateUserReminders:  BASE_URL + '/updateuserreminders.php',
       groupMemberInfo:      BASE_URL + '/groupmemberinfo.php',
@@ -25,10 +31,12 @@ angular.module('careWheels', [
     };
     return api;
   })
+
   // GroupInfo factory for global GroupInfo
   .factory('GroupInfo', function() {
     return [];
   })
+
   // User factory
   .factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike) {
     var user = {};
@@ -54,7 +62,7 @@ angular.module('careWheels', [
       }).then(function(response) {
         //store user info
         //store groupMember info
-        //$state.go('overview')
+        $state.go('groupStatus')
       }, function(response) {
         //present login failed
       })
