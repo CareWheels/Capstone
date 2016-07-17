@@ -49,6 +49,13 @@
           <!-- need another row here for a new reminder -->
 
         </ion-list>
+        <div ng-controller="NotificationController">
+          <button id="initnotifbtn" ng-click="Init_Notifs()">Initialize Notifications</button><br>
+          <button id="notifstatusbtn" ng-click="Notifs_Status()">Notifications Status</button><br>
+          <button id="unschedulenotifbtn" ng-click="Toggle_Off_Notif(1)">Toggle Off All Notifications</button><br>
+          <button id="createnotifbtn" ng-click="Create_Notif(10,11,12,1)">Reminder 1</button><br>
+          <pre>notification created {{data}}</pre>
+        </div>
       </ion-content>
 
     </ion-side-menu-content>

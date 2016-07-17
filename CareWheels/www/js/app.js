@@ -69,16 +69,16 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
       $scope.data[reminderNum-1].seconds = seconds;
       window.localStorage['Reminders'] = angular.toJson($scope.data);   //save $scope.data so new reminder is remembered
 
-      $cordovaLocalNotification.schedule({
-        id: reminderNum,
-        firstAt: time,
-        every: "day",
-        message: "Reminder " + reminderNum + ": Please check in with your CareWheel!",
-        title: "CareWheels",
-        sound: null   //same, hopefully a different sound than red alerts
-      }).then(function() {
-        $log.log("Notification" + reminderNum + "has been scheduled for " + time.getUTCTime() + ", daily");
-      });    
+      // $cordovaLocalNotification.schedule({
+      //   id: reminderNum,
+      //   firstAt: time,
+      //   every: "day",
+      //   message: "Reminder " + reminderNum + ": Please check in with your CareWheel!",
+      //   title: "CareWheels",
+      //   sound: null   //same, hopefully a different sound than red alerts
+      // }).then(function() {
+      //   $log.log("Notification" + reminderNum + "has been scheduled for " + time.getUTCTime() + ", daily");
+      // });    
     } else {
       $log.warn("Incorrect attempt to create notification for id #" + reminderNum);
     }
@@ -94,5 +94,18 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
       $scope.data[id] = null;   //clear its index
       window.localStorage['Reminders'] = angular.toJson($scope.data);   //and save $scope.data so deletiion is remembered
     }
+  }
+
+  //Unschedules a local notification as per Delete_Notif but does NOT clear storage or data index; to be used by User Reminder's Toggle()
+  $scope.Toggle_Off_Notif = function(id){
+    $cordovaLocalNotification.clear(id, function() {
+      $log.log(id + " is cleared");
+    });
+  }
+
+  $scope.Notifs_Status = function(){
+    alert("Reminder 1= " + $scope.data[0]);
+    alert("Reminder 2= " + $scope.data[1]);
+    alert("Reminder 3= " + $scope.data[2]);
   }
 });
