@@ -13,6 +13,7 @@ angular.module('careWheels', [
       }
     });
   })
+  // API factory for making all php endpoints globally accessible.
   .factory('API', function(BASE_URL) {
     var api = {
       userAndGroupInfo:     BASE_URL + '/userandgroupinfo.php',
@@ -24,28 +25,29 @@ angular.module('careWheels', [
     };
     return api;
   })
+  // GroupInfo factory for global GroupInfo
   .factory('GroupInfo', function() {
     return [];
   })
-  .factory('User', function(GroupInfo, BASE_URL, $http, API, $state) {
+  // User factory
+  .factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike) {
     var user = {};
+    window.localStorage['loginCredentials'] = null;
 
     var credentials = angular.fromJson(window.localStorage['loginCredentials']);
 
-    if (credentials)
-      user.login(credentials.username, credentials.password);
-    else
-      $state.go('login');
+    user.login = function(uname, passwd, rmbr) {
+      if (rmbr)
+        window.localStorage['loginCredentials'] = angular.toJson({"username":uname, "password":passwd});
 
-    user.login = function(uname, passwd) {
       $http({
         url:API.userAndGroupInfo,
         method: 'POST',
-        data: {
+        data: $httpParamSerializerJQLike({
             username:uname,
             password:passwd,
             usernametofind:uname
-        },
+        }),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
@@ -57,6 +59,12 @@ angular.module('careWheels', [
         //present login failed
       })
     };
+
+    if (credentials)
+      user.login(credentials.username, credentials.password, true);
+    else
+      $state.go('login');
+
     return user;
   });
 
