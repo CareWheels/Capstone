@@ -27,7 +27,7 @@ app.run(function($ionicPlatform) {
 app.controller("NotificationController", function($scope, $log, $cordovaLocalNotification){
   var isAndroid = window.cordova!=undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
   function Time() {this.hours=0; this.minutes=0; this.seconds=0; this.on=true;};
-  window.localStorage['Reminders'] = null;
+  //window.localStorage['Reminders'] = null;    //Turning this on simulates starting from fresh storage every time controller is called by view change
   $scope.data = angular.fromJson(window.localStorage['Reminders']);   //needs to be called outside the functions so it persists for all of them
 
   //To be called during app startup after login; retrieves saved alert times (if they exist) or creates default alerts (if they don't) 
@@ -43,16 +43,16 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
       $scope.Create_Notif(14,0,0,2);
       $scope.Create_Notif(19,0,0,3);
     } else {    //need to check if each reminder, as any/all of them could be deleted by user
-      if($scope.data[0]) $scope.Create_Notif($scope.data[0].hours,$scope.data[0].minutes,$scope.data[0].seconds,1);
-      if($scope.data[1]) $scope.Create_Notif($scope.data[1].hours,$scope.data[1].minutes,$scope.data[1].seconds,2);
-      if($scope.data[2]) $scope.Create_Notif($scope.data[2].hours,$scope.data[2].minutes,$scope.data[2].seconds,3);
+      if($scope.data[0]) $scope.Create_Notif($scope.data[0].hours,$scope.data[0].minutes,$scope.data[0].seconds,$scope.data[0].on,1);
+      if($scope.data[1]) $scope.Create_Notif($scope.data[1].hours,$scope.data[1].minutes,$scope.data[1].seconds,$scope.data[0].on,2);
+      if($scope.data[2]) $scope.Create_Notif($scope.data[2].hours,$scope.data[2].minutes,$scope.data[2].seconds,$scope.data[0].on,3);
     }
     $log.log("Notifications initialized");
   }
 
   //Schedules a local notification and, if it is a reminder, saves a record of it to local storage. reminderNum must be <4
   //or it will log an error and schedule no notifications.
-  $scope.Create_Notif = function(hours=0, minutes=0, seconds=0, reminderNum=0){
+  $scope.Create_Notif = function(hours=0, minutes=0, seconds=0, on=true, reminderNum=0){
     if(reminderNum==0){   //is notif a red alert?
       if(isAndroid){
         $cordovaLocalNotification.schedule({    //omitting 'at' and 'every' params means it occurs once, immediately
@@ -72,7 +72,7 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
       $scope.data[reminderNum-1].minutes = minutes;
       time.setSeconds(seconds);
       $scope.data[reminderNum-1].seconds = seconds;
-      $scope.data[reminderNum-1].on = true;
+      $scope.data[reminderNum-1].on = on;
       window.localStorage['Reminders'] = angular.toJson($scope.data);   //save $scope.data so new reminder is stored
 
       if(isAndroid){
