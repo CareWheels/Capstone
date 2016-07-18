@@ -2,7 +2,7 @@
  * CareWheels - Login Service
  *
  */
-angular.module('careWheels', [])
+angular.module('careWheels')
 
 .service('loginService', function($q){
   console.log("in loginservice");

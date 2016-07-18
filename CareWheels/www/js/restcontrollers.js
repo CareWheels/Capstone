@@ -1,574 +1,575 @@
-// //Call to the UserInfo custom rest endpoint, which logs user in and then returns all the field data of another user as $scope.data;
-// //or one of the following error messages: "Missing username / password", "Invalid username / password", "Your access is blocked by 
-// //exceeding invalid login attempts", or a default catch "Error while performing login: errorCode".
-// app.controller("UserRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
-//   $scope.url = 'https://carebank.carewheels.org:8443/userinfo.php';
-//   $scope.fetch = function(userIn, passIn, tofindIn) {
-//     $scope.code = null;
-//     $scope.response = null;
-//     $http({
-//       url:$scope.url, 
-//       method:'POST',    //all our custom REST endpoints have been designed to use POST
-//       data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
-//         username:userIn, 
-//         password:passIn, 
-//         usernametofind:tofindIn        
-//       }), 
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
-//       }
-//     }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
-//         $scope.status = response.status;
-//         $scope.data = response.data;
-//       }, function(response) {
-//         $scope.data = response.data || "Request failed";
-//         $scope.status = response.status;
-//         if(response.status!=200){
-//           $log.warn($scope.data);
-//         }
-//     })
-//   };
+//Call to the UserInfo custom rest endpoint, which logs user in and then returns all the field data of another user as $scope.data;
+//or one of the following error messages: "Missing username / password", "Invalid username / password", "Your access is blocked by 
+//exceeding invalid login attempts", or a default catch "Error while performing login: errorCode".
+angular.module('careWheels')
 
-//   // function for retrieving a custom field value from the json object returned by the userInfo endpoint. If the custom
-//   // value cannot be found, returns null.
-//   getCustomField = function(customFieldName, data) {
-//     for(var i = 0; i < data.customValues.length; i++) {
-//       if (data.customValues[i].field.internalName == customFieldName)
-//         return data.customValues[i].stringValue;
-//     }
-//     return null;
-//   }
+.controller("UserRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+  $scope.url = 'https://carebank.carewheels.org:8443/userinfo.php';
+  $scope.fetch = function(userIn, passIn, tofindIn) {
+    $scope.code = null;
+    $scope.response = null;
+    $http({
+      url:$scope.url, 
+      method:'POST',    //all our custom REST endpoints have been designed to use POST
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
+        username:userIn, 
+        password:passIn, 
+        usernametofind:tofindIn        
+      }), 
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+      }
+    }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
+        $scope.status = response.status;
+        $scope.data = response.data;
+      }, function(response) {
+        $scope.data = response.data || "Request failed";
+        $scope.status = response.status;
+        if(response.status!=200){
+          $log.warn($scope.data);
+        }
+    })
+  };
 
-//   // function will get the lastOwnershipTakenTime value for a specified user.
-//   $scope.getLastOwnershipTimeForUser = function(userIn, passIn, toFindIn) {
-//     $scope.response = null;
-//     $http({
-//       url:$scope.url,
-//       method: 'POST',
-//       data: $httpParamSerializerJQLike({
-//         username:userIn,
-//         password:passIn,
-//         usernametofind:toFindIn
-//       }),
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded'
-//       }
-//     }).then(function(response) {
-//       $scope.status = response.status;
-//       $scope.lastOwnershipTime = getCustomField("LastOwnershipTakenTime", response.data);
-//     }, function(response) {
-//       $scope.status = response.status;
-//       $scope.lastOwnershipTime = "0000/00/00 00:00:00";
-//       $log.warn(response.data);
-//     })
-//   };
+  // function for retrieving a custom field value from the json object returned by the userInfo endpoint. If the custom
+  // value cannot be found, returns null.
+  getCustomField = function(customFieldName, data) {
+    for(var i = 0; i < data.customValues.length; i++) {
+      if (data.customValues[i].field.internalName == customFieldName)
+        return data.customValues[i].stringValue;
+    }
+    return null;
+  }
+
+  // function will get the lastOwnershipTakenTime value for a specified user.
+  $scope.getLastOwnershipTimeForUser = function(userIn, passIn, toFindIn) {
+    $scope.response = null;
+    $http({
+      url:$scope.url,
+      method: 'POST',
+      data: $httpParamSerializerJQLike({
+        username:userIn,
+        password:passIn,
+        usernametofind:toFindIn
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then(function(response) {
+      $scope.status = response.status;
+      $scope.lastOwnershipTime = getCustomField("LastOwnershipTakenTime", response.data);
+    }, function(response) {
+      $scope.status = response.status;
+      $scope.lastOwnershipTime = "0000/00/00 00:00:00";
+      $log.warn(response.data);
+    })
+  };
 
 
-// /*** Test functions for userInfo.php enpoint ***/
+/*** Test functions for userInfo.php enpoint ***/
 
-//   //test verifies returned json contains expected values using a correct username and password combination
-//   $scope.testValidUserPass = function() {
-//     $scope.response = null;
-//     var userIn = 'b_test_1';
-//     var passIn = 'password';
-//     var usernametofindIn = 'b_test_1';
-//     $http({
-//       url:$scope.url,
-//       method: 'POST',
-//       data: $httpParamSerializerJQLike({
-//         username:userIn,
-//         password:passIn,
-//         usernametofind:usernametofindIn
-//       }),
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded'
-//       }
-//     }).then(function(response) {
-//       $scope.status = response.status;
-//       $scope.pass = ($scope.status == 200);
-//     }, function(response){
+  //test verifies returned json contains expected values using a correct username and password combination
+  $scope.testValidUserPass = function() {
+    $scope.response = null;
+    var userIn = 'b_test_1';
+    var passIn = 'password';
+    var usernametofindIn = 'b_test_1';
+    $http({
+      url:$scope.url,
+      method: 'POST',
+      data: $httpParamSerializerJQLike({
+        username:userIn,
+        password:passIn,
+        usernametofind:usernametofindIn
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then(function(response) {
+      $scope.status = response.status;
+      $scope.pass = ($scope.status == 200);
+    }, function(response){
 
-//     })
-//   };
+    })
+  };
 
-// });
+})
 
-// //Call to the UpdateUserReminders endpoint, which logs a user in and updates all three of a user's (does not have to be the same user)
-// //reminder slots in the format HH:MM:SS. Returns same login errors as UserRestController. The contents of a reminder slot 
-// //are cleared by passing in '' rather than a string of the correct format.
-// app.controller("ReminderRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
-//   $scope.url = 'https://carebank.carewheels.org:8443/updateuserreminders.php';
-//   $scope.fetch = function(userIn, passIn, toUpdate, rem1, rem2, rem3) {
-//     $scope.code = null;
-//     $scope.response = null;
-//     $http({
-//       url:$scope.url, 
-//       method:'POST',    //all our custom REST endpoints have been designed to use POST
-//       data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
-//         username:userIn, 
-//         password:passIn, 
-//         usernametoupdate:toUpdate,
-//         reminder1:rem1,
-//         reminder2:rem2,
-//         reminder3:rem3        
-//       }), 
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
-//       }
-//     }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
-//         $scope.status = response.status;
-//         $scope.data = response.data;
-//       }, function(response) {
-//         $scope.data = response.data || "Request failed";
-//         $scope.status = response.status;
-//         if(response.status!=200){
-//           $log.warn($scope.data);
-//         }
-//     })
-//   };
-// });
+//Call to the UpdateUserReminders endpoint, which logs a user in and updates all three of a user's (does not have to be the same user)
+//reminder slots in the format HH:MM:SS. Returns same login errors as UserRestController. The contents of a reminder slot 
+//are cleared by passing in '' rather than a string of the correct format.
+.controller("ReminderRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+  $scope.url = 'https://carebank.carewheels.org:8443/updateuserreminders.php';
+  $scope.fetch = function(userIn, passIn, toUpdate, rem1, rem2, rem3) {
+    $scope.code = null;
+    $scope.response = null;
+    $http({
+      url:$scope.url, 
+      method:'POST',    //all our custom REST endpoints have been designed to use POST
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
+        username:userIn, 
+        password:passIn, 
+        usernametoupdate:toUpdate,
+        reminder1:rem1,
+        reminder2:rem2,
+        reminder3:rem3        
+      }), 
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+      }
+    }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
+        $scope.status = response.status;
+        $scope.data = response.data;
+      }, function(response) {
+        $scope.data = response.data || "Request failed";
+        $scope.status = response.status;
+        if(response.status!=200){
+          $log.warn($scope.data);
+        }
+    })
+  };
+})
 
-// //Call to the Group Member Info custom rest endpoint
-// app.controller("GroupRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
-//   $scope.url = 'https://carebank.carewheels.org:8443/groupmemberinfo.php';
-//   $scope.fetch = function(userIn, passIn, groupName) {
-//     $scope.code = null;
-//     $scope.response = null;
-//     $http({
-//       url:$scope.url, 
-//       method:'POST',    //all our custom REST endpoints have been designed to use POST
-//       data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
-//         username:userIn, 
-//         password:passIn, 
-//         groupInternalName:groupName
-//       }), 
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
-//       }
-//     }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
-//         $scope.status = response.status;
-//         $scope.data = response.data;
-//       }, function(response) {
-//         $scope.data = response.data || "Request failed";
-//         $scope.status = response.status;
-//         if(response.status!=200){
-//           $log.warn($scope.data);
-//         }
-//     })
-//   };
-// });
+//Call to the Group Member Info custom rest endpoint
+.controller("GroupRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+  $scope.url = 'https://carebank.carewheels.org:8443/groupmemberinfo.php';
+  $scope.fetch = function(userIn, passIn, groupName) {
+    $scope.code = null;
+    $scope.response = null;
+    $http({
+      url:$scope.url, 
+      method:'POST',    //all our custom REST endpoints have been designed to use POST
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
+        username:userIn, 
+        password:passIn, 
+        groupInternalName:groupName
+      }), 
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+      }
+    }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
+        $scope.status = response.status;
+        $scope.data = response.data;
+      }, function(response) {
+        $scope.data = response.data || "Request failed";
+        $scope.status = response.status;
+        if(response.status!=200){
+          $log.warn($scope.data);
+        }
+    })
+  };
+})
 
-// //Call to the UpdateLastOwnershipTakenTime endpoint, which logs a user in and updates the LastOwnershipTakenTime field for
-// //the member has an alert. This field uses the format XXXX/XX/XX XX:XX:XX. This will report the following error messages upon 
-// //failure: "Missing username / password", "Invalid username / password", "Your access is blocked by exceeding invalid login
-// //attempts", or a default catch "Error while performing login: errorCode".
+//Call to the UpdateLastOwnershipTakenTime endpoint, which logs a user in and updates the LastOwnershipTakenTime field for
+//the member has an alert. This field uses the format XXXX/XX/XX XX:XX:XX. This will report the following error messages upon 
+//failure: "Missing username / password", "Invalid username / password", "Your access is blocked by exceeding invalid login
+//attempts", or a default catch "Error while performing login: errorCode".
 
-// // Nothing seems to verify whether or not this is working. I don't know what more can be done.
-// app.controller("OwnershipRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
-//   $scope.url = 'https://carebank.carewheels.org:8443/updatelastownershiptakentime.php';
-//   $scope.fetch = function(userIn, passIn, toUpdate, ownershipTime) {
-//     $scope.code = null;
-//     $scope.response = null;
-//     $http({
-//       url:$scope.url, 
-//       method:'POST',    //all our custom REST endpoints have been designed to use POST
-//       data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
-//         username:userIn, 
-//         password:passIn, 
-//         usernametoupdate:toUpdate,
-//         lastownershiptakentime:ownershipTime,        
-//       }), 
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
-//       }
-//     }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
-//         $scope.status = response.status;
-//         $scope.data = response.data;
-//       }, function(response) {
-//         $scope.data = response.data || "Request failed";
-//         $scope.status = response.status;
-//         if(response.status!=200){
-//           $log.warn($scope.data);
-//         }
-//     })
-//   };
+// Nothing seems to verify whether or not this is working. I don't know what more can be done.
+.controller("OwnershipRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+  $scope.url = 'https://carebank.carewheels.org:8443/updatelastownershiptakentime.php';
+  $scope.fetch = function(userIn, passIn, toUpdate, ownershipTime) {
+    $scope.code = null;
+    $scope.response = null;
+    $http({
+      url:$scope.url, 
+      method:'POST',    //all our custom REST endpoints have been designed to use POST
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
+        username:userIn, 
+        password:passIn, 
+        usernametoupdate:toUpdate,
+        lastownershiptakentime:ownershipTime,        
+      }), 
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+      }
+    }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
+        $scope.status = response.status;
+        $scope.data = response.data;
+      }, function(response) {
+        $scope.data = response.data || "Request failed";
+        $scope.status = response.status;
+        if(response.status!=200){
+          $log.warn($scope.data);
+        }
+    })
+  };
 
-// /*** Test Functions for UpdateLastOwnershipTakenTime enpoint ***/
+/*** Test Functions for UpdateLastOwnershipTakenTime enpoint ***/
   
-//   //Verifies the returned json contains updated lastownershiptakentime value sent in the request.
-//   $scope.test = function() {
-//     var userIn = "b_test_1";
-//     var passIn = "password";
-//     $scope.code = null;
-//     $scope.response = null;
-//     $scope.ownershipTime = "2016/07/09 15:30:00";
-//     $http({
-//       url:$scope.url,
-//       method:'POST',
-//       data:$httpParamSerializerJQLike({
-//         username:userIn,
-//         password:passIn,
-//         usernametoupdate:userIn,
-//         lastownershiptakentime:$scope.ownershipTime,
-//       }),
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded'
-//       }
-//     }).then(function(response) {
-//       $scope.status = response.status;
-//       $scope.data = response.data;
-//       $scope.value = response.data.customValues[6].stringValue;
-//       $scope.pass = ($scope.value === $scope.ownershipTime);
-//     }, function(response) {
-//       $scope.data = response.data || "Request failed";
-//       $scope.status = response.status;
-//     })
-//   };
+  //Verifies the returned json contains updated lastownershiptakentime value sent in the request.
+  $scope.test = function() {
+    var userIn = "b_test_1";
+    var passIn = "password";
+    $scope.code = null;
+    $scope.response = null;
+    $scope.ownershipTime = "2016/07/09 15:30:00";
+    $http({
+      url:$scope.url,
+      method:'POST',
+      data:$httpParamSerializerJQLike({
+        username:userIn,
+        password:passIn,
+        usernametoupdate:userIn,
+        lastownershiptakentime:$scope.ownershipTime,
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then(function(response) {
+      $scope.status = response.status;
+      $scope.data = response.data;
+      $scope.value = response.data.customValues[6].stringValue;
+      $scope.pass = ($scope.value === $scope.ownershipTime);
+    }, function(response) {
+      $scope.data = response.data || "Request failed";
+      $scope.status = response.status;
+    })
+  };
 
-//   // verifies request returned error 'Invalid username / password'
-//   $scope.test_passError = function() {
-//     var userIn = "b_test_1";
-//     var passIn = "passwor";
-//     $scope.code = null;
-//     $scope.response = null;
-//     $scope.ownershipTime = "2016/07/10 13:50:00";
-//     $http({
-//       url:$scope.url,
-//       method: 'POST',
-//       data:$httpParamSerializerJQLike({
-//         username:userIn,
-//         password:passIn,
-//         usernametoupdate:userIn,
-//         lastownershiptakentime:$scope.ownershipTime,
-//       }),
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded'
-//       }
-//     }).then(function(response) {
-//       $scope.status = response.status;
-//     }, function(response) {
-//       $scope.error = response.data || "Request failed";
-//       $scope.status = response.status;
-//       $scope.pass = ($scope.error == "Invalid username / password");
-//     })
-//   };
+  // verifies request returned error 'Invalid username / password'
+  $scope.test_passError = function() {
+    var userIn = "b_test_1";
+    var passIn = "passwor";
+    $scope.code = null;
+    $scope.response = null;
+    $scope.ownershipTime = "2016/07/10 13:50:00";
+    $http({
+      url:$scope.url,
+      method: 'POST',
+      data:$httpParamSerializerJQLike({
+        username:userIn,
+        password:passIn,
+        usernametoupdate:userIn,
+        lastownershiptakentime:$scope.ownershipTime,
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then(function(response) {
+      $scope.status = response.status;
+    }, function(response) {
+      $scope.error = response.data || "Request failed";
+      $scope.status = response.status;
+      $scope.pass = ($scope.error == "Invalid username / password");
+    })
+  };
 
-//   // verifies response for a lastownershiptakentime value of empty string.
-//   $scope.test_blankTime = function() {
-//     var userIn = "b_test_1";
-//     var passIn = "password";
-//     var ownershipTime = "";
-//     $http({
-//       url:$scope.url,
-//       method: 'POST',
-//       data:$httpParamSerializerJQLike({
-//         username:userIn,
-//         password:passIn,
-//         usernametoupdate:userIn,
-//         lastownershiptakentime:ownershipTime
-//       }),
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded'
-//       }
-//     }).then(function(response) {
-//       $scope.status = response.status;
-//       $scope.error = response.data;
-//       $scope.pass = ($scope.error == "lastownershiptakentime cannot be blank.");
-//     }, function(response) {
-//       $scope.status = response.status;
-//       $scope.error = response.data;
-//       $scope.pass = ($scope.error == "lastownershiptakentime cannot be blank.");
-//     })
-//   };
+  // verifies response for a lastownershiptakentime value of empty string.
+  $scope.test_blankTime = function() {
+    var userIn = "b_test_1";
+    var passIn = "password";
+    var ownershipTime = "";
+    $http({
+      url:$scope.url,
+      method: 'POST',
+      data:$httpParamSerializerJQLike({
+        username:userIn,
+        password:passIn,
+        usernametoupdate:userIn,
+        lastownershiptakentime:ownershipTime
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then(function(response) {
+      $scope.status = response.status;
+      $scope.error = response.data;
+      $scope.pass = ($scope.error == "lastownershiptakentime cannot be blank.");
+    }, function(response) {
+      $scope.status = response.status;
+      $scope.error = response.data;
+      $scope.pass = ($scope.error == "lastownershiptakentime cannot be blank.");
+    })
+  };
 
-// });
+})
 
-// //This doesn't work at all. I don't know the solution. Looking at the JSON string that returns, there is no instance of 
-// //"LastOwnershipTakenTime":XXXX/XX/XX XX:XX:XX anywhere in the string. There are several instances of "id":xxx..xx, so I 
-// //tried using id to get something/anything to print out.
+//This doesn't work at all. I don't know the solution. Looking at the JSON string that returns, there is no instance of 
+//"LastOwnershipTakenTime":XXXX/XX/XX XX:XX:XX anywhere in the string. There are several instances of "id":xxx..xx, so I 
+//tried using id to get something/anything to print out.
 
-// //Based on:
-// //    var json = '{"count":1, "LastOwnershipTakenTime":"2016/07/06 18:00:00", "count":2}',
-// //    obj = JSON.parse(json);
-// //    alert(obj.count);
-// //    
-// //    prints out: 2 ...
+//Based on:
+//    var json = '{"count":1, "LastOwnershipTakenTime":"2016/07/06 18:00:00", "count":2}',
+//    obj = JSON.parse(json);
+//    alert(obj.count);
+//    
+//    prints out: 2 ...
 
-// //...I figured that obj.id should print out the last instance of id in the string, but nothing printed. I am not sure
-// //why. However, since "LastOwnershipTakenTime":XXXX/XX/XX XX:XX:XX does not actually appear in the string, using
-// //JSON.parse is probably not the answer. 
-// app.controller("GetOwnershipRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
-//   $scope.url = 'https://carebank.carewheels.org:8443/groupmemberinfo.php';
-//   $scope.fetch = function(userIn, passIn, groupNameIn) {
-//     $scope.code = null;
-//     $scope.response = null;
-//     $http({
-//       url:$scope.url, 
-//       method:'POST',   //all our custom REST endpoints have been designed to use POST
-//       data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
-//         username:userIn, 
-//         password:passIn, 
-//         groupInternalName:groupNameIn,        
-//       }), 
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
-//       }
-//     }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
-//         $scope.status = response.status;
-//         $scope.data = response.data;
-//         //obj = JSON.parse(response.data);
-//         //$scope.data = obj.LastOwnershipTakenTime;      // What I hoped would work
-//         //$scope.data = obj.id;                          // Checking to see if anything works (should contain x of last "id":x)
-//       }, function(response) {
-//         $scope.data = response.data || "Request failed";
-//         $scope.status = response.status;
-//         if(response.status!=200){
-//           $log.warn($scope.data);
-//         }
-//     })
-//   };
-// });
+//...I figured that obj.id should print out the last instance of id in the string, but nothing printed. I am not sure
+//why. However, since "LastOwnershipTakenTime":XXXX/XX/XX XX:XX:XX does not actually appear in the string, using
+//JSON.parse is probably not the answer. 
+.controller("GetOwnershipRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+  $scope.url = 'https://carebank.carewheels.org:8443/groupmemberinfo.php';
+  $scope.fetch = function(userIn, passIn, groupNameIn) {
+    $scope.code = null;
+    $scope.response = null;
+    $http({
+      url:$scope.url, 
+      method:'POST',   //all our custom REST endpoints have been designed to use POST
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
+        username:userIn, 
+        password:passIn, 
+        groupInternalName:groupNameIn,        
+      }), 
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+      }
+    }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
+        $scope.status = response.status;
+        $scope.data = response.data;
+        //obj = JSON.parse(response.data);
+        //$scope.data = obj.LastOwnershipTakenTime;      // What I hoped would work
+        //$scope.data = obj.id;                          // Checking to see if anything works (should contain x of last "id":x)
+      }, function(response) {
+        $scope.data = response.data || "Request failed";
+        $scope.status = response.status;
+        if(response.status!=200){
+          $log.warn($scope.data);
+        }
+    })
+  };
+})
 
-// //Call to the UserAndGroupMemberInfo custom rest endpoint, which logs user in and then returns all the field data of all users in their group as $scope.data;
-// //or one of the following error messages: "Missing username / password", "Invalid username / password", "Your access is blocked by 
-// //exceeding invalid login attempts", or a default catch "Error while performing login: errorCode" or "Error while performing group search".
-// app.controller("UserAndGroupRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
-//   $scope.url = 'https://carebank.carewheels.org:8443/userandgroupmemberinfo.php';
-//   $scope.fetch = function(userIn, passIn, tofindIn) {
-//     $scope.code = null;
-//     $scope.response = null;
-//     $http({
-//       url:$scope.url, 
-//       method:'POST',    //all our custom REST endpoints have been designed to use POST
-//       data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
-//         username:userIn, 
-//         password:passIn, 
-//         usernametofind:tofindIn        
-//       }), 
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
-//       }
-//     }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
-//         $scope.status = response.status;
-//         $scope.data = response.data;
-//       }, function(response) {
-//         $scope.data = response.data || "Request failed";
-//         $scope.status = response.status;
-//         if(response.status!=200){
-//           $log.warn($scope.data);
-//         }
-//     })
-//   };
-// });
+//Call to the UserAndGroupMemberInfo custom rest endpoint, which logs user in and then returns all the field data of all users in their group as $scope.data;
+//or one of the following error messages: "Missing username / password", "Invalid username / password", "Your access is blocked by 
+//exceeding invalid login attempts", or a default catch "Error while performing login: errorCode" or "Error while performing group search".
+.controller("UserAndGroupRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+  $scope.url = 'https://carebank.carewheels.org:8443/userandgroupmemberinfo.php';
+  $scope.fetch = function(userIn, passIn, tofindIn) {
+    $scope.code = null;
+    $scope.response = null;
+    $http({
+      url:$scope.url, 
+      method:'POST',    //all our custom REST endpoints have been designed to use POST
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
+        username:userIn, 
+        password:passIn, 
+        usernametofind:tofindIn        
+      }), 
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+      }
+    }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
+        $scope.status = response.status;
+        $scope.data = response.data;
+      }, function(response) {
+        $scope.data = response.data || "Request failed";
+        $scope.status = response.status;
+        if(response.status!=200){
+          $log.warn($scope.data);
+        }
+    })
+  };
+})
 
 
-// app.controller("CreditController", function($scope, $http, $log, $httpParamSerializerJQLike){
+.controller("CreditController", function($scope, $http, $log, $httpParamSerializerJQLike){
   
-//   //creditUser is the main function which will get called by the other components in the application
-//   //(individual group member sensor data or group member summary status subsystem)
-//   $scope.creditUser = function(username, password, credits, creditType, alertLevel) {
+  //creditUser is the main function which will get called by the other components in the application
+  //(individual group member sensor data or group member summary status subsystem)
+  $scope.creditUser = function(username, password, credits, creditType, alertLevel) {
 
-//   //toFind is a parameter for post request to dailytransactionhistory.php
-//   var toFind = username;
+  //toFind is a parameter for post request to dailytransactionhistory.php
+  var toFind = username;
 
-//   //callPayment is a parameter for post request to credituser.php
-//   var callPayment = 'False';
+  //callPayment is a parameter for post request to credituser.php
+  var callPayment = 'False';
 
-//   //these are test values for creditType
-//   var sensorDataViewPayment = 'False';
-//   var memberSummaryPayment = 'False';
+  //these are test values for creditType
+  var sensorDataViewPayment = 'False';
+  var memberSummaryPayment = 'False';
 
-//   var getHistory = function() {
-//   var url = 'https://carebank.carewheels.org:8443/dailytransactionhistory.php';  
-//   //console.log("reached transaction function", url);
-//   $http({
-//     url:url, 
-//     method:'POST',
-//     data: $httpParamSerializerJQLike({
-//       username:username, 
-//       password:password, 
-//       usernametofind:toFind       
-//     }), 
-//     headers: {
-//       'Content-Type': 'application/x-www-form-urlencoded'
-//     }
-//   }).then(function(response) {
-//     $scope.status = response.status;
-//     $scope.data = response.data;
+  var getHistory = function() {
+  var url = 'https://carebank.carewheels.org:8443/dailytransactionhistory.php';  
+  //console.log("reached transaction function", url);
+  $http({
+    url:url, 
+    method:'POST',
+    data: $httpParamSerializerJQLike({
+      username:username, 
+      password:password, 
+      usernametofind:toFind       
+    }), 
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  }).then(function(response) {
+    $scope.status = response.status;
+    $scope.data = response.data;
      
-//         //insert conditional statement and iterate through events/views in last 24 hours
-//         var countMemberSummaryViews = 0;
-//         for (item in response.data.elements){         
-//           if(item.date.hour == current_time.hour)
-//             return 0;
-//           if(item.customValues.MemberSummaryView == True)
-//             ++countMemberSummaryViews;                             
-//           if(countMemberSummarViews > 9) {
-//             return 0;
-//                        }
-//         }
-//         memberSummaryPayment = 'True';
-//         creditRequest();
+        //insert conditional statement and iterate through events/views in last 24 hours
+        var countMemberSummaryViews = 0;
+        for (item in response.data.elements){         
+          if(item.date.hour == current_time.hour)
+            return 0;
+          if(item.customValues.MemberSummaryView == True)
+            ++countMemberSummaryViews;                             
+          if(countMemberSummarViews > 9) {
+            return 0;
+                       }
+        }
+        memberSummaryPayment = 'True';
+        creditRequest();
 
-//         //else 
-//         //sensorDataViewPayment = true
+        //else 
+        //sensorDataViewPayment = true
         
 
-//     }, function(response) {
-//       $scope.data = response.data || "Request failed";
-//       $scope.status = response.status;
-//     })
-//   }
+    }, function(response) {
+      $scope.data = response.data || "Request failed";
+      $scope.status = response.status;
+    })
+  }
 
-//     //function which makes post request for user credit
-//     var creditRequest = function() {
-//     var creditUrl = 'https://carebank.carewheels.org:8443/credituser.php';
-//     //console.log("reached creditrequest function", creditUrl);
+    //function which makes post request for user credit
+    var creditRequest = function() {
+    var creditUrl = 'https://carebank.carewheels.org:8443/credituser.php';
+    //console.log("reached creditrequest function", creditUrl);
     
-//     $http({
-//       url:creditUrl, 
-//       method:'POST',
-//       data: $httpParamSerializerJQLike({
-//         username:username, 
-//         password:password, 
-//         usernametocredit:username, 
-//         credits:credits, 
-//         alertlevel:alertLevel,
-//         callpayment:callPayment,
-//         sensordataviewpayment:sensorDataViewPayment,
-//         membersummarypayment:memberSummaryPayment      
-//       }), 
-//       headers: {
-//         'Content-Type': 'application/x-www-form-urlencoded'
-//       }
-//     }).then(function(response2) {
-//       $scope.status2 = response2.status;
-//       $scope.data2 = response2.data;
+    $http({
+      url:creditUrl, 
+      method:'POST',
+      data: $httpParamSerializerJQLike({
+        username:username, 
+        password:password, 
+        usernametocredit:username, 
+        credits:credits, 
+        alertlevel:alertLevel,
+        callpayment:callPayment,
+        sensordataviewpayment:sensorDataViewPayment,
+        membersummarypayment:memberSummaryPayment      
+      }), 
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then(function(response2) {
+      $scope.status2 = response2.status;
+      $scope.data2 = response2.data;
 
-//     }, function(response2) {
-//       $scope.data2= response2.data || "Request failed";
-//       $scope.status2 = response2.status;
-//     })
-//   } //;
+    }, function(response2) {
+      $scope.data2= response2.data || "Request failed";
+      $scope.status2 = response2.status;
+    })
+  } //;
 
-//   //call the getHistory function which makes post request to dailytransactionhistory.php
-//   //will only be reached if memberSummaryPayment == true
-//   //note that when memberSummaryViews is < 9, we will proceed to creditRequest()
-//   //after we break the loop in getHistory()
-//   if (creditType == 'memberSummaryPayment'){
-//   getHistory();
-//   }
-//   else
-//   sensorDataViewPayment = 'True';
-//   memberSummaryPayment = 'False';
-//   //call creditRequest function/ send post request to credituser.php
-//   creditRequest();
-// }})
-// ;
-
-// // based on CreditController
-// app.controller("CreditControllerByDebit", function($scope, $http, $log, $httpParamSerializerJQLike) {
-
-//   //creditUser is the main function which will get called by the other components in the application
-//   //(individual group member sensor data or group member summary status subsystem)
-//   $scope.debitUser = function(username, password, usernameDebit, credits, creditType, alertLevel) {
-
-//     //toFind is a parameter for post request to dailytransactionhistory.php
-//     var toFind = username;
-
-//     //callPayment is a parameter for post request to credituser.php
-//     var callPayment = 'True';
-
-//     //these are test values for creditType
-//     var sensorDataViewPayment = 'False';
-//     var memberSummaryPayment = 'False';
-
-//     var getHistory = function() {
-//       var url = 'https://carebank.carewheels.org:8443/dailytransactionhistory.php';
-//       //console.log("reached transaction function", url);
-//       $http({
-//         url:url,
-//         method:'POST',
-//         data: $httpParamSerializerJQLike({
-//           username:username,
-//           password:password,
-//           usernametofind:toFind
-//         }),
-//         headers: {
-//           'Content-Type': 'application/x-www-form-urlencoded'
-//         }
-//       }).then(function(response) {
-//         $scope.status = response.status;
-//         $scope.data = response.data;
-
-//         //insert conditional statement and iterate through events/views in last 24 hours
-//         var countMemberSummaryViews = 0;
-//         for (item in response.data.elements){
-//           if(item.date.hour == current_time.hour)
-//             return 0;
-//           if(item.customValues.MemberSummaryView == True)
-//             ++countMemberSummaryViews;
-//           if(countMemberSummarViews > 9) {
-//             return 0;
-//           }
-//         }
-//         memberSummaryPayment = 'True';
-//         debtRequest();
-
-//         //else
-//         //sensorDataViewPayment = true
+  //call the getHistory function which makes post request to dailytransactionhistory.php
+  //will only be reached if memberSummaryPayment == true
+  //note that when memberSummaryViews is < 9, we will proceed to creditRequest()
+  //after we break the loop in getHistory()
+  if (creditType == 'memberSummaryPayment'){
+  getHistory();
+  }
+  else
+  sensorDataViewPayment = 'True';
+  memberSummaryPayment = 'False';
+  //call creditRequest function/ send post request to credituser.php
+  creditRequest();
+}})
 
 
-//       }, function(response) {
-//         $scope.data = response.data || "Request failed";
-//         $scope.status = response.status;
-//       })
-//     }
+// based on CreditController
+.controller("CreditControllerByDebit", function($scope, $http, $log, $httpParamSerializerJQLike) {
 
-//     //function which makes post request for user credit
-//     var debtRequest = function() {
-//       var creditUrl = 'https://carebank.carewheels.org:8443/credituser.php';
-//       //console.log("reached creditrequest function", creditUrl);
+  //creditUser is the main function which will get called by the other components in the application
+  //(individual group member sensor data or group member summary status subsystem)
+  $scope.debitUser = function(username, password, usernameDebit, credits, creditType, alertLevel) {
 
-//       $http({
-//         url:creditUrl,
-//         method:'POST',
-//         data: $httpParamSerializerJQLike({
-//           username:username,
-//           password:password,
-//           usernametocredit:username,
-//           usernametodebt:usernameDebit,
-//           credits:credits,
-//           alertlevel:alertLevel,
-//           callpayment:callPayment,
-//           sensordataviewpayment:sensorDataViewPayment,
-//           membersummarypayment:memberSummaryPayment
-//         }),
-//         headers: {
-//           'Content-Type': 'application/x-www-form-urlencoded'
-//         }
-//       }).then(function(response2) {
-//         $scope.status2 = response2.status;
-//         $scope.data2 = response2.data;
+    //toFind is a parameter for post request to dailytransactionhistory.php
+    var toFind = username;
 
-//       }, function(response2) {
-//         $scope.data2= response2.data || "Request failed";
-//         $scope.status2 = response2.status;
-//       })
-//     } //;
+    //callPayment is a parameter for post request to credituser.php
+    var callPayment = 'True';
 
-//     //call the getHistory function which makes post request to dailytransactionhistory.php
-//     //will only be reached if memberSummaryPayment == true
-//     //note that when memberSummaryViews is < 9, we will proceed to creditRequest()
-//     //after we break the loop in getHistory()
-//     if (creditType == 'memberSummaryPayment'){
-//       getHistory();
-//     }
-//     else
-//       sensorDataViewPayment = 'True';
-//     memberSummaryPayment = 'False';
-//     //call creditRequest function/ send post request to credituser.php
-//     creditRequest();
-//   }})
-// ;
+    //these are test values for creditType
+    var sensorDataViewPayment = 'False';
+    var memberSummaryPayment = 'False';
+
+    var getHistory = function() {
+      var url = 'https://carebank.carewheels.org:8443/dailytransactionhistory.php';
+      //console.log("reached transaction function", url);
+      $http({
+        url:url,
+        method:'POST',
+        data: $httpParamSerializerJQLike({
+          username:username,
+          password:password,
+          usernametofind:toFind
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }).then(function(response) {
+        $scope.status = response.status;
+        $scope.data = response.data;
+
+        //insert conditional statement and iterate through events/views in last 24 hours
+        var countMemberSummaryViews = 0;
+        for (item in response.data.elements){
+          if(item.date.hour == current_time.hour)
+            return 0;
+          if(item.customValues.MemberSummaryView == True)
+            ++countMemberSummaryViews;
+          if(countMemberSummarViews > 9) {
+            return 0;
+          }
+        }
+        memberSummaryPayment = 'True';
+        debtRequest();
+
+        //else
+        //sensorDataViewPayment = true
+
+
+      }, function(response) {
+        $scope.data = response.data || "Request failed";
+        $scope.status = response.status;
+      })
+    }
+
+    //function which makes post request for user credit
+    var debtRequest = function() {
+      var creditUrl = 'https://carebank.carewheels.org:8443/credituser.php';
+      //console.log("reached creditrequest function", creditUrl);
+
+      $http({
+        url:creditUrl,
+        method:'POST',
+        data: $httpParamSerializerJQLike({
+          username:username,
+          password:password,
+          usernametocredit:username,
+          usernametodebt:usernameDebit,
+          credits:credits,
+          alertlevel:alertLevel,
+          callpayment:callPayment,
+          sensordataviewpayment:sensorDataViewPayment,
+          membersummarypayment:memberSummaryPayment
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }).then(function(response2) {
+        $scope.status2 = response2.status;
+        $scope.data2 = response2.data;
+
+      }, function(response2) {
+        $scope.data2= response2.data || "Request failed";
+        $scope.status2 = response2.status;
+      })
+    } //;
+
+    //call the getHistory function which makes post request to dailytransactionhistory.php
+    //will only be reached if memberSummaryPayment == true
+    //note that when memberSummaryViews is < 9, we will proceed to creditRequest()
+    //after we break the loop in getHistory()
+    if (creditType == 'memberSummaryPayment'){
+      getHistory();
+    }
+    else
+      sensorDataViewPayment = 'True';
+    memberSummaryPayment = 'False';
+    //call creditRequest function/ send post request to credituser.php
+    creditRequest();
+  }});
 

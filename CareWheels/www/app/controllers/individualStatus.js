@@ -2,6 +2,7 @@
  * CareWheels - Individual Status Controller
  *
  */
-angular.module('careWheels').controller('individualStatus', function($scope){
+angular.module('careWheels')
+.controller('individualStatus', function($scope){
 
 });
