@@ -27,14 +27,16 @@ app.run(function($ionicPlatform) {
 app.controller("NotificationController", function($scope, $log, $cordovaLocalNotification){
   var isAndroid = window.cordova!=undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
   function Time() {this.hours=0; this.minutes=0; this.seconds=0; this.on=true;};
+  window.localStorage['Reminders'] = null;
   $scope.data = angular.fromJson(window.localStorage['Reminders']);   //needs to be called outside the functions so it persists for all of them
 
   //To be called during app startup after login; retrieves saved alert times (if they exist) or creates default alerts (if they don't) 
   //and calls Create_Notif for each of them
   $scope.Init_Notifs = function() {
-    if(!$scope.data){   //have notifications been initialized before?
-      $scope.data;    //data param needs to be initialized before indices can be added
+    if($scope.data==null){   //have notifications been initialized before?
+      $scope.data = [];    //data param needs to be initialized before indices can be added
       $scope.data[0] = new Time();
+      alert($scope.data[0]);
       $scope.data[1] = new Time();
       $scope.data[2] = new Time();
       $scope.Create_Notif(10,0,0,1);  //these correspond to the pre-chosen default alarm times
@@ -90,7 +92,7 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
 
   //Unschedules a local notification; clears its index if it is a user reminder (id 1-3). If id is invalid clear() will not
   //throw errors. Delete_Notif(0) is technically valid but Red Alerts are one-time and instant so unscheduling them is unnecessary.
-  $scope.Delete_Notif = function(id){
+  $scope.Delete_Notif = function(id){   //NOTE: id corresponds to $scope.data array indices so it is off by one
     if(isAndroid){
       $cordovaLocalNotification.clear(id, function() {
         $log.log(id + " is cleared");
@@ -103,8 +105,11 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
   }
 
   //Unschedules a local notification as per Delete_Notif but does NOT clear storage or data index; to be used by User Reminder's Toggle()
-  $scope.Toggle_Off_Notif = function(id){
-    if(id==1||id==2||id==3) $scope.data[id].on = false;
+  $scope.Toggle_Off_Notif = function(id){   //NOTE: id corresponds to $scope.data array indices so it is off by one
+    if(id==1||id==2||id==3){
+      $scope.data[id].on = false;
+      window.localStorage['Reminders'] = angular.toJson($scope.data);   //and save $scope.data so toggle is remembered
+    } 
     if(isAndroid){
       $cordovaLocalNotification.clear(id, function() {
         $log.log(id + " is cleared");
