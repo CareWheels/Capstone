@@ -10,6 +10,9 @@
   <link href="../../lib/ionic/css/ionic.css" rel="stylesheet">
   <link href="../../css/style.css" rel="stylesheet">
 
+
+  <meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src  'self' 'unsafe-inline' *">
+
   <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
   <link href="css/ionic.app.css" rel="stylesheet">
   -->
@@ -19,6 +22,7 @@
 
   <!-- cordova script (this will be a 404 during development) -->
   <script src="../../lib/ngCordova/dist/ng-cordova.js"></script>
+  <script src="../../cordova.js"></script>
 
   <!-- your app's js -->
   <script src="../../js/app.js"></script>
@@ -58,9 +62,8 @@
         <div ng-controller="NotificationController">
           <button id="initnotifbtn" ng-click="Init_Notifs()">Initialize Notifications</button><br>
           <button id="notifstatusbtn" ng-click="Notifs_Status()">Notifications Status</button><br>
-          <button id="unschedulenotifbtn" ng-click="Toggle_Off_Notif(1)">Toggle Off All Notifications</button><br>
-          <button id="createnotifbtn" ng-click="Create_Notif(10,11,12,1)">Reminder 1</button><br>
-          <button id="initnotifbtn" ng-click="Init_Notifs()">Initialize Notifications</button><br>
+          <button id="unschedulenotifbtn" ng-click="Toggle_Off_Notif(1)">Toggle Off Reminder 1</button><br>
+          <button id="createnotifbtn" ng-click="Create_Notif(10,11,12,1)">Change Reminder 1</button><br>
           <button id="createnotifbtn" ng-click="Create_Notif(19, 12, 15, 0)">Create Red Alert</button><br>
           <pre>notifications created {{data}}</pre>
         </div>

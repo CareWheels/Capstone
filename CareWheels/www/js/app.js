@@ -71,7 +71,7 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
       time.setSeconds(seconds);
       $scope.data[reminderNum-1].seconds = seconds;
       $scope.data[reminderNum-1].on = true;
-      window.localStorage['Reminders'] = angular.toJson($scope.data);   //save $scope.data so new reminder is remembered
+      window.localStorage['Reminders'] = angular.toJson($scope.data);   //save $scope.data so new reminder is stored
 
       if(isAndroid){
         $cordovaLocalNotification.schedule({
