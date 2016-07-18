@@ -17,9 +17,14 @@
   <!-- controller -->
   <script src="../controllers/individualStatus.js"></script>
 
+
+  <!-- cordova script (this will be a 404 during development) -->
+  <script src="../../lib/ngCordova/dist/ng-cordova.min.js"></script>
+  <script src="../../cordova.js"></script>
+
 </head>
 <body ng-app="careWheels" ng-controller="individualStatusController" class="overflow-scroll">
-<ion-pane>
+<ion-view>
   <ion-nav-bar>
     <h2 class="title">Sensor Status, Trevor</h2>
   </ion-nav-bar>
@@ -32,7 +37,7 @@
     </div>
     <div class="row">
       <div class="col">12am</div>
-      <div class="col" ng-style="{'background-color': '{{trevor.0.status}}'}"></div>
+      <div class="col" ng-style="{'background-color': '{{trevor.row0.status}}'}"></div>
       <div class="col yellow"></div>
       <div class="col blue"></div>
     </div>
@@ -176,7 +181,7 @@
     </div>
   </ion-content>
 <!-- </ion-view> -->
-</ion-pane>
+</ion-view>
 
 </body>
 </html>

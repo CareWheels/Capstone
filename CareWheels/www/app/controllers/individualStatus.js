@@ -2,11 +2,12 @@
  * CareWheels - Individual Status Controller
  *
  */
-angular.module('careWheels', []).controller('individualStatus', function($scope){
+angular.module('careWheels', ['ionic']).controller('individualStatusController', function($scope){
 
   $scope.trevor = {
-    0: {
-    status: 'blue'
+    row0: {
+      status: 'blue'
     }
   };
+  console.log("hit");
 });
