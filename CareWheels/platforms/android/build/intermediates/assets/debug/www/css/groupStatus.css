@@ -1,0 +1,105 @@
+ul {
+  list-style: none;
+}
+#careBankBlock{
+  position: relative;
+  /*background-color: #4cd964;*/
+  left: 0;
+  padding-left: 0;
+  width: 100%;
+  padding-bottom: 50%;
+}
+#careBankHeader {
+  position: relative;
+  width: 200px;
+  height: 34px;
+  margin-left: 50%;
+  left: -100px;
+  margin-top: 10px;
+
+  padding-top: 5px;
+  text-align: center;
+  font-size: 30px;
+}
+.careBankDetail{
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  text-align: center;
+  padding: 20px;
+}
+.careBankCredits{
+  left: 0;
+}
+.careBankDebits{
+  right: 0;
+}
+
+.smallBorder{
+  border-radius: 2px 2px 2px 2px;
+  -moz-border-radius: 2px 2px 2px 2px;
+  -webkit-border-radius: 2px 2px 2px 2px;
+  border: 2px solid #000000;
+}
+.boxShadow {
+  -webkit-box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.75);
+}
+#careBankData {
+  position: relative;
+  width: 90%;
+  margin-top: 10px;
+  margin-left: 5%;
+  padding-bottom: 30%;
+
+}
+#userGroup {
+  position: relative;
+  left: 0;
+  padding-left: 0;
+  width: 100%;
+  padding-bottom: 100%;
+}
+.userSquare {
+  position: absolute;
+  background-color: deepskyblue;
+  width: 50%;
+  height: 50%;
+  -webkit-box-shadow: inset 0 0 2px 0 rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: inset 0 0 2px 0 rgba(0, 0, 0, 0.75);
+  box-shadow: inset 0 0 2px 0 rgba(0, 0, 0, 0.75);
+}
+.userImage {
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  background-color: white;
+  margin: 2%;
+  border-radius: 150px 150px 150px 150px;
+  -moz-border-radius: 150px 150px 150px 150px;
+  -webkit-border-radius: 150px 150px 150px 150px;
+  border: 1px solid #000000;
+}
+.topLeft {
+  left: 0;
+  top: 0;
+}
+.topRight {
+  top: 0;
+  right: 0;
+}
+.bottomLeft {
+  left: 0;
+  bottom: 0;
+}
+.bottomRight {
+  right: 0;
+  bottom: 0;
+}
+.centerUser {
+  left: 28%;
+  top: 28%;
+  width: 40%;
+  height: 40%;
+}
