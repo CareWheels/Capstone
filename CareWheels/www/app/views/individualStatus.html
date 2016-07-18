@@ -25,9 +25,17 @@
 </head>
 <body ng-app="careWheels" ng-controller="individualStatusController" class="overflow-scroll">
 <ion-view>
-  <ion-nav-bar>
-    <h2 class="title">Sensor Status, Trevor</h2>
-  </ion-nav-bar>
+  <ion-side-menus>
+    <ion-side-menu-content>
+      <ion-nav-bar>
+        <ion-nav-buttons side="left">
+          <h2 class="title">Sensor Status, {{trevor.name}}</h2>
+          <!-- Toggle right side menu -->
+          <button ng-click="toggleRight()" menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+        </ion-nav-buttons>
+      </ion-nav-bar>
+
+  <!-- individual status content -->
   <ion-content>
     <div class="row header" style="margin-top:10px;">
       <div class="col no_border col-25"></div>
@@ -39,7 +47,7 @@
       <div class="col">12am</div>
       <div class="col" ng-style="{'background-color': '{{trevor.row0.status}}'}"></div>
       <div class="col yellow"></div>
-      <div class="col blue"></div>
+      <div class="col {{trevor.row0.status}}"></div> <!-- it can also be done like this, since your it matches the css class your made -->
     </div>
     <div class="row">
       <div class="col">1</div>
@@ -180,6 +188,14 @@
       <div class="col"></div>
     </div>
   </ion-content>
+    </ion-side-menu-content>
+
+
+
+    <ion-side-menu side="right">
+      <embed src="./menu.html"></embed>
+    </ion-side-menu>
+  </ion-side-menus>
 <!-- </ion-view> -->
 </ion-view>
 
