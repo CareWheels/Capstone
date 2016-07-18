@@ -17,19 +17,26 @@
   <!-- controller -->
   <script src="../controllers/individualStatus.js"></script>
 
+
+  <!-- cordova script (this will be a 404 during development) -->
+  <script src="../../lib/ngCordova/dist/ng-cordova.min.js"></script>
+  <script src="../../cordova.js"></script>
+
 </head>
-<body ng-app="careWheels" ng-controller="individualStatusController">
-<ion-pane>
-  <ion-nav-bar>
-    <ion-nav-back-button class="button">
-      <i class="ion-arrow-left-c"></i>
-    </ion-nav-back-button>
-      <!--
-    <h1 class="title">Shiftwiz.{{controllerCheck}}</h1> -->
-    <h2 class="title">Sensor Status, Trevor</h2>
-  </ion-nav-bar>
-<!-- <ion-view title="Trevor"> -->
-  <ion-content>
+<body ng-app="careWheels" ng-controller="individualStatusController" class="overflow-scroll">
+<ion-view>
+  <ion-side-menus>
+    <ion-side-menu-content>
+      <ion-nav-bar>
+        <ion-nav-buttons side="left">
+          <h2 class="title">Sensor Status, {{trevor.name}}</h2>
+          <!-- Toggle right side menu -->
+          <button ng-click="toggleRight()" menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+        </ion-nav-buttons>
+      </ion-nav-bar>
+
+  <!-- individual status content -->
+  <ion-content class="moveDown">
     <div class="row header">
       <div class="col no_border col-25"></div>
       <div class="col no_border col-25">presence</div>
@@ -38,9 +45,9 @@
     </div>
     <div class="row">
       <div class="col">12am</div>
-      <div class="col blue"></div>
+      <div class="col" ng-style="{'background-color': '{{trevor.row0.status}}'}"></div>
       <div class="col yellow"></div>
-      <div class="col blue"></div>
+      <div class="col {{trevor.row0.status}}"></div> <!-- it can also be done like this, since your it matches the css class your made -->
     </div>
     <div class="row">
       <div class="col">1</div>
@@ -181,8 +188,31 @@
       <div class="col"></div>
     </div>
   </ion-content>
+    </ion-side-menu-content>
+
+
+
+    <ion-side-menu side="right">
+      <ion-list>
+        <!-- make sure to have target point to parent, otherwise
+             it will open the page in the within the menu block.
+
+             also there are two external links on this menu page,
+             these links need to be handled as opening an external
+             app, or the devices native web browser.(cordova plug-in) -->
+
+        <ion-item href="groupStatus.html" target="_parent">CareWheels Group</ion-item>
+        <ion-item href="reminders.html" target="_parent">Reminders</ion-item>
+        <!-- https://carebank.carewheels.org/#login -->
+        <ion-item href="" target="_parent">CareBank</ion-item>
+        <!-- link to sense app -->
+        <ion-item href="" target="_parent">Sen.se</ion-item>
+        <ion-item href="login.html" target="_parent">Logout</ion-item>
+      </ion-list>
+    </ion-side-menu>
+  </ion-side-menus>
 <!-- </ion-view> -->
-</ion-pane>
+</ion-view>
 
 </body>
 </html>
