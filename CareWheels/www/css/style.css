@@ -22,3 +22,36 @@ a{
 .devButton:active {
   box-shadow: inset 0 0 10px 0 rgba(0,0,0,0.5);
 }
+
+
+/* For individualStatus */
+.col {
+  border: solid 1px grey;
+  text-align: center;
+}
+
+.col.no_border {
+  border: none;
+}
+
+.col.blue {
+  border: solid 1px grey;
+  background-color: blue;
+  color: white;
+}
+
+.col.grey {
+  border: solid 1px grey;
+  background-color: grey;
+}
+
+.col.yellow {
+  border: solid 1px grey;
+  background-color: yellow;
+}
+
+.col.red {
+  border: solid 1px grey;
+  background-color: red;
+}
+

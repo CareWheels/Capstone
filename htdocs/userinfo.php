@@ -13,10 +13,20 @@ include('login.php');
 $userService = new Cyclos\UserService();
 $locator = new stdclass();
 $locator->username = $_POST['usernametofind'];
+$userImageService = new Cyclos\UserImageService();
 
 try {
     $user = $userService->locate($locator);
     $userInfo = $userService->load($user->id);
+    $userImages = $userImageService->_list($user->id);
+    
+    if(!empty($userImages)) {
+          $userInfo->photoUrl = "https://carebank.carewheels.org/content/images/user/".$userImages[0]->key;
+    }
+    else {
+          $userInfo->photoUrl = null;
+    }
+
 } catch (Cyclos\ServiceException $e) {
     echo("Error while performing user search: {$e->errorCode}");
     die();
