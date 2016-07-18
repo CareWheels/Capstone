@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+  <title></title>
+
+  <!-- style sheets -->
+  <link href="../../lib/ionic/css/ionic.css" rel="stylesheet">
+  <link href="../../css/style.css" rel="stylesheet">
+  <!-- ionic/angularjs js -->
+  <script src="../../lib/ionic/js/ionic.bundle.js"></script>
+  <!-- javascript -->
+  <script src="../../js/app.js"></script>
+  <script src="../../js/restcontrollers.js"></script>
+
+  <!-- controller -->
+  <script src="../controllers/groupStatus.js"></script>
+
+  <!-- my styling -->
+  <link href="../../css/groupStatus.css" rel="stylesheet">
+
+
+
+</head>
+<body ng-app="careWheels" ng-controller="groupStatusController">
+<ion-pane>
+<!-- user group block: holds the -->
+<ion-content>
+  <ul id="userGroup">
+    <li class="userSquare topLeft" ng-click="clickTopLeft()">
+      <div class="userImage topLeft"></div>
+    </li>
+    <li class="userSquare topRight" ng-click="clickTopRight()">
+      <div class="userImage topRight"></div>
+    </li>
+    <li class="userSquare bottomLeft"  ng-click="clickBottomLeft()">
+      <div class="userImage bottomLeft"></div>
+    </li>
+    <li class="userSquare bottomRight"  ng-click="clickBottomRight()">
+      <div class="userImage bottomRight"></div>
+    </li>
+    <li class="userImage centerUser" ng-click="clickCenter()"></li>
+  </ul>
+
+  <ul id="careBankBlock" ng-click="clickCareBank()">
+    <li id="careBankHeader" class="smallBorder">CareBank</li>
+    <li id="careBankData" class="smallBorder">
+      <div class="careBankDetail careBankCredits">
+        <h3>Credits</h3>
+        <h3><b>{{group.credits}}</b></h3>
+      </div>
+      <div class="careBankDetail careBankDebits">
+        <h3>Debits</h3>
+        <h3><b>{{group.debits}}</b></h3>
+      </div>
+    </li>
+  </ul>
+
+</ion-content>
+
+</ion-pane>
+</body>
+</html>
