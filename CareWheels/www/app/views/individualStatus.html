@@ -36,8 +36,8 @@
       </ion-nav-bar>
 
   <!-- individual status content -->
-  <ion-content>
-    <div class="row header" style="margin-top:10px;">
+  <ion-content class="moveDown">
+    <div class="row header">
       <div class="col no_border col-25"></div>
       <div class="col no_border col-25">presence</div>
       <div class="col no_border col-25">meals</div>
@@ -193,7 +193,22 @@
 
 
     <ion-side-menu side="right">
-      <embed src="./menu.html"></embed>
+      <ion-list>
+        <!-- make sure to have target point to parent, otherwise
+             it will open the page in the within the menu block.
+
+             also there are two external links on this menu page,
+             these links need to be handled as opening an external
+             app, or the devices native web browser.(cordova plug-in) -->
+
+        <ion-item href="groupStatus.html" target="_parent">CareWheels Group</ion-item>
+        <ion-item href="reminders.html" target="_parent">Reminders</ion-item>
+        <!-- https://carebank.carewheels.org/#login -->
+        <ion-item href="" target="_parent">CareBank</ion-item>
+        <!-- link to sense app -->
+        <ion-item href="" target="_parent">Sen.se</ion-item>
+        <ion-item href="login.html" target="_parent">Logout</ion-item>
+      </ion-list>
     </ion-side-menu>
   </ion-side-menus>
 <!-- </ion-view> -->
