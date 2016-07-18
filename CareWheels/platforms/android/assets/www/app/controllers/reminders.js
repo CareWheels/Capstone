@@ -9,9 +9,9 @@
 //    $controller('TestCtrl1',{$scope : testCtrl1ViewModel });
 //    testCtrl1ViewModel.myMethod(); //And call the method on the newScope.
 // }]);
+angular.module('careWheels')
 
-
-app.controller('remindersController', ['$scope', '$controller', function($scope, $controller){
+.controller('remindersController', ['$scope', '$controller', function($scope, $controller){
   var notifViewModel = $scope.$new();
   $controller('NotificationController',{$scope : notifViewModel });
   $scope.reminders = {

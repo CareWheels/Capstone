@@ -1,6 +1,18 @@
 [
     {
-        "merged": "/home/asakawa/Capstone/CareWheels/platforms/android/build/intermediates/res/merged/debug/drawable-mdpi-v4/icon.png",
-        "source": "/home/asakawa/Capstone/CareWheels/platforms/android/res/drawable-mdpi/icon.png"
+        "merged": "E:\\Capstone\\Capstone\\CareWheels\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\icon.png",
+        "source": "E:\\Capstone\\Capstone\\CareWheels\\platforms\\android\\res\\drawable-mdpi\\icon.png"
+    },
+    {
+        "merged": "E:\\Capstone\\Capstone\\CareWheels\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\ic_action_previous_item.png",
+        "source": "E:\\Capstone\\Capstone\\CareWheels\\platforms\\android\\res\\drawable-mdpi\\ic_action_previous_item.png"
+    },
+    {
+        "merged": "E:\\Capstone\\Capstone\\CareWheels\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\ic_action_next_item.png",
+        "source": "E:\\Capstone\\Capstone\\CareWheels\\platforms\\android\\res\\drawable-mdpi\\ic_action_next_item.png"
+    },
+    {
+        "merged": "E:\\Capstone\\Capstone\\CareWheels\\platforms\\android\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\ic_action_remove.png",
+        "source": "E:\\Capstone\\Capstone\\CareWheels\\platforms\\android\\res\\drawable-mdpi\\ic_action_remove.png"
     }
 ]

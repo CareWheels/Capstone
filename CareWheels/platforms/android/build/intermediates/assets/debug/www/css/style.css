@@ -3,6 +3,12 @@ a{
   text-decoration: none;
   color: white;
 }
+/* used for the menu, take up all the available space */
+embed{
+  width: 100%;
+  height: 100%;
+}
+
 .devButton {
   position: relative;
   width: 200px;
@@ -55,6 +61,12 @@ a{
   background-color: red;
 }
 
+.overflowHide {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
 .moveDown{
   top: 43px;
 }
+

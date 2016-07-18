@@ -1,29 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-  <title></title>
-
-  <!-- style sheets -->
-  <link href="../../lib/ionic/css/ionic.css" rel="stylesheet">
-  <link href="../../css/style.css" rel="stylesheet">
-  <!-- ionic/angularjs js -->
-  <script src="../../lib/ionic/js/ionic.bundle.js"></script>
-  <!-- javascript -->
-  <script src="../../js/app.js"></script>
-  <script src="../../js/restcontrollers.js"></script>
-
-  <!-- controller -->
-  <script src="../controllers/login.js"></script>
-
-</head>
-<body ng-app="careWheels" ng-controller="loginController">
 <ion-pane>
   <ion-content>
-    <!--content goes here-->
-
+    <img src="../../img/CareWheelsLogo.png"> 
+    <div class="list list-inset">
+      <label class="item item-input">
+        <input type="text" placeholder="Username" ng-model="username">
+      </label>
+      <label class="item item-input">
+        <input type="password" placeholder="Password" ng-model="password">
+      </label>
+      </br>
+      <ion-list>
+        <ion-checkbox ng-model="rememberMe">Remember Credentials</ion-checkbox>
+      </ion-list>
+    </div>
+    <button class="button button-block button-calm" ng-click="user.login(username, password, rememberMe)">Login</button>
   </ion-content>
 </ion-pane>
-</body>
-</html>
+<div ui-view></div>

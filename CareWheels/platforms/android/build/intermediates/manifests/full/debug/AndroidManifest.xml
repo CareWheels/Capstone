@@ -18,8 +18,6 @@
         android:xlargeScreens="true" />
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:hardwareAccelerated="true"
@@ -40,38 +38,7 @@
             </intent-filter>
         </activity>
 
-        <receiver
-            android:name="de.appplant.cordova.plugin.localnotification.TriggerReceiver"
-            android:exported="false" />
-        <receiver
-            android:name="de.appplant.cordova.plugin.localnotification.ClearReceiver"
-            android:exported="false" />
-
-        <activity
-            android:name="de.appplant.cordova.plugin.localnotification.ClickActivity"
-            android:exported="false"
-            android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.NoDisplay" />
-
-        <receiver
-            android:name="de.appplant.cordova.plugin.notification.TriggerReceiver"
-            android:exported="false" />
-        <receiver
-            android:name="de.appplant.cordova.plugin.notification.ClearReceiver"
-            android:exported="false" />
-        <receiver
-            android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
-        <activity
-            android:name="de.appplant.cordova.plugin.notification.ClickActivity"
-            android:exported="false"
-            android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.NoDisplay" />
+        <service android:name="de.appplant.cordova.plugin.background.ForegroundService" />
     </application>
 
 </manifest>
