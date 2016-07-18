@@ -33,6 +33,10 @@ app.run(function($ionicPlatform) {
 /////////////////////////////////////////////////////////////////////////////////////////
 //controller
 /////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//TODO: Inject 'GroupInfo' service to access groupmemberinfo object
+/////////////////////////////////////////////////////////////////////////////////////////
 app.controller('WorkerCtrl', function($scope, WorkerService) {
 
 // The URL must be absolute because of the URL blob specification  
@@ -55,12 +59,6 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       // All communication must be performed through the output parameter.
    */
 
-    //********************************************
-    //TODO:
-    //Serialize params into 'input' before creating worker. eg. groupMembername, access-token, refresh-token, senseID
-    //will be obtained from groupmember array object in memory (from login)
-    //********************************************
-
   var workerPromise = WorkerService.createAngularWorker(['input', 'output', '$http', '$httpParamSerializerJQLike', function (input, output, $http, $httpParamSerializerJQLike) {
 
     ///////////////////////////////////////////////////////////////////////////
@@ -70,14 +68,14 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //$http request to sen.se with access token to attempt to retrieve feed data
     ///////////////////////////////////////////////////////////////////////////
     var downloadFunc = function(){
-
+    var count = 0;
     //var dataUrl = "http://jsonplaceholder.typicode.com/posts/1";
     var dataUrl = "https://apis.sen.se/v2/feeds/";
     $http({
       url:dataUrl, 
       method:'GET',    
       data: $httpParamSerializerJQLike({   
-       //accesstoken:accessToken,
+       accesstoken:input['accesstoken']
        //
       }), 
       headers: {
@@ -102,16 +100,11 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //
         //if we fail the request to a 403 expired token error
         //call refresh function
-        /*
-        if (response.status = '403'){
-          refreshFunc();  //
-            //if error, exit/display error msg
-          downloadFunc(); //
-        }
-        else
-
-        console.log("download func fail", response);
-        */
+        
+        if (response.status === 403){
+          refreshFunc();
+        }       
+        
         output.notify(JSON.parse(JSON.stringify(response)));
         console.log("download func fail", response);
 
@@ -133,7 +126,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       url:refreshUrl, 
       method:'POST',    
       data: $httpParamSerializerJQLike({
-        //
+        refreshtoken:input['refreshtoken']
        //refreshtoken: refreshToken
       }), 
       headers: {
@@ -155,15 +148,6 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       )
     };
 
-/*
-from design doc
-    groupMembersInfo - array
-    JSON.parse(
-    member.customValues.
-       SenseUserID: String
-       SenseOAuthToken: String
-       SenseOAuthRefreshToken: String
-*/
 
     downloadFunc();
     //refreshFunc();
@@ -172,15 +156,21 @@ from design doc
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
-//This is where we run our worker thread
-//and handle the returned promise (this will be a javascript object containing
-//sensor download data)
+//MAIN THREAD
 /////////////////////////////////////////////////////////////////////////////////////////
+//This is where we handle the returned promise by the worker thread
+//(this will be a javascript object containing sensor download data)
+/////////////////////////////////////////////////////////////////////////////////////////
+
     workerPromise
       .then(function success(angularWorker) {
       //The input must be serializable
       //console.log('reached');
-      return angularWorker.run();
+
+      //make input object as arg for run()
+      //we will need to include all properties which will be needed as params
+      //when making refresh/post and download/get requests to sense
+      return angularWorker.run({refreshtoken:"token123", accesstoken:"token456"});
       
     }, function error(reason) {
 
@@ -210,7 +200,7 @@ from design doc
         //*******************************************
         //TODO:
         //json parse update for appropriate feed data
-        //save to localStorage
+        //save to global variable, to be handled by data analysis
         //*******************************************
       });
   };
