@@ -13,7 +13,7 @@
   <!-- javascript -->
   <script src="../../js/app.js"></script>
   <script src="../../js/restcontrollers.js"></script>
-
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <!-- controller -->
   <script src="../controllers/groupStatus.js"></script>
 
@@ -40,24 +40,20 @@
       <!-- user group block: holds the -->
       <ion-content class="overflowHide">
         <ul id="userGroup">
-          <li class="userSquare topLeft"
-              ng-click="clickTopLeft()"
-              ng-style="{'background-color': '{{group.topLeft.status}}'}">
+          <li class="userSquare topLeft" ng-click="clickTopLeft()">
+            <div id="topLeftAlert" class="alertOverlay" ng-style="{'background-color': '{{group.topLeft.status}}'}"></div>
             <div class="userImage topLeft"></div>
           </li>
-          <li class="userSquare topRight"
-              ng-click="clickTopRight()"
-              ng-style="{'background-color': '{{group.topRight.status}}'}">
+          <li class="userSquare topRight" ng-click="clickTopRight()">
+            <div id="topRightAlert" class="alertOverlay" ng-style="{'background-color': '{{group.topRight.status}}'}"></div>
             <div class="userImage topRight"></div>
           </li>
-          <li class="userSquare bottomLeft"
-              ng-click="clickBottomLeft()"
-              ng-style="{'background-color': '{{group.bottomLeft.status}}'}">
+          <li class="userSquare bottomLeft" ng-click="clickBottomLeft()">
+            <div id="bottomLeftAlert" class="alertOverlay" ng-style="{'background-color': '{{group.bottomLeft.status}}'}"></div>
             <div class="userImage bottomLeft"></div>
           </li>
-          <li class="userSquare bottomRight"
-              ng-click="clickBottomRight()"
-              ng-style="{'background-color': '{{group.bottomRight.status}}'}">
+          <li class="userSquare bottomRight" ng-click="clickBottomRight()">
+            <div id="bottomRightAlert" class="alertOverlay" ng-style="{'background-color': '{{group.bottomRight.status}}'}"></div>
             <div class="userImage bottomRight"></div>
           </li>
           <li class="userImage centerUser" ng-click="clickCenter()"></li>

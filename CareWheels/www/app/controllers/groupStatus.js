@@ -7,11 +7,7 @@
 angular.module('careWheels', ['ionic', 'ngAnimate'])
   .controller('groupStatusController', function ($scope, $interval) {
 
-/*    $interval(function ( ){
-      console.log("interval hit");
-      $scope.getElementById('.topLeftRed').style.display = "absolute";
-      return true;
-    }, 1000);*/
+
 
 
     $scope.group = {
@@ -28,7 +24,7 @@ angular.module('careWheels', ['ionic', 'ngAnimate'])
         status: 'deepskyblue'
       },
       topRight: {
-        username: 'yoda',
+        username: 'mace windu',
         profilePic: 'url',
         status: 'deepskyblue'
       },
@@ -74,7 +70,21 @@ angular.module('careWheels', ['ionic', 'ngAnimate'])
       }
     }
 
+    $interval(function (){
+      var alertArray = [
+        $('#topLeftAlert'),
+        $('#topRightAlert'),
+        $('#bottomLeftAlert'),
+        $('#bottomRightAlert')
+      ];
 
+      for(var i =0; i < alertArray.length; i++){
+        if(alertArray[i].css('background-color') === 'rgb(255, 0, 0)'){
+          alertArray[i].fadeOut("slow");
+          alertArray[i].fadeIn("slow");
+        }
+      }
+    }, 2000);
   });
 
 
