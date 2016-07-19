@@ -37,7 +37,7 @@ app.run(function($ionicPlatform) {
 /////////////////////////////////////////////////////////////////////////////////////////
 //TODO: Inject 'GroupInfo' service to access groupmemberinfo object
 /////////////////////////////////////////////////////////////////////////////////////////
-app.controller('WorkerCtrl', function($scope, WorkerService) {
+app.controller('DownloadCtrl', function($scope, WorkerService, DataService) {
 
 // The URL must be absolute because of the URL blob specification  
 WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js");
@@ -68,20 +68,19 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //$http request to sen.se with access token to attempt to retrieve feed data
     ///////////////////////////////////////////////////////////////////////////
     var downloadFunc = function(){
-    var count = 0;
     //var dataUrl = "http://jsonplaceholder.typicode.com/posts/1";
     var dataUrl = "https://apis.sen.se/v2/feeds/";
     $http({
       url:dataUrl, 
       method:'GET',    
       data: $httpParamSerializerJQLike({   
-       accesstoken:input['accesstoken']
-       //
+       //accesstoken:input['accesstoken']
+       
       }), 
       headers: {
         //'Content-Type': 'application/x-www-form-urlencoded',
         'Content-Type': 'application/JSON',
-        'Authorization': 'Bearer access-token'
+        //'Authorization': 'Bearer access-token'
       }
     }).then(function(response) {   
         //
@@ -103,6 +102,8 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         
         if (response.status === 403){
           refreshFunc();
+          //try to download from sense, but limit after n attempts
+          //to prevent infinite re-attempts
         }       
         
         output.notify(JSON.parse(JSON.stringify(response)));
@@ -126,12 +127,11 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       url:refreshUrl, 
       method:'POST',    
       data: $httpParamSerializerJQLike({
-        refreshtoken:input['refreshtoken']
-       //refreshtoken: refreshToken
+        //refreshtoken:input['refreshtoken']
       }), 
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer refresh-token'
+        //'Content-Type': 'application/x-www-form-urlencoded',
+        //'Authorization': 'Bearer refresh-token'
       }
     }).then(function(response) {
 
@@ -170,7 +170,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       //make input object as arg for run()
       //we will need to include all properties which will be needed as params
       //when making refresh/post and download/get requests to sense
-      return angularWorker.run({refreshtoken:"token123", accesstoken:"token456"});
+
+      //currently testing with bill's access/refresh tokens
+      return angularWorker.run({refreshtoken:"PjBiwFdKyXwDsfm82FfVVK6IGWLLk0", accesstoken:"A0RegyQMErQ7DgqS1a9f8KxcnAsjt5"});
       
     }, function error(reason) {
 
@@ -199,9 +201,34 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         console.log('reached notify');
         //*******************************************
         //TODO:
-        //json parse update for appropriate feed data
-        //save to global variable, to be handled by data analysis
+        //Save successful response object 
+        //Will be used/parsed in DataService factory
         //*******************************************
       });
   };
+});
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//Factory for parsing feed data returned from promise in DownloadCtrl above
+//We can then inject this service into AnalysisCtrl
+/////////////////////////////////////////////////////////////////////////////////////////
+app.factory('DataService', function() {
+
+
+    return [];//return object, containing an array of group members, each with 3 feed objects
+  
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//Controller for Sensor Data Analysis
+//Will receive parsed feed data from the injected DataService factory
+/////////////////////////////////////////////////////////////////////////////////////////
+app.controller('AnalysisCtrl', function($scope, DataService) {
+
+
+
+
+
+
 });
