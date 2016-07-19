@@ -182,7 +182,8 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     $http({
       url:dataUrl, 
       method:'GET',    
-      data: $httpParamSerializerJQLike({   
+      data: $httpParamSerializerJQLike({
+        SENSE_API_KEY:input['accesstoken']
        //accesstoken:input['accesstoken']
        
       }), 
@@ -313,6 +314,8 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //Save successful response object 
         //Will be used/parsed in DataService factory
         //*******************************************
+        DataService.setCurrentGroup(update);
+
       });
   };
 });
@@ -324,8 +327,28 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 /////////////////////////////////////////////////////////////////////////////////////////
 app.factory('DataService', function() {
 
+  var currentGroupId;
 
-    return [];//return object, containing an array of group members, each with 3 feed objects
+  // public API
+  return {
+    getCurrentGroup: function () { 
+      if (currentGroupId == null){
+          return console.error("Group data has not been parsed yet!");
+        }
+      return currentGroupId; 
+    },
+    setCurrentGroup: function ( id ) { 
+      //will be called by data download.  This will be an object
+      //which contains up to 5 members, with and array of 3 feeds each
+      currentGroupId = id;
+      console.log('reached service', currentGroupId);
+      /////////////////////////////////////////////////////////////////////////////////////////
+      //This is where i will parse the feed object, and save it to currentGroupId
+      /////////////////////////////////////////////////////////////////////////////////////////
+
+
+    }
+  };
   
 });
 
@@ -334,10 +357,22 @@ app.factory('DataService', function() {
 //Will receive parsed feed data from the injected DataService factory
 /////////////////////////////////////////////////////////////////////////////////////////
 app.controller('AnalysisCtrl', function($scope, DataService) {
+  
+  $scope.AnalyzeData = function(){
+    var testFunc = function(){
+    
+    $scope.groupData = DataService.getCurrentGroup();
+
+    }
+    //testFunc();
+    //console.log('testing analysis controller', $scope.groupData);  
+
+  };
 
 
-
-
+      /////////////////////////////////////////////////////////////////////////////////////////
+      //This is where functions for analyzing data will go
+      /////////////////////////////////////////////////////////////////////////////////////////
 
 });
 
