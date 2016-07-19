@@ -143,7 +143,8 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
 /////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////////////
-//TODO: Inject 'GroupInfo' service to access groupmemberinfo object
+//TODO: Inject 'GroupInfo' service to access groupmemberinfo object (to obtain sen.se credentials)
+//Will be manually entering credentials in GET/POST requests during testing
 /////////////////////////////////////////////////////////////////////////////////////////
 app.controller('DownloadCtrl', function($scope, WorkerService, DataService) {
 
