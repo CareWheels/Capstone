@@ -23,6 +23,10 @@
     <script src="js/app.js"></script>
     <script src="js/restcontrollers.js"></script>
 
+    <!-- angular-worker js -->
+    <script src="js/angular-workers.js"></script>
+    <script src="js/angular-workers.min.js"></script>
+
   </head>
   <body ng-app="careWheels">
 
@@ -49,6 +53,14 @@
             <a href="app/views/reminders.html">Reminders</a>
           </li>
         </ul>
+
+        <!-- Data Download / Worker Thread Test -->
+        <div ng-controller="DownloadCtrl">
+          <button id= "btn1" ng-click="DownloadData()">DownloadData »</button><br>
+          <pre>http response data: {{data}}</pre>
+          <pre>http status code: {{status}}</pre>
+          <pre>Response object sent back to main thread: {{update}}</pre>
+        </div>
 
           <!-- sample rest function calls -->
         <div ng-controller="NotificationController">

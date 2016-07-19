@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\Nolan\Documents\GitHub\Capstone\CareWheels\platforms\android\build\intermediates\exploded-aar\com.android.support\support-v4\24.0.0\jars\libs\internal_impl-24.0.0.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="fcaf463e10e69c1923ccf1edeba3b4196d239e00">
+        <dex dex="C:\Users\Nolan\Documents\GitHub\Capstone\CareWheels\platforms\android\build\intermediates\pre-dexed\debug\internal_impl-24.0.0_48d3d6a85331720162b3489debb24d79d2088c2a.jar" />
+    </item>
+    <item
+        jar="C:\Users\Nolan\Documents\GitHub\Capstone\CareWheels\platforms\android\build\intermediates\exploded-aar\android\CordovaLib\unspecified\debug\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="5f3b14f9a132ac6f77115d29871b64813efab647">
+        <dex dex="C:\Users\Nolan\Documents\GitHub\Capstone\CareWheels\platforms\android\build\intermediates\pre-dexed\debug\CordovaLib-unspecified-debug_ec0745c21efe50ea06720f1900f26b0bf8f3868b.jar" />
+    </item>
+    <item
+        jar="C:\Users\Nolan\Documents\GitHub\Capstone\CareWheels\platforms\android\build\intermediates\exploded-aar\com.android.support\support-v4\24.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="2f7e6e2dad1bccaf68a8820820adc6c0d5b96d37">
+        <dex dex="C:\Users\Nolan\Documents\GitHub\Capstone\CareWheels\platforms\android\build\intermediates\pre-dexed\debug\com.android.support-support-v4-24.0.0_5f53141ba3c4f49f88243d156e5958c957338218.jar" />
+    </item>
+    <item
+        jar="C:\Users\Nolan\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\24.0.0\support-annotations-24.0.0.jar"
+        jumboMode="false"
+        revision="23.0.3"
+        sha1="2943c74db6d4346ab8c6531adac91fa05c137c40">
+        <dex dex="C:\Users\Nolan\Documents\GitHub\Capstone\CareWheels\platforms\android\build\intermediates\pre-dexed\debug\support-annotations-24.0.0_4c6c432683ded03368299e594f04933aecaa8e13.jar" />
+    </item>
+
+</items>
