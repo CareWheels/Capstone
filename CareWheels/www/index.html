@@ -62,6 +62,12 @@
           <pre>Response object sent back to main thread: {{update}}</pre>
         </div>
 
+        <!-- Basic Analysis Test -->
+        <div ng-controller="AnalysisCtrl">
+          <button id= "btn2" ng-click="AnalyzeData()">Analyze Data »</button><br>
+          <pre>Object to be analyzed: {{groupData}}</pre>
+        </div>
+
           <!-- sample rest function calls -->
         <div ng-controller="NotificationController">
           <button id="createnotifbtn" ng-click="Create_Notif(19, 12, 15, 0)">Set Notification</button><br>
