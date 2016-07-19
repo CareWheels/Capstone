@@ -230,5 +230,4 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
 
 
 
-
 });
