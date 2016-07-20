@@ -326,23 +326,23 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 /////////////////////////////////////////////////////////////////////////////////////////
 app.factory('DataService', function() {
 
-  var currentGroupId;
+  var currentGroup;
 
   // public API
   return {
     getCurrentGroup: function () { 
-      if (currentGroupId == null){
+      if (currentGroup == null){
           return console.error("Group data has not been parsed yet!");
         }
-      return currentGroupId; 
+      return currentGroup; 
     },
     setCurrentGroup: function ( id ) { 
       //will be called by data download.  This will be an object
       //which contains up to 5 members, with and array of 3 feeds each
-      currentGroupId = id;
-      console.log('reached service', currentGroupId);
+      currentGroup = id;
+      console.log('reached service', currentGroup);
       /////////////////////////////////////////////////////////////////////////////////////////
-      //This is where i will parse the feed object, and save it to currentGroupId
+      //This is where i will parse the feed object, and save it to currentGroup
       /////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -350,6 +350,132 @@ app.factory('DataService', function() {
   };
   
 });
+
+/////////////////////////////////////////////////////////////////////////////////////////
+/*
+
+  "currentGroup": [
+    {
+      "groupmembername": "abe",
+      "feeds": [
+        {      
+        "type": "Fridge",
+        "events": [
+          {
+          "dateEvent": "2016-02-20T16:25:20",
+          },
+        ]
+        },
+        {      
+        "type": "Presence",
+        "events": [
+          {
+          "dateEvent": "2016-02-20T16:25:20",
+          },
+        ]
+        },
+        {      
+        "type": "Medication",
+        "events": [
+          {
+          "dateEvent": "2016-02-20T16:25:20",
+          },
+        ]
+        }
+      ]
+    },
+    {
+      "groupmembername": "ben",
+      "feeds": [
+        {      
+        "type": "Fridge",
+        "events": [
+          {
+          "dateEvent": "2016-02-20T16:25:20",
+          },
+        ]
+        },
+        {      
+        "type": "Presence",
+        "events": [
+          {
+          "dateEvent": "2016-02-20T16:25:20",
+          },
+        ]
+        },
+        {      
+        "type": "Medication",
+        "events": [
+          {
+          "dateEvent": "2016-02-20T16:25:20",
+          },
+        ]
+        }
+      ]
+    },
+    {
+      "groupmembername": "carl",
+      "feeds": [
+        {      
+        "type": "Fridge",
+        "events": [
+          {
+          "dateEvent": "2016-02-20T16:25:20",
+          },
+        ]
+        },
+        {      
+        "type": "Presence",
+        "events": [
+          {
+          "dateEvent": "2016-02-20T16:25:20",
+          },
+        ]
+        },
+        {      
+        "type": "Medication",
+        "events": [
+          {
+          "dateEvent": "2016-02-20T16:25:20",
+          },
+        ]
+        }
+      ]
+    },
+    {
+      "groupmembername": "dan",
+      "feeds": [
+        {      
+        "type": "Fridge",
+        "events": [
+          {
+          "dateEvent": "2016-02-20T16:25:20",
+          },
+        ]
+        },
+        {      
+        "type": "Presence",
+        "events": [
+          {
+          "dateEvent": "2016-02-20T16:25:20",
+          },
+        ]
+        },
+        {      
+        "type": "Medication",
+        "events": [
+          {
+          "dateEvent": "2016-02-20T16:25:20",
+          },
+        ]
+        }
+      ]
+    }
+]
+
+*/
+/////////////////////////////////////////////////////////////////////////////////////////
+
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //Controller for Sensor Data Analysis
