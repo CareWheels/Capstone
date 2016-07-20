@@ -27,7 +27,7 @@ app.run(function($ionicPlatform) {
 app.controller("NotificationController", function($scope, $log, $cordovaLocalNotification){
   var isAndroid = window.cordova!=undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
   function Time() {this.hours=0; this.minutes=0; this.seconds=0; this.on=true;};
-  //window.localStorage['Reminders'] = null;    //Turning this on simulates starting from fresh storage every time controller is called by view change
+  window.localStorage['Reminders'] = null;    //Turning this on simulates starting from fresh storage every time controller is called by view change
   $scope.data = angular.fromJson(window.localStorage['Reminders']);   //needs to be called outside the functions so it persists for all of them
 
   //To be called during app startup after login; retrieves saved alert times (if they exist) or creates default alerts (if they don't) 
