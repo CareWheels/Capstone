@@ -1,2 +1,5 @@
 .idea/
 OAuth2/composer.lock
+CareWheels/platforms/
+CareWheels/plugins/
+
