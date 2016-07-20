@@ -146,7 +146,66 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
 //TODO: Inject 'GroupInfo' service to access groupmemberinfo object (to obtain sen.se credentials)
 //Will be manually entering credentials in GET/POST requests during testing
 /////////////////////////////////////////////////////////////////////////////////////////
-app.controller('DownloadCtrl', function($scope, WorkerService, DataService) {
+app.controller('DownloadCtrl', function($scope, $http, WorkerService, DataService) {
+/*
+//TEST FUNCTION - DELETE LATER
+$scope.testfunction = function(){
+    var downloadtest = function(){
+    //var dataUrl = "http://jsonplaceholder.typicode.com/posts/1";
+    var dataUrl = "https://apis.sen.se/v2/feeds/";
+    $http({
+      url:dataUrl, 
+      method:'GET',    
+      headers: {
+        //'Content-Type': 'application/x-www-form-urlencoded',
+        //'Content-Type': 'application/JSON',
+        'Authorization': 'Bearer A0RegyQMErQ7DgqS1a9f8KxcnAsjt5'
+        //'Authentication': 'Bearer '+input['accesstoken']
+      }
+    }).then(function(response) {   
+        //
+        //received response, send to main thread
+        //NOTE: need to JSON.parse + stringify the response
+        //or else there will be an error as we attempt to 
+        //pass the response back to main thread
+
+        //ideally, this is what we would like to have happen
+        //the response object will be sent back to the main thread
+        //where the feed data can be manipulated for analysis
+        //output.notify(JSON.parse(JSON.stringify(response)));
+        console.log("download func success", response);
+
+      }, function(response) {
+        //
+        //if we fail the request to a 403 expired token error
+        //call refresh function
+        
+        console.log("download func fail", response);
+
+        }
+      )
+    };
+    downloadtest();
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////END TEST FUNCTION
+
+*/
 
 // The URL must be absolute because of the URL blob specification  
 WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js");
@@ -182,15 +241,17 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     $http({
       url:dataUrl, 
       method:'GET',    
-      data: $httpParamSerializerJQLike({
-        SENSE_API_KEY:input['accesstoken']
+      //data: //$httpParamSerializerJQLike({
+        //SENSE_API_KEY:input['accesstoken']
        //accesstoken:input['accesstoken']
        
-      }), 
+      //})
+      //,
       headers: {
         //'Content-Type': 'application/x-www-form-urlencoded',
-        'Content-Type': 'application/JSON',
-        //'Authorization': 'Bearer access-token'
+        //'Content-Type': 'application/JSON',
+        'Authorization': 'Bearer '+input['accesstoken']
+        //'Authentication': 'Bearer '+input['accesstoken']
       }
     }).then(function(response) {   
         //
