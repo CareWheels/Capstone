@@ -179,6 +179,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     ///////////////////////////////////////////////////////////////////////////
     var downloadFunc = function(){
     //var dataUrl = "http://jsonplaceholder.typicode.com/posts/1";
+
+
+  
     var dataUrl = "https://apis.sen.se/v2/feeds/";
     $http({
       url:dataUrl, 
@@ -196,7 +199,83 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //'Authentication': 'Bearer '+input['accesstoken']
       }
     }).then(function(response) {   
-        //
+        
+        //TEST DATA
+        var testData = {
+  "links": {
+    "next": null,
+    "prev": "https://apis.sen.se/v2/feeds/?page=2"
+  },
+  "totalObjects": 27,
+  "object": "list",
+  "objects": [
+    {
+      "object": "feed",
+      "url": "https://apis.sen.se/v2/feeds/qSR0UsgRQAgQXhdrQA11m7IkhRGtvRhi/",
+      "uid": "qSR0UsgRQAgQXhdrQA11m7IkhRGtvRhi",
+      "label": "Battery",
+      "type": "battery",
+      "node": "https://apis.sen.se/v2/nodes/aeVETYmaxjUqhOiRVF6myce7swXvjbqT/",
+      "used": true
+    },
+    {
+      "object": "feed",
+      "url": "https://apis.sen.se/v2/feeds/dilmMnEPKLi49WMPh5fZ58dGBJ1zKRIN/",
+      "uid": "dilmMnEPKLi49WMPh5fZ58dGBJ1zKRIN",
+      "label": "Battery debug",
+      "type": "batterydebug",
+      "node": "https://apis.sen.se/v2/nodes/aeVETYmaxjUqhOiRVF6myce7swXvjbqT/",
+      "used": false
+    },
+    {
+      "object": "feed",
+      "url": "https://apis.sen.se/v2/feeds/cUiyqAKCxDZcEqmfGnfYFTxAo7GrEBaI/",
+      "uid": "cUiyqAKCxDZcEqmfGnfYFTxAo7GrEBaI",
+      "label": "Motion",
+      "type": "motion",
+      "node": "https://apis.sen.se/v2/nodes/aeVETYmaxjUqhOiRVF6myce7swXvjbqT/",
+      "used": true
+    },
+    {
+      "object": "feed",
+      "url": "https://apis.sen.se/v2/feeds/GLEvneYl6pQBKhAfl7l2Bx32C4Bm1Xdv/",
+      "uid": "GLEvneYl6pQBKhAfl7l2Bx32C4Bm1Xdv",
+      "label": "Presence",
+      "type": "presence",
+      "node": "https://apis.sen.se/v2/nodes/aeVETYmaxjUqhOiRVF6myce7swXvjbqT/",
+      "used": false
+    },
+    {
+      "object": "feed",
+      "url": "https://apis.sen.se/v2/feeds/575nXALrcqznrj8nfsQjm9CPHPl4bdn5/",
+      "uid": "575nXALrcqznrj8nfsQjm9CPHPl4bdn5",
+      "label": "Profile",
+      "type": "profile",
+      "node": "https://apis.sen.se/v2/nodes/aeVETYmaxjUqhOiRVF6myce7swXvjbqT/",
+      "used": true
+    },
+    {
+      "object": "feed",
+      "url": "https://apis.sen.se/v2/feeds/U6RxKJudHrhaG8x8eqj6jdqGpuyRkRZW/",
+      "uid": "U6RxKJudHrhaG8x8eqj6jdqGpuyRkRZW",
+      "label": "System",
+      "type": "system",
+      "node": "https://apis.sen.se/v2/nodes/aeVETYmaxjUqhOiRVF6myce7swXvjbqT/",
+      "used": true
+    },
+    {
+      "object": "feed",
+      "url": "https://apis.sen.se/v2/feeds/4bKNRX9hQ4i5P1CgrpbfZgM6DwBhNsok/",
+      "uid": "4bKNRX9hQ4i5P1CgrpbfZgM6DwBhNsok",
+      "label": "Temperature",
+      "type": "temperature",
+      "node": "https://apis.sen.se/v2/nodes/aeVETYmaxjUqhOiRVF6myce7swXvjbqT/",
+      "used": true
+    }
+  ]
+}
+
+console.log('test data', testData);
         //received response, send to main thread
         //NOTE: need to JSON.parse + stringify the response
         //or else there will be an error as we attempt to 
@@ -211,24 +290,31 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         var uids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
         var count = 1;//this will be used in constructing the page urls
         var getUid = function(arg){//this function will get the uids from every object on a given page
-          for (each object in arg.objects){//for each object on the page...
-            uids.push(object.uid)//....add uid into array
-          }
-          if (arg.links.next != null){ //this is to handle multiple pages of feed objects returned from sense api
+          //       angular.forEach($scope.companies, function(item){
+         //          console.log(item.technologies);  
+          var feeds = arg;
+          angular.forEach(feeds, function(item){//for each object on the page...
+            uids.push(item.uid)//....add uid into array
+          })
+
+          if (feeds.links.next != null){ //this is to handle multiple pages of feed objects returned from sense api
             count++;//for url construction
+
             $http({
-              url:"https://apis.sen.se/v2/feeds/?page="+count, //get url of next page
+              url: "https://apis.sen.se/v2/feeds/?page="+count, //get url of next page
               method:'GET',
               headers: {
                 'Authorization': 'Bearer '+input['accesstoken']
               }
             }).then(function(response) {
-              //add stuff
-
+                //TODO 
+                console.log("don't go here yet");
+                
             }, function(response) {
 
                 if (response.status === 403){
                 refreshFunc();
+                //FINISH//////
                 //try to download from sense, but limit after n attempts
                 //to prevent infinite re-attempts
                 }       
@@ -237,15 +323,42 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               }
             )
           }
+          //return uids;
         }
-        getUid(response);
-
-        //do something with uid array
-
-        //var func getEvents
+        //getUid(response);
+        getUid(testData);
+        var events = [];
+        var arrayLength = uids.length;
         
+        for (var i = 0; i < arrayLength; i++){//for each uid in uids array
+            $http({
+              url:"https://apis.sen.se/v2/feeds/"+uid[i]+"/events/", //get url of next page
+              method:'GET',
+              headers: {
+                'Authorization': 'Bearer '+input['accesstoken']
+              }
+            }).then(function(response) {
+                var eventArray = response;
+                angular.forEach(eventArray, function(item){
+                  events.push(item.event)
+                })
+                
+            }, function(response) {
 
+                if (response.status === 403){
+                refreshFunc();
+                //try to download from sense, but limit after n attempts
+                //to prevent infinite re-attempts
+                }       
+            
+              console.log("get event fail", response);
+              }
+            )
+        }
 
+        output.notify(JSON.parse(JSON.stringify(events)));
+        console.log("these are the event objects", events);
+        
 
       }, function(response) {
         //
@@ -364,214 +477,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 
 /*
 EXAMPLE OBJECT RECEIVED FROM SENSE
-
-{
-  "links": {
-    "next": "https://apis.sen.se/v2/feeds/?page=2",
-    "prev": null
-  },
-  "totalObjects": 27,
-  "object": "list",
-  "objects": [
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/u58QogqXNFXCCHsmBP2W6mADGmXerSS8/",
-      "uid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
-      "label": "Face",
-      "type": "face",
-      "node": "https://apis.sen.se/v2/nodes/mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6/",
-      "used": true
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK/",
-      "uid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
-      "label": "Presence",
-      "type": "presence",
-      "node": "https://apis.sen.se/v2/nodes/mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6/",
-      "used": false
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/eyG2BmtMhu0Zp5kMqXYVo5wuDtEx1UjR/",
-      "uid": "eyG2BmtMhu0Zp5kMqXYVo5wuDtEx1UjR",
-      "label": "Touch",
-      "type": "touch",
-      "node": "https://apis.sen.se/v2/nodes/mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6/",
-      "used": false
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/xosI0Yr0dYBlZgaLLIahyzep8HAq9wi2/",
-      "uid": "xosI0Yr0dYBlZgaLLIahyzep8HAq9wi2",
-      "label": "Alert",
-      "type": "alert",
-      "node": "https://apis.sen.se/v2/nodes/0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae/",
-      "used": false
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/10t7D4yb83Kc2A4sWHyu3qX2AOW26spj/",
-      "uid": "10t7D4yb83Kc2A4sWHyu3qX2AOW26spj",
-      "label": "Battery",
-      "type": "battery",
-      "node": "https://apis.sen.se/v2/nodes/0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae/",
-      "used": true
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/1dHAmahUBlevebr5nJJOdzkZzOSE61He/",
-      "uid": "1dHAmahUBlevebr5nJJOdzkZzOSE61He",
-      "label": "Battery debug",
-      "type": "batterydebug",
-      "node": "https://apis.sen.se/v2/nodes/0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae/",
-      "used": false
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR/",
-      "uid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
-      "label": "Motion",
-      "type": "motion",
-      "node": "https://apis.sen.se/v2/nodes/0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae/",
-      "used": false
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/DWDpSYvnUhn6FnGZ2N74tsW1LlSzwMVz/",
-      "uid": "DWDpSYvnUhn6FnGZ2N74tsW1LlSzwMVz",
-      "label": "Presence",
-      "type": "presence",
-      "node": "https://apis.sen.se/v2/nodes/0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae/",
-      "used": true
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/xAGDSbLvjKmlFu2NitdXeycyVDRpwEw8/",
-      "uid": "xAGDSbLvjKmlFu2NitdXeycyVDRpwEw8",
-      "label": "Profile",
-      "type": "profile",
-      "node": "https://apis.sen.se/v2/nodes/0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae/",
-      "used": true
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/Kkad2fCOJvlxXLHh2btzCzKNPlMrfAY6/",
-      "uid": "Kkad2fCOJvlxXLHh2btzCzKNPlMrfAY6",
-      "label": "System",
-      "type": "system",
-      "node": "https://apis.sen.se/v2/nodes/0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae/",
-      "used": false
-    }
-  ]
-}
-
--Need to click on link and make new request to https://apis.sen.se/v2/feeds/?page=2 for
-more data
-
-{
-  "links": {
-    "next": "https://apis.sen.se/v2/feeds/?page=3",
-    "prev": "https://apis.sen.se/v2/feeds/?page=1"
-  },
-  "totalObjects": 27,
-  "object": "list",
-  "objects": [
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/DuboQoOL74Mi6IbtkkCvOBB1o7ZTZeI6/",
-      "uid": "DuboQoOL74Mi6IbtkkCvOBB1o7ZTZeI6",
-      "label": "Temperature",
-      "type": "temperature",
-      "node": "https://apis.sen.se/v2/nodes/0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae/",
-      "used": true
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/NXKpt9YNrdXXBifIXjUo9fqndp2Fxw0K/",
-      "uid": "NXKpt9YNrdXXBifIXjUo9fqndp2Fxw0K",
-      "label": "Alert",
-      "type": "alert",
-      "node": "https://apis.sen.se/v2/nodes/wSkDxGoikhpMA3EQr1CnIj4U85rarbdB/",
-      "used": false
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/CWJMuqieKiwECuxN8cBR5vmypQ2xHw44/",
-      "uid": "CWJMuqieKiwECuxN8cBR5vmypQ2xHw44",
-      "label": "Battery",
-      "type": "battery",
-      "node": "https://apis.sen.se/v2/nodes/wSkDxGoikhpMA3EQr1CnIj4U85rarbdB/",
-      "used": true
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/3ZdDNad4tlnIOFYrazepOkpchNfS1kDV/",
-      "uid": "3ZdDNad4tlnIOFYrazepOkpchNfS1kDV",
-      "label": "Battery debug",
-      "type": "batterydebug",
-      "node": "https://apis.sen.se/v2/nodes/wSkDxGoikhpMA3EQr1CnIj4U85rarbdB/",
-      "used": false
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/55kVSSdgZ8EJXe7zC2Snr2NPyOG9jRn8/",
-      "uid": "55kVSSdgZ8EJXe7zC2Snr2NPyOG9jRn8",
-      "label": "Motion",
-      "type": "motion",
-      "node": "https://apis.sen.se/v2/nodes/wSkDxGoikhpMA3EQr1CnIj4U85rarbdB/",
-      "used": true
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/Jj2XBNXm69WjpfZhYlCmNxTHmjIGaHS3/",
-      "uid": "Jj2XBNXm69WjpfZhYlCmNxTHmjIGaHS3",
-      "label": "Presence",
-      "type": "presence",
-      "node": "https://apis.sen.se/v2/nodes/wSkDxGoikhpMA3EQr1CnIj4U85rarbdB/",
-      "used": false
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/eTyUk02Vgqo1V4HMClszTDF8LJOvtSu3/",
-      "uid": "eTyUk02Vgqo1V4HMClszTDF8LJOvtSu3",
-      "label": "Profile",
-      "type": "profile",
-      "node": "https://apis.sen.se/v2/nodes/wSkDxGoikhpMA3EQr1CnIj4U85rarbdB/",
-      "used": true
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/9FnEIbl24RU55RilAxXq3Ep3fSnAxxyI/",
-      "uid": "9FnEIbl24RU55RilAxXq3Ep3fSnAxxyI",
-      "label": "System",
-      "type": "system",
-      "node": "https://apis.sen.se/v2/nodes/wSkDxGoikhpMA3EQr1CnIj4U85rarbdB/",
-      "used": true
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/xTw50CW6XwybaqEY918bcVagCeLzlPdK/",
-      "uid": "xTw50CW6XwybaqEY918bcVagCeLzlPdK",
-      "label": "Temperature",
-      "type": "temperature",
-      "node": "https://apis.sen.se/v2/nodes/wSkDxGoikhpMA3EQr1CnIj4U85rarbdB/",
-      "used": true
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/3KCvAZiGLorx1jYXgzcMjtaOUzRPtvjd/",
-      "uid": "3KCvAZiGLorx1jYXgzcMjtaOUzRPtvjd",
-      "label": "Alert",
-      "type": "alert",
-      "node": "https://apis.sen.se/v2/nodes/aeVETYmaxjUqhOiRVF6myce7swXvjbqT/",
-      "used": true
-    }
-  ]
-}
-
-
--Note that when no more pages of data are present, "next": null,
+this is page 3 of 3 page response
 
 {
   "links": {
