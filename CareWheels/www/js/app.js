@@ -179,25 +179,16 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //$http request to sen.se with access token to attempt to retrieve feed data
     ///////////////////////////////////////////////////////////////////////////
     var downloadFunc = function(){
-    //var dataUrl = "http://jsonplaceholder.typicode.com/posts/1";
+
     var dataUrl = "https://apis.sen.se/v2/feeds/";
     $http({
       url:dataUrl, 
       method:'GET',    
-      //data: //$httpParamSerializerJQLike({
-        //SENSE_API_KEY:input['accesstoken']
-       //accesstoken:input['accesstoken']
-       
-      //})
-      //,
       headers: {
-        //'Content-Type': 'application/x-www-form-urlencoded',
-        //'Content-Type': 'application/JSON',
         'Authorization': 'Bearer '+input['accesstoken']
-        //'Authentication': 'Bearer '+input['accesstoken']
       }
     }).then(function(response) {   
-        //
+
         //received response, send to main thread
         //NOTE: need to JSON.parse + stringify the response
         //or else there will be an error as we attempt to 
@@ -212,24 +203,38 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         var uids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
         var count = 1;//this will be used in constructing the page urls
         var getUid = function(arg){//this function will get the uids from every object on a given page
-          for (each object in arg.objects){//for each object on the page...
-            uids.push(object.uid)//....add uid into array
-          }
-          if (arg.links.next != null){ //this is to handle multiple pages of feed objects returned from sense api
+          //       angular.forEach($scope.companies, function(item){
+         //          console.log(item.technologies);  
+          var feeds = arg;
+          var objects = feeds.objects;
+          //console.log("contents", objects[0].uid);
+
+          var objectsLength = objects.length;
+          for (var i = 0; i < objectsLength; i++){
+            uids.push(objects[i].uid);
+          };
+          //angular.forEach(feeds, function(item){//for each object on the page...
+          //  uids.push(item.uid)//....add uid into array
+          //})
+
+          if (feeds.links.next != null){ //this is to handle multiple pages of feed objects returned from sense api
             count++;//for url construction
+
             $http({
-              url:"https://apis.sen.se/v2/feeds/?page="+count, //get url of next page
+              url: "https://apis.sen.se/v2/feeds/?page="+count, //get url of next page
               method:'GET',
               headers: {
                 'Authorization': 'Bearer '+input['accesstoken']
               }
             }).then(function(response) {
-              //add stuff
-
+                //TODO 
+                console.log("don't go here yet");
+                
             }, function(response) {
 
                 if (response.status === 403){
                 refreshFunc();
+                //FINISH//////
                 //try to download from sense, but limit after n attempts
                 //to prevent infinite re-attempts
                 }       
@@ -238,17 +243,42 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               }
             )
           }
+          //return uids;
         }
         getUid(response);
-
-        //do something with uid array
-
-        //var func getEvents
+        //getUid(testData);
+        var events = [];
+        var arrayLength = uids.length;
         
+        for (var i = 0; i < arrayLength; i++){//for each uid in uids array
+            $http({
+              url:"https://apis.sen.se/v2/feeds/"+uids[i]+"/events/", //get url of next page
+              method:'GET',
+              headers: {
+                'Authorization': 'Bearer '+input['accesstoken']
+              }
+            }).then(function(response) {
+                var eventArray = response;
+                angular.forEach(eventArray, function(item){
+                  events.push(item.event)
+                })
+                
+            }, function(response) {
 
-
-
-      }, function(response) {
+                if (response.status === 403){
+                refreshFunc();
+                //try to download from sense, but limit after n attempts
+                //to prevent infinite re-attempts
+                }       
+            
+              console.log("get event fail", response);
+              }
+            )
+        }
+        output.notify(JSON.parse(JSON.stringify(response)));//this will be the successful response of events being sent to main thread
+        console.log("these are the event objects -being sent to main thread.  Victory!", response);
+        
+      }, function(response) {//this is the error response from initial promise from initial http request
         //
         //if we fail the request to a 403 expired token error
         //call refresh function
@@ -259,11 +289,10 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
           //to prevent infinite re-attempts
         }       
         
-        output.notify(JSON.parse(JSON.stringify(response)));
-        console.log("download func fail", response);
+        //output.notify(JSON.parse(JSON.stringify(response)));
+        console.log("download func fail, not sending output of worker thread to main thread.  You don't deserve it! :)", response);
 
-        }
-      )
+        })
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -284,7 +313,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       }), 
       headers: {
         //'Content-Type': 'application/x-www-form-urlencoded',
-        //'Authorization': 'Bearer refresh-token'
+        'Authorization': 'Bearer '+input['refreshtoken']
       }
     }).then(function(response) {
 
