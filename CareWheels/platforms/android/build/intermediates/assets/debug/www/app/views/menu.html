@@ -1,3 +1,4 @@
+<!-- this view is the -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,16 +15,24 @@
   <script src="../../js/app.js"></script>
   <script src="../../js/restcontrollers.js"></script>
 
-  <!-- controller -->
-  <script src="../controllers/menu.js"></script>
 
 </head>
-<body ng-app="careWheels" ng-controller="menuController">
-<ion-pane>
-  <ion-content>
-    <!--content goes here-->
+<body ng-app="careWheels">
+  <ion-list>
+    <!-- make sure to have target point to parent, otherwise
+         it will open the page in the within the menu block.
 
-  </ion-content>
-</ion-pane>
+         also there are two external links on this menu page,
+         these links need to be handled as opening an external
+         app, or the devices native web browser.(cordova plug-in) -->
+
+    <ion-item href="groupStatus.html" target="_parent">CareWheels Group</ion-item>
+    <ion-item href="reminders.html" target="_parent">Reminders</ion-item>
+    <!-- https://carebank.carewheels.org/#login -->
+    <ion-item href="" target="_parent">CareBank</ion-item>
+    <!-- link to sense app -->
+    <ion-item href="" target="_parent">Sen.se</ion-item>
+    <ion-item href="login.html" target="_parent">Logout</ion-item>
+  </ion-list>
 </body>
 </html>
