@@ -178,104 +178,16 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //$http request to sen.se with access token to attempt to retrieve feed data
     ///////////////////////////////////////////////////////////////////////////
     var downloadFunc = function(){
-    //var dataUrl = "http://jsonplaceholder.typicode.com/posts/1";
 
-
-  
     var dataUrl = "https://apis.sen.se/v2/feeds/";
     $http({
       url:dataUrl, 
       method:'GET',    
-      //data: //$httpParamSerializerJQLike({
-        //SENSE_API_KEY:input['accesstoken']
-       //accesstoken:input['accesstoken']
-       
-      //})
-      //,
       headers: {
-        //'Content-Type': 'application/x-www-form-urlencoded',
-        //'Content-Type': 'application/JSON',
         'Authorization': 'Bearer '+input['accesstoken']
-        //'Authentication': 'Bearer '+input['accesstoken']
       }
     }).then(function(response) {   
-        
-        //TEST DATA
-        var testData = {
-  "links": {
-    "next": null,
-    "prev": "https://apis.sen.se/v2/feeds/?page=2"
-  },
-  "totalObjects": 27,
-  "object": "list",
-  "objects": [
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/qSR0UsgRQAgQXhdrQA11m7IkhRGtvRhi/",
-      "uid": "qSR0UsgRQAgQXhdrQA11m7IkhRGtvRhi",
-      "label": "Battery",
-      "type": "battery",
-      "node": "https://apis.sen.se/v2/nodes/aeVETYmaxjUqhOiRVF6myce7swXvjbqT/",
-      "used": true
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/dilmMnEPKLi49WMPh5fZ58dGBJ1zKRIN/",
-      "uid": "dilmMnEPKLi49WMPh5fZ58dGBJ1zKRIN",
-      "label": "Battery debug",
-      "type": "batterydebug",
-      "node": "https://apis.sen.se/v2/nodes/aeVETYmaxjUqhOiRVF6myce7swXvjbqT/",
-      "used": false
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/cUiyqAKCxDZcEqmfGnfYFTxAo7GrEBaI/",
-      "uid": "cUiyqAKCxDZcEqmfGnfYFTxAo7GrEBaI",
-      "label": "Motion",
-      "type": "motion",
-      "node": "https://apis.sen.se/v2/nodes/aeVETYmaxjUqhOiRVF6myce7swXvjbqT/",
-      "used": true
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/GLEvneYl6pQBKhAfl7l2Bx32C4Bm1Xdv/",
-      "uid": "GLEvneYl6pQBKhAfl7l2Bx32C4Bm1Xdv",
-      "label": "Presence",
-      "type": "presence",
-      "node": "https://apis.sen.se/v2/nodes/aeVETYmaxjUqhOiRVF6myce7swXvjbqT/",
-      "used": false
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/575nXALrcqznrj8nfsQjm9CPHPl4bdn5/",
-      "uid": "575nXALrcqznrj8nfsQjm9CPHPl4bdn5",
-      "label": "Profile",
-      "type": "profile",
-      "node": "https://apis.sen.se/v2/nodes/aeVETYmaxjUqhOiRVF6myce7swXvjbqT/",
-      "used": true
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/U6RxKJudHrhaG8x8eqj6jdqGpuyRkRZW/",
-      "uid": "U6RxKJudHrhaG8x8eqj6jdqGpuyRkRZW",
-      "label": "System",
-      "type": "system",
-      "node": "https://apis.sen.se/v2/nodes/aeVETYmaxjUqhOiRVF6myce7swXvjbqT/",
-      "used": true
-    },
-    {
-      "object": "feed",
-      "url": "https://apis.sen.se/v2/feeds/4bKNRX9hQ4i5P1CgrpbfZgM6DwBhNsok/",
-      "uid": "4bKNRX9hQ4i5P1CgrpbfZgM6DwBhNsok",
-      "label": "Temperature",
-      "type": "temperature",
-      "node": "https://apis.sen.se/v2/nodes/aeVETYmaxjUqhOiRVF6myce7swXvjbqT/",
-      "used": true
-    }
-  ]
-}
 
-console.log('test data', testData);
         //received response, send to main thread
         //NOTE: need to JSON.parse + stringify the response
         //or else there will be an error as we attempt to 
@@ -293,9 +205,16 @@ console.log('test data', testData);
           //       angular.forEach($scope.companies, function(item){
          //          console.log(item.technologies);  
           var feeds = arg;
-          angular.forEach(feeds, function(item){//for each object on the page...
-            uids.push(item.uid)//....add uid into array
-          })
+          var objects = feeds.objects;
+          //console.log("contents", objects[0].uid);
+
+          var objectsLength = objects.length;
+          for (var i = 0; i < objectsLength; i++){
+            uids.push(objects[i].uid);
+          };
+          //angular.forEach(feeds, function(item){//for each object on the page...
+          //  uids.push(item.uid)//....add uid into array
+          //})
 
           if (feeds.links.next != null){ //this is to handle multiple pages of feed objects returned from sense api
             count++;//for url construction
@@ -325,14 +244,14 @@ console.log('test data', testData);
           }
           //return uids;
         }
-        //getUid(response);
-        getUid(testData);
+        getUid(response);
+        //getUid(testData);
         var events = [];
         var arrayLength = uids.length;
         
         for (var i = 0; i < arrayLength; i++){//for each uid in uids array
             $http({
-              url:"https://apis.sen.se/v2/feeds/"+uid[i]+"/events/", //get url of next page
+              url:"https://apis.sen.se/v2/feeds/"+uids[i]+"/events/", //get url of next page
               method:'GET',
               headers: {
                 'Authorization': 'Bearer '+input['accesstoken']
@@ -355,12 +274,10 @@ console.log('test data', testData);
               }
             )
         }
-
-        output.notify(JSON.parse(JSON.stringify(events)));
-        console.log("these are the event objects", events);
+        output.notify(JSON.parse(JSON.stringify(response)));//this will be the successful response of events being sent to main thread
+        console.log("these are the event objects -being sent to main thread.  Victory!", response);
         
-
-      }, function(response) {
+      }, function(response) {//this is the error response from initial promise from initial http request
         //
         //if we fail the request to a 403 expired token error
         //call refresh function
@@ -371,11 +288,10 @@ console.log('test data', testData);
           //to prevent infinite re-attempts
         }       
         
-        output.notify(JSON.parse(JSON.stringify(response)));
-        console.log("download func fail", response);
+        //output.notify(JSON.parse(JSON.stringify(response)));
+        console.log("download func fail, not sending output of worker thread to main thread.  You don't deserve it! :)", response);
 
-        }
-      )
+        })
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -396,7 +312,7 @@ console.log('test data', testData);
       }), 
       headers: {
         //'Content-Type': 'application/x-www-form-urlencoded',
-        //'Authorization': 'Bearer refresh-token'
+        'Authorization': 'Bearer '+input['refreshtoken']
       }
     }).then(function(response) {
 
@@ -474,6 +390,177 @@ console.log('test data', testData);
       });
   };
 });
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//Factory for parsing feed data returned from promise in DownloadCtrl above
+//We can then inject this service into AnalysisCtrl
+/////////////////////////////////////////////////////////////////////////////////////////
+app.factory('DataService', function() {
+
+  var currentGroupId;
+
+  // public API
+  return {
+    getCurrentGroup: function () { 
+      if (currentGroupId == null){
+          return console.error("Group data has not been parsed yet!");
+        }
+      return currentGroupId; 
+    },
+    setCurrentGroup: function ( id ) { 
+      //will be called by data download.  This will be an object
+      //which contains up to 5 members, with and array of 3 feeds each
+      currentGroupId = id;
+      console.log('reached service', currentGroupId);
+      /////////////////////////////////////////////////////////////////////////////////////////
+      //This is where i will parse the feed object, and save it to currentGroupId
+      /////////////////////////////////////////////////////////////////////////////////////////
+
+
+    }
+  };
+  
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//Controller for Sensor Data Analysis
+//Will receive parsed feed data from the injected DataService factory
+/////////////////////////////////////////////////////////////////////////////////////////
+app.controller('AnalysisCtrl', function($scope, DataService) {
+  
+  $scope.AnalyzeData = function(){
+    var testFunc = function(){
+    
+    $scope.groupData = DataService.getCurrentGroup();
+
+    }
+    //testFunc();
+    //console.log('testing analysis controller', $scope.groupData);  
+
+  };
+
+
+      /////////////////////////////////////////////////////////////////////////////////////////
+      //This is where functions for analyzing data will go
+      /////////////////////////////////////////////////////////////////////////////////////////
+
+});
+
+
+
+
+
+
+
+
+
+/*
+//TEST EVENT DATA
+var testEvents = {
+  "links": {
+    "next": null,
+    "prev": null
+  },
+  "totalObjects": 5,
+  "object": "list",
+  "objects": [
+    {
+      "profile": null,
+      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-20T17:28:54.691",
+      "geometry": null,
+      "data": {
+        "sound": "None"
+      },
+      "signal": null,
+      "dateEvent": "2016-07-20T17:28:54.691",
+      "expiresAt": "2016-07-21T17:28:54.691",
+      "version": null,
+      "type": "face",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": null,
+      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-20T12:55:21.489",
+      "geometry": null,
+      "data": {
+        "sound": "None"
+      },
+      "signal": null,
+      "dateEvent": "2016-07-20T12:55:21.489",
+      "expiresAt": "2016-07-21T12:55:21.489",
+      "version": null,
+      "type": "face",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": null,
+      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-20T02:54:35.451",
+      "geometry": null,
+      "data": {
+        "sound": "None"
+      },
+      "signal": null,
+      "dateEvent": "2016-07-20T02:54:35.451",
+      "expiresAt": "2016-07-21T02:54:35.451",
+      "version": null,
+      "type": "face",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": null,
+      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-20T02:50:16.043",
+      "geometry": null,
+      "data": {
+        "sound": "None"
+      },
+      "signal": null,
+      "dateEvent": "2016-07-20T02:50:16.043",
+      "expiresAt": "2016-07-21T02:50:16.043",
+      "version": null,
+      "type": "face",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": null,
+      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-19T20:37:59.242",
+      "geometry": null,
+      "data": {
+        "sound": "None"
+      },
+      "signal": null,
+      "dateEvent": "2016-07-19T20:37:59.242",
+      "expiresAt": "2016-07-20T20:37:59.242",
+      "version": null,
+      "type": "face",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    }
+  ]
+}
+
+          var eventobjects = testEvents.objects;
+          //console.log("contents", objects[0].uid);
+
+          var eventobjectsLength = eventobjects.length;
+          for (var i = 0; i < eventobjectsLength; i++){
+            events.push(eventobjects[i]);
+          };//DELETE AFTER TESTING
+*/
 
 /*
 EXAMPLE OBJECT RECEIVED FROM SENSE
@@ -656,59 +743,3 @@ RESPONSE from https://apis.sen.se/v2/feeds/ + uid + /events/
 
 
 */
-
-/////////////////////////////////////////////////////////////////////////////////////////
-//Factory for parsing feed data returned from promise in DownloadCtrl above
-//We can then inject this service into AnalysisCtrl
-/////////////////////////////////////////////////////////////////////////////////////////
-app.factory('DataService', function() {
-
-  var currentGroupId;
-
-  // public API
-  return {
-    getCurrentGroup: function () { 
-      if (currentGroupId == null){
-          return console.error("Group data has not been parsed yet!");
-        }
-      return currentGroupId; 
-    },
-    setCurrentGroup: function ( id ) { 
-      //will be called by data download.  This will be an object
-      //which contains up to 5 members, with and array of 3 feeds each
-      currentGroupId = id;
-      console.log('reached service', currentGroupId);
-      /////////////////////////////////////////////////////////////////////////////////////////
-      //This is where i will parse the feed object, and save it to currentGroupId
-      /////////////////////////////////////////////////////////////////////////////////////////
-
-
-    }
-  };
-  
-});
-
-/////////////////////////////////////////////////////////////////////////////////////////
-//Controller for Sensor Data Analysis
-//Will receive parsed feed data from the injected DataService factory
-/////////////////////////////////////////////////////////////////////////////////////////
-app.controller('AnalysisCtrl', function($scope, DataService) {
-  
-  $scope.AnalyzeData = function(){
-    var testFunc = function(){
-    
-    $scope.groupData = DataService.getCurrentGroup();
-
-    }
-    //testFunc();
-    //console.log('testing analysis controller', $scope.groupData);  
-
-  };
-
-
-      /////////////////////////////////////////////////////////////////////////////////////////
-      //This is where functions for analyzing data will go
-      /////////////////////////////////////////////////////////////////////////////////////////
-
-});
-
