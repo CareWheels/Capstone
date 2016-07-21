@@ -11,9 +11,5 @@
             "PACKAGE_NAME": "com.ionicframework.carewheels806376"
         }
     },
-    "dependent_plugins": {
-        "cordova-android-support-v4": {
-            "PACKAGE_NAME": "com.ionicframework.carewheels806376"
-        }
-    }
+    "dependent_plugins": {}
 }
