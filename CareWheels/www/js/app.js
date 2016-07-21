@@ -275,10 +275,11 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               }
             )
         }
+        //This is the end of the ".then" promise from the intital http GET call to /feeds/ endpoint
         output.notify(JSON.parse(JSON.stringify(response)));//this will be the successful response of events being sent to main thread
         console.log("these are the event objects -being sent to main thread.  Victory!", response);
         
-      }, function(response) {//this is the error response from initial promise from initial http request
+      }, function(response) {//This is the end of the "error" promise from the intital http GET call to /feeds/ endpoint
         //
         //if we fail the request to a 403 expired token error
         //call refresh function
@@ -289,7 +290,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
           //to prevent infinite re-attempts
         }       
         
-        //output.notify(JSON.parse(JSON.stringify(response)));
+        output.notify(JSON.parse(JSON.stringify(response)));//for testing, DELETE AFTER TESTING
         console.log("download func fail, not sending output of worker thread to main thread.  You don't deserve it! :)", response);
 
         })
@@ -380,14 +381,112 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         $scope.status = update.status;
         $scope.update = update;
         console.log(update);
-        console.log('reached notify');
+        console.log('notify');
+        //DataService.addToGroup(update); //COMMENTED OUT DURING TESTING, ADD LATER
+
         //*******************************************
         //TODO:
         //Return array of event objects, send to DataService,
         //then Analysis
         //*******************************************
-        DataService.setCurrentGroup(update);
+        //BEGINNING OF TESTING AREA
+var testData = //will be in the form of an array of event objects for each group member
+[
+    {
+      "profile": null,
+      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-20T17:28:54.691",
+      "geometry": null,
+      "data": {
+        "sound": "None"
+      },
+      "signal": null,
+      "dateEvent": "2016-07-20T17:28:54.691",
+      "expiresAt": "2016-07-21T17:28:54.691",
+      "version": null,
+      "type": "face",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": null,
+      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-20T12:55:21.489",
+      "geometry": null,
+      "data": {
+        "sound": "None"
+      },
+      "signal": null,
+      "dateEvent": "2016-07-20T12:55:21.489",
+      "expiresAt": "2016-07-21T12:55:21.489",
+      "version": null,
+      "type": "face",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": null,
+      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-20T02:54:35.451",
+      "geometry": null,
+      "data": {
+        "sound": "None"
+      },
+      "signal": null,
+      "dateEvent": "2016-07-20T02:54:35.451",
+      "expiresAt": "2016-07-21T02:54:35.451",
+      "version": null,
+      "type": "face",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": null,
+      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-20T02:50:16.043",
+      "geometry": null,
+      "data": {
+        "sound": "None"
+      },
+      "signal": null,
+      "dateEvent": "2016-07-20T02:50:16.043",
+      "expiresAt": "2016-07-21T02:50:16.043",
+      "version": null,
+      "type": "face",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": null,
+      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-19T20:37:59.242",
+      "geometry": null,
+      "data": {
+        "sound": "None"
+      },
+      "signal": null,
+      "dateEvent": "2016-07-19T20:37:59.242",
+      "expiresAt": "2016-07-20T20:37:59.242",
+      "version": null,
+      "type": "face",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    }
+  ]
+        var memberObject = {
+          "name": "test", //will get name from GroupInfo Service later
+          "events": testData
+        };
 
+        DataService.addToGroup(memberObject); 
+
+
+/////////END OF TESTING AREA
       });
   };
 });
@@ -399,156 +498,31 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 /////////////////////////////////////////////////////////////////////////////////////////
 app.factory('DataService', function() {
 
-  var currentGroup;
+  var currentGroup = [];
 
   // public API
   return {
-    getCurrentGroup: function () { 
+    getGroup: function () { 
       if (currentGroup == null){
           return console.error("Group data has not been parsed yet!");
         }
       return currentGroup; 
     },
-    setCurrentGroup: function ( id ) { 
+    addToGroup: function ( id ) { 
       //will be called by data download.  This will be an object
       //which contains up to 5 members, with and array of 3 feeds each
-      currentGroup = id;
-      console.log('reached service', currentGroup);
+      objectToAdd = id;
+      console.log('object to add', objectToAdd);
       /////////////////////////////////////////////////////////////////////////////////////////
       //This is where i will parse the feed object, and save it to currentGroup
       /////////////////////////////////////////////////////////////////////////////////////////
-
+      currentGroup.push(objectToAdd);
+      console.log('check currentGroup contents', currentGroup);
 
     }
   };
   
 });
-
-/////////////////////////////////////////////////////////////////////////////////////////
-/*
-
-  "currentGroup": [
-    {
-      "groupmembername": "abe",
-      "feeds": [
-        {      
-        "type": "Fridge",
-        "events": [
-          {
-          "dateEvent": "2016-02-20T16:25:20",
-          },
-        ]
-        },
-        {      
-        "type": "Presence",
-        "events": [
-          {
-          "dateEvent": "2016-02-20T16:25:20",
-          },
-        ]
-        },
-        {      
-        "type": "Medication",
-        "events": [
-          {
-          "dateEvent": "2016-02-20T16:25:20",
-          },
-        ]
-        }
-      ]
-    },
-    {
-      "groupmembername": "ben",
-      "feeds": [
-        {      
-        "type": "Fridge",
-        "events": [
-          {
-          "dateEvent": "2016-02-20T16:25:20",
-          },
-        ]
-        },
-        {      
-        "type": "Presence",
-        "events": [
-          {
-          "dateEvent": "2016-02-20T16:25:20",
-          },
-        ]
-        },
-        {      
-        "type": "Medication",
-        "events": [
-          {
-          "dateEvent": "2016-02-20T16:25:20",
-          },
-        ]
-        }
-      ]
-    },
-    {
-      "groupmembername": "carl",
-      "feeds": [
-        {      
-        "type": "Fridge",
-        "events": [
-          {
-          "dateEvent": "2016-02-20T16:25:20",
-          },
-        ]
-        },
-        {      
-        "type": "Presence",
-        "events": [
-          {
-          "dateEvent": "2016-02-20T16:25:20",
-          },
-        ]
-        },
-        {      
-        "type": "Medication",
-        "events": [
-          {
-          "dateEvent": "2016-02-20T16:25:20",
-          },
-        ]
-        }
-      ]
-    },
-    {
-      "groupmembername": "dan",
-      "feeds": [
-        {      
-        "type": "Fridge",
-        "events": [
-          {
-          "dateEvent": "2016-02-20T16:25:20",
-          },
-        ]
-        },
-        {      
-        "type": "Presence",
-        "events": [
-          {
-          "dateEvent": "2016-02-20T16:25:20",
-          },
-        ]
-        },
-        {      
-        "type": "Medication",
-        "events": [
-          {
-          "dateEvent": "2016-02-20T16:25:20",
-          },
-        ]
-        }
-      ]
-    }
-]
-
-*/
-/////////////////////////////////////////////////////////////////////////////////////////
-
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //Controller for Sensor Data Analysis
@@ -559,17 +533,19 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
   $scope.AnalyzeData = function(){
     var testFunc = function(){
     
-    $scope.groupData = DataService.getCurrentGroup();
+    $scope.groupData = DataService.getGroup();
+
+/*
+    if ($scope.groupData.length < 4){
+      console.log("group data array not yet ready for analysis");
+    }
+*/
+
 
     }
     testFunc();
-    console.log('testing analysis controller', $scope.groupData);  
+    console.log('contents of $scope.groupData in Analysis', $scope.groupData);  
 
   };
-
-
-      /////////////////////////////////////////////////////////////////////////////////////////
-      //This is where functions for analyzing data will go
-      /////////////////////////////////////////////////////////////////////////////////////////
 
 });
