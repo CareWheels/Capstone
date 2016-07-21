@@ -144,9 +144,11 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
 /////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////////////
-//TODO: Inject 'GroupInfo' service to access groupmemberinfo object
+//TODO: Inject 'GroupInfo' service to access groupmemberinfo object (to obtain sen.se credentials)
+//Will be manually entering credentials in GET/POST requests during testing
 /////////////////////////////////////////////////////////////////////////////////////////
-app.controller('DownloadCtrl', function($scope, WorkerService, DataService) {
+app.controller('DownloadCtrl', function($scope, $http, WorkerService, DataService) {
+
 
 // The URL must be absolute because of the URL blob specification  
 WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js");
@@ -182,14 +184,17 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     $http({
       url:dataUrl, 
       method:'GET',    
-      data: $httpParamSerializerJQLike({   
+      //data: //$httpParamSerializerJQLike({
+        //SENSE_API_KEY:input['accesstoken']
        //accesstoken:input['accesstoken']
        
-      }), 
+      //})
+      //,
       headers: {
         //'Content-Type': 'application/x-www-form-urlencoded',
-        'Content-Type': 'application/JSON',
-        //'Authorization': 'Bearer access-token'
+        //'Content-Type': 'application/JSON',
+        'Authorization': 'Bearer '+input['accesstoken']
+        //'Authentication': 'Bearer '+input['accesstoken']
       }
     }).then(function(response) {   
         //
@@ -201,8 +206,47 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //ideally, this is what we would like to have happen
         //the response object will be sent back to the main thread
         //where the feed data can be manipulated for analysis
-        output.notify(JSON.parse(JSON.stringify(response)));
-        console.log("download func success", response);
+
+        //output.notify(JSON.parse(JSON.stringify(response)));
+        //console.log("download func success: page 1", response);
+        var uids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
+        var count = 1;//this will be used in constructing the page urls
+        var getUid = function(arg){//this function will get the uids from every object on a given page
+          for (each object in arg.objects){//for each object on the page...
+            uids.push(object.uid)//....add uid into array
+          }
+          if (arg.links.next != null){ //this is to handle multiple pages of feed objects returned from sense api
+            count++;//for url construction
+            $http({
+              url:"https://apis.sen.se/v2/feeds/?page="+count, //get url of next page
+              method:'GET',
+              headers: {
+                'Authorization': 'Bearer '+input['accesstoken']
+              }
+            }).then(function(response) {
+              //add stuff
+
+            }, function(response) {
+
+                if (response.status === 403){
+                refreshFunc();
+                //try to download from sense, but limit after n attempts
+                //to prevent infinite re-attempts
+                }       
+            
+              console.log("download func fail on next page", response);
+              }
+            )
+          }
+        }
+        getUid(response);
+
+        //do something with uid array
+
+        //var func getEvents
+        
+
+
 
       }, function(response) {
         //
@@ -310,8 +354,8 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         console.log('reached notify');
         //*******************************************
         //TODO:
-        //Save successful response object 
-        //Will be used/parsed in DataService factory
+        //Return array of event objects, send to DataService,
+        //then Analysis
         //*******************************************
         DataService.setCurrentGroup(update);
 
