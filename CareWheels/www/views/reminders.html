@@ -63,8 +63,8 @@
           <button id="initnotifbtn" ng-click="Init_Notifs()">Initialize Notifications</button><br>
           <button id="notifstatusbtn" ng-click="Notifs_Status()">Notifications Status</button><br>
           <button id="unschedulenotifbtn" ng-click="Toggle_Off_Notif(1)">Toggle Off Reminder 1</button><br>
-          <button id="createnotifbtn" ng-click="Create_Notif(10,11,12,1)">Change Reminder 1</button><br>
-          <button id="createnotifbtn" ng-click="Create_Notif(19, 12, 15, 0)">Create Red Alert</button><br>
+          <button id="createnotifbtn" ng-click="Create_Notif(10,11,12, true, 1)">Change Reminder 1</button><br>
+          <button id="createnotifbtn" ng-click="Create_Notif(19, 12, 15, true, 0)">Create Red Alert</button><br>
           <pre>notifications created {{data}}</pre>
         </div>
       </ion-content>
@@ -75,13 +75,20 @@
 
     <ion-side-menu side="right">
       <ion-list>
-        <ion-item>home</ion-item>
-      </ion-list>
-      <ion-list>
-        <ion-item>group</ion-item>
-      </ion-list>
-      <ion-list>
-        <ion-item>etc</ion-item>
+        <!-- make sure to have target point to parent, otherwise
+             it will open the page in the within the menu block.
+
+             also there are two external links on this menu page,
+             these links need to be handled as opening an external
+             app, or the devices native web browser.(cordova plug-in) -->
+
+        <ion-item href="groupStatus.html" target="_parent">CareWheels Group</ion-item>
+        <ion-item href="reminders.html" target="_parent">Reminders</ion-item>
+        <!-- https://carebank.carewheels.org/#login -->
+        <ion-item href="" target="_parent">CareBank</ion-item>
+        <!-- link to sense app -->
+        <ion-item href="" target="_parent">Sen.se</ion-item>
+        <ion-item href="login.html" target="_parent">Logout</ion-item>
       </ion-list>
     </ion-side-menu>
   </ion-side-menus>
