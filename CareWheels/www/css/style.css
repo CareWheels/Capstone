@@ -68,3 +68,37 @@ embed{
 .moveDown{
   top: 43px;
 }
+
+.reminderTime {
+  margin-left: 200px;
+  text-align: center;
+  font-size:30px;
+}
+.amPmToggle {
+  height: 60px;
+  padding-right: 57px;
+  right: -2px;
+  border: none;
+}
+.amPmCheckBox {
+  position: inherit;
+}
+.amPmTogglePosition {
+  display: inline-block;
+  margin-left: 10px;
+  margin-top: 0;
+}
+.amPmTrack {
+  position: absolute;
+}
+.amPmfHandle {
+  left: 60px;
+}
+
+.onOffToggle {
+  left: 16px;
+}
+
+.onOffHandle {
+  margin-left: 32px;
+}
