@@ -7,7 +7,7 @@ angular.module('careWheels')
 
     .state('login', {
       url: '/login',
-      templateUrl: 'app/views/login.html',
+      templateUrl: '../views/login.html',
       controller: 'loginController',
       resolve: {
         "auth": function($state, User) {
@@ -23,13 +23,25 @@ angular.module('careWheels')
 
     .state('groupStatus', {
       url: '/groupStatus',
-      templateUrl: 'app/views/groupStatus.html',
+      templateUrl: '../views/groupStatus.html',
       controller: 'groupStatusController'
+    })
+
+    .state('individualStatus', {
+      url: '/individualStatus',
+      templateUrl: '../views/individualStatus.html',
+      controller: 'individualStatusController'
+    })
+
+    .state('reminders', {
+      url: '/reminders',
+      templateUrl: '../views/reminders.html',
+      controller: 'NotificationController'
     })
 
     .state('test', {
       url: '/test',
-      templateUrl: '../../templates/test.html',
+      templateUrl: '../templates/test.html',
     });
 
   //$urlRouterProvider.otherwise('/groupStatus');
