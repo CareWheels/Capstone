@@ -24,13 +24,13 @@ app.controller('remindersController', ['$scope', '$controller', function($scope,
     {/* Reminder 0 */
       hour: '12',
       min: '0', //leading zeros will automatically be added
-      amOrPm: 'AM',
-      isOn: true
+      amOrPm: 'PM',
+      isOn: false
     },
     {/* Reminder 1 */
       hour: '2',
       min: '30',
-      amOrPm: 'PM',
+      amOrPm: 'AM',
       isOn: true
 
     },
@@ -42,34 +42,82 @@ app.controller('remindersController', ['$scope', '$controller', function($scope,
     }
   ];
 
-
-  /**
-   *  ON/OFF toggle, the toggle returns a true or false value
-   * */
-  $scope.toggleOnOff = function(index){
-    if ($scope.isOnOffToggled == false) {
-      $scope.reminders[index].isOn = false;
-      $scope.isOnOffToggled = true;
-      //console.log("toggle off")
+  /** ON/OFF toggle **/
+  $scope.toggleOnOff_0 = function(){
+    if ($scope.isOnOffToggled_0 == false) {
+      $scope.reminders[0].isOn = false;
+      $scope.isOnOffToggled_0 = true;
     } else{
-      $scope.reminders[index].isOn = true;
-      $scope.isOnOffToggled = false;
-      //console.log("toggle on");
-      sendReminder(index);
+      $scope.reminders[0].isOn = true;
+      $scope.isOnOffToggled_0 = false;
+      sendReminder(0);
+    }
+  };
+  /** AM/PM toggle **/
+  $scope.toggleAmPm_0 = function(){
+    if ($scope.isAmPmToggled_0 == false) {
+      $scope.reminders[0].amOrPm = 'AM';
+      $scope.isAmPmToggled_0 = true;
+    } else{
+      $scope.reminders[0].amOrPm = 'PM';
+      $scope.isAmPmToggled_0 = false;
     }
   };
 
-  /**
-   *  AM/PM toggle, the toggle returns a true or false value
-   * */
-  $scope.toggleAmPm = function(index){
-    if ($scope.isAmPmToggled[index] == false) {
-      $scope.reminders[index].amOrPm = 'AM';
-      $scope.isAmPmToggled[index] = true;
+
+  /** ON/OFF toggle **/
+  $scope.toggleOnOff_1 = function(){
+    if ($scope.isOnOffToggled_1 == false) {
+      $scope.reminders[1].isOn = false;
+      $scope.isOnOffToggled_1 = true;
     } else{
-      $scope.reminders[index].amOrPm = 'PM';
-      $scope.isAmPmToggled[index] = false;
+      $scope.reminders[1].isOn = true;
+      $scope.isOnOffToggled_1 = false;
+      sendReminder(1);
     }
+  };
+  /** AM/PM toggle **/
+  $scope.toggleAmPm_1 = function(){
+    if ($scope.isAmPmToggled_1 == false) {
+      $scope.reminders[1].amOrPm = 'AM';
+      $scope.isAmPmToggled_1 = true;
+    } else{
+      $scope.reminders[1].amOrPm = 'PM';
+      $scope.isAmPmToggled_1 = false;
+    }
+  };
+
+
+  /** ON/OFF toggle **/
+  $scope.toggleOnOff_2 = function(){
+    if ($scope.isOnOffToggled_2 == false) {
+      $scope.reminders[2].isOn = false;
+      $scope.isOnOffToggled_2 = true;
+    } else{
+      $scope.reminders[2].isOn = true;
+      $scope.isOnOffToggled_2 = false;
+      sendReminder(2);
+
+    }
+  };
+  /** AM/PM toggle **/
+  $scope.toggleAmPm_2 = function(){
+    if ($scope.isAmPmToggled_2 == false) {
+      $scope.reminders[2].amOrPm = 'AM';
+      $scope.isAmPmToggled_2 = true;
+    } else{
+      $scope.reminders[2].amOrPm = 'PM';
+      $scope.isAmPmToggled_2 = false;
+    }
+  };
+
+
+
+  /**
+   * function for ng-checked, returns a true if set at PM
+   * or a false if set to AM */
+  $scope.isPM = function(element){
+    return element == 'PM';
   };
 
   /**
@@ -91,11 +139,15 @@ app.controller('remindersController', ['$scope', '$controller', function($scope,
      * wait five seconds before any of the following
      * code is executed
      * */
+    console.log("send Reminder hit for reminder#:" + index);
     setTimeout(function() {
+
       if($scope.reminders[index].isOn){
         //set the reminder here
-
+        console.log("ship it!");
       }
+      else
+        console.log("REVERT!!!")
     }, 1000 * 5); //5 seconds
   }
 }]);
