@@ -8,4 +8,6 @@ angular.module('careWheels')
         $scope.rememberMe = false;
         $scope.user = User;
         $scope.groupInfo = GroupInfo;
+
+
     });

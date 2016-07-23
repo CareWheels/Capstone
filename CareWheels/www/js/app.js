@@ -9,9 +9,15 @@ angular.module('careWheels', [
   //contant definition for endpoint base url
   .constant('BASE_URL', 'https://carebank.carewheels.org:8443')
 
-  .run(function($ionicPlatform) {
+  .run(function($ionicPlatform, $ionicHistory, $state) {
 
 //    window.localStorage['loginCredentials'] = null;
+
+
+    $ionicPlatform.registerBackButtonAction(function(event) {
+      console.log("in registerbackbutton");
+      $state.go($ionicHistory.backTitle());
+    }, 100);
 
     $ionicPlatform.ready(function() {
       if(window.cordova && window.cordova.plugins.Keyboard) {
@@ -22,6 +28,7 @@ angular.module('careWheels', [
         StatusBar.styleDefault();
       }
     });
+
   })
 
   // API factory for making all php endpoints globally accessible.
