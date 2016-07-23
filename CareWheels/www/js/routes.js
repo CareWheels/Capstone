@@ -21,16 +21,16 @@ angular.module('careWheels')
       }
     })
 
-  .state('groupStatus', {
-    url: '/groupStatus',
-    templateUrl: 'app/views/groupStatus.html',
-    controller: 'groupStatusController'
-  })
+    .state('groupStatus', {
+      url: '/groupStatus',
+      templateUrl: 'app/views/groupStatus.html',
+      controller: 'groupStatusController'
+    })
 
-  .state('test', {
-    url: '/test',
-    templateUrl: '../../templates/test.html',
-  });
+    .state('test', {
+      url: '/test',
+      templateUrl: '../../templates/test.html',
+    });
 
   //$urlRouterProvider.otherwise('/groupStatus');
 })
