@@ -42,7 +42,17 @@ app.controller('remindersController', ['$scope', '$controller', function($scope,
     }
   ];
 
-  /** ON/OFF toggle **/
+
+  /**
+   * PLEASE NOTE: these next 6 functions can be consolidated
+   * into just two functions, by using an array of booleans
+   * and passing an index as a parameter for the following
+   * functions. I attempted to code this, however
+   * I kept getting naming conflict errors with the toggle
+   * booleans.
+   * */
+
+  /** REMINDER 0: ON/OFF toggle **/
   $scope.toggleOnOff_0 = function(){
     if ($scope.isOnOffToggled_0 == false) {
       $scope.reminders[0].isOn = false;
@@ -53,7 +63,7 @@ app.controller('remindersController', ['$scope', '$controller', function($scope,
       sendReminder(0);
     }
   };
-  /** AM/PM toggle **/
+  /** REMINDER 0: AM/PM toggle **/
   $scope.toggleAmPm_0 = function(){
     if ($scope.isAmPmToggled_0 == false) {
       $scope.reminders[0].amOrPm = 'AM';
@@ -64,8 +74,7 @@ app.controller('remindersController', ['$scope', '$controller', function($scope,
     }
   };
 
-
-  /** ON/OFF toggle **/
+  /** REMINDER 1: ON/OFF toggle **/
   $scope.toggleOnOff_1 = function(){
     if ($scope.isOnOffToggled_1 == false) {
       $scope.reminders[1].isOn = false;
@@ -76,7 +85,7 @@ app.controller('remindersController', ['$scope', '$controller', function($scope,
       sendReminder(1);
     }
   };
-  /** AM/PM toggle **/
+  /** REMINDER 1: AM/PM toggle **/
   $scope.toggleAmPm_1 = function(){
     if ($scope.isAmPmToggled_1 == false) {
       $scope.reminders[1].amOrPm = 'AM';
@@ -87,8 +96,7 @@ app.controller('remindersController', ['$scope', '$controller', function($scope,
     }
   };
 
-
-  /** ON/OFF toggle **/
+  /** REMINDER 2 : ON/OFF toggle **/
   $scope.toggleOnOff_2 = function(){
     if ($scope.isOnOffToggled_2 == false) {
       $scope.reminders[2].isOn = false;
@@ -97,10 +105,9 @@ app.controller('remindersController', ['$scope', '$controller', function($scope,
       $scope.reminders[2].isOn = true;
       $scope.isOnOffToggled_2 = false;
       sendReminder(2);
-
     }
   };
-  /** AM/PM toggle **/
+  /** REMINDER 2: AM/PM toggle **/
   $scope.toggleAmPm_2 = function(){
     if ($scope.isAmPmToggled_2 == false) {
       $scope.reminders[2].amOrPm = 'AM';
@@ -110,7 +117,6 @@ app.controller('remindersController', ['$scope', '$controller', function($scope,
       $scope.isAmPmToggled_2 = false;
     }
   };
-
 
 
   /**
@@ -143,11 +149,14 @@ app.controller('remindersController', ['$scope', '$controller', function($scope,
     setTimeout(function() {
 
       if($scope.reminders[index].isOn){
-        //set the reminder here
-        console.log("ship it!");
+        //TODO: set the reminder here
+
+
+        console.log("ship it!"); /// testing
       }
-      else
-        console.log("REVERT!!!")
+      else{
+        console.log("REVERT!!!"); // testing
+      }
     }, 1000 * 5); //5 seconds
   }
 }]);
