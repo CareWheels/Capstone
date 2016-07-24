@@ -1,7 +1,9 @@
 //Call to the UserInfo custom rest endpoint, which logs user in and then returns all the field data of another user as $scope.data;
 //or one of the following error messages: "Missing username / password", "Invalid username / password", "Your access is blocked by 
 //exceeding invalid login attempts", or a default catch "Error while performing login: errorCode".
-app.controller("UserRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+angular.module('careWheels')
+
+.controller("UserRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
   $scope.url = 'https://carebank.carewheels.org:8443/userinfo.php';
   $scope.fetch = function(userIn, passIn, tofindIn) {
     $scope.code = null;
@@ -91,12 +93,12 @@ app.controller("UserRestController", function($scope, $http, $log, $httpParamSer
     })
   };
 
-});
+})
 
 //Call to the UpdateUserReminders endpoint, which logs a user in and updates all three of a user's (does not have to be the same user)
 //reminder slots in the format HH:MM:SS. Returns same login errors as UserRestController. The contents of a reminder slot 
 //are cleared by passing in '' rather than a string of the correct format.
-app.controller("ReminderRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+.controller("ReminderRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
   $scope.url = 'https://carebank.carewheels.org:8443/updateuserreminders.php';
   $scope.fetch = function(userIn, passIn, toUpdate, rem1, rem2, rem3) {
     $scope.code = null;
@@ -126,10 +128,10 @@ app.controller("ReminderRestController", function($scope, $http, $log, $httpPara
         }
     })
   };
-});
+})
 
 //Call to the Group Member Info custom rest endpoint
-app.controller("GroupRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+.controller("GroupRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
   $scope.url = 'https://carebank.carewheels.org:8443/groupmemberinfo.php';
   $scope.fetch = function(userIn, passIn, groupName) {
     $scope.code = null;
@@ -156,7 +158,7 @@ app.controller("GroupRestController", function($scope, $http, $log, $httpParamSe
         }
     })
   };
-});
+})
 
 //Call to the UpdateLastOwnershipTakenTime endpoint, which logs a user in and updates the LastOwnershipTakenTime field for
 //the member has an alert. This field uses the format XXXX/XX/XX XX:XX:XX. This will report the following error messages upon 
@@ -164,7 +166,7 @@ app.controller("GroupRestController", function($scope, $http, $log, $httpParamSe
 //attempts", or a default catch "Error while performing login: errorCode".
 
 // Nothing seems to verify whether or not this is working. I don't know what more can be done.
-app.controller("OwnershipRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+.controller("OwnershipRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
   $scope.url = 'https://carebank.carewheels.org:8443/updatelastownershiptakentime.php';
   $scope.fetch = function(userIn, passIn, toUpdate, ownershipTime) {
     $scope.code = null;
@@ -281,7 +283,7 @@ app.controller("OwnershipRestController", function($scope, $http, $log, $httpPar
     })
   };
 
-});
+})
 
 //This doesn't work at all. I don't know the solution. Looking at the JSON string that returns, there is no instance of 
 //"LastOwnershipTakenTime":XXXX/XX/XX XX:XX:XX anywhere in the string. There are several instances of "id":xxx..xx, so I 
@@ -297,7 +299,7 @@ app.controller("OwnershipRestController", function($scope, $http, $log, $httpPar
 //...I figured that obj.id should print out the last instance of id in the string, but nothing printed. I am not sure
 //why. However, since "LastOwnershipTakenTime":XXXX/XX/XX XX:XX:XX does not actually appear in the string, using
 //JSON.parse is probably not the answer. 
-app.controller("GetOwnershipRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+.controller("GetOwnershipRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
   $scope.url = 'https://carebank.carewheels.org:8443/groupmemberinfo.php';
   $scope.fetch = function(userIn, passIn, groupNameIn) {
     $scope.code = null;
@@ -327,12 +329,12 @@ app.controller("GetOwnershipRestController", function($scope, $http, $log, $http
         }
     })
   };
-});
+})
 
 //Call to the UserAndGroupMemberInfo custom rest endpoint, which logs user in and then returns all the field data of all users in their group as $scope.data;
 //or one of the following error messages: "Missing username / password", "Invalid username / password", "Your access is blocked by 
 //exceeding invalid login attempts", or a default catch "Error while performing login: errorCode" or "Error while performing group search".
-app.controller("UserAndGroupRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
+.controller("UserAndGroupRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
   $scope.url = 'https://carebank.carewheels.org:8443/userandgroupmemberinfo.php';
   $scope.fetch = function(userIn, passIn, tofindIn) {
     $scope.code = null;
@@ -359,10 +361,10 @@ app.controller("UserAndGroupRestController", function($scope, $http, $log, $http
         }
     })
   };
-});
+})
 
 
-app.controller("CreditController", function($scope, $http, $log, $httpParamSerializerJQLike){
+.controller("CreditController", function($scope, $http, $log, $httpParamSerializerJQLike){
   
   //creditUser is the main function which will get called by the other components in the application
   //(individual group member sensor data or group member summary status subsystem)
@@ -464,10 +466,10 @@ app.controller("CreditController", function($scope, $http, $log, $httpParamSeria
   //call creditRequest function/ send post request to credituser.php
   creditRequest();
 }})
-;
+
 
 // based on CreditController
-app.controller("CreditControllerByDebit", function($scope, $http, $log, $httpParamSerializerJQLike) {
+.controller("CreditControllerByDebit", function($scope, $http, $log, $httpParamSerializerJQLike) {
 
   //creditUser is the main function which will get called by the other components in the application
   //(individual group member sensor data or group member summary status subsystem)
@@ -569,6 +571,5 @@ app.controller("CreditControllerByDebit", function($scope, $http, $log, $httpPar
     memberSummaryPayment = 'False';
     //call creditRequest function/ send post request to credituser.php
     creditRequest();
-  }})
-;
+  }});
 
