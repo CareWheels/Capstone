@@ -35,6 +35,7 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
   $scope.Init_Notifs = function() {
     //$scope.data = angular.fromJson(window.localStorage['Reminders']);
     if($scope.data==null){   //have notifications been initialized before?
+      $log.log("Initializing Notifications from default");
       $scope.data = [];    //data param needs to be initialized before indices can be added
       $scope.data[0] = new Time();
       $scope.data[1] = new Time();
@@ -43,17 +44,16 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
       $scope.Create_Notif(14,0,0,true,2);
       $scope.Create_Notif(19,0,0,true,3);
     } else {    //need to check if each reminder, as any/all of them could be deleted by user
+      $log.log("Initializing Notifications from memory");
       if($scope.data[0]) $scope.Create_Notif($scope.data[0].hours,$scope.data[0].minutes,$scope.data[0].seconds,$scope.data[0].on,1);
       if($scope.data[1]) $scope.Create_Notif($scope.data[1].hours,$scope.data[1].minutes,$scope.data[1].seconds,$scope.data[1].on,2);
       if($scope.data[2]) $scope.Create_Notif($scope.data[2].hours,$scope.data[2].minutes,$scope.data[2].seconds,$scope.data[2].on,3);
     }
-    $log.log("Notifications initialized");
   }
 
   //Schedules a local notification and, if it is a reminder, saves a record of it to local storage. reminderNum must be <4
   //or it will log an error and schedule no notifications.
   $scope.Create_Notif = function(hours, minutes, seconds, isOn, reminderNum){
-    //$scope.data = angular.fromJson(window.localStorage['Reminders']);
     if(reminderNum==0){   //is notif a red alert?
       if(isAndroid){
         $cordovaLocalNotification.schedule({    //omitting 'at' and 'every' params means it occurs once, immediately
@@ -90,19 +90,19 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
     } else if(reminderNum >=4) $log.warn("Incorrect attempt to create notification for id #" + reminderNum);
   };
 
-  //Unschedules a local notification; clears its index if it is a user reminder (id 1-3). If id is invalid clear() will not
-  //throw errors. Delete_Notif(0) is technically valid but Red Alerts are one-time and instant so unscheduling them is unnecessary.
-  $scope.Delete_Notif = function(id){   //NOTE: id corresponds to $scope.data array indices so it is off by one
+  //Unschedules all local reminders; clears its index if it is a user reminder (id 1-3).
+  $scope.Delete_Reminders = function(){   //NOTE: id corresponds to $scope.data array indices so it is off by one
     //$scope.data = angular.fromJson(window.localStorage['Reminders']);
     if(isAndroid){
-      $cordovaLocalNotification.clear(id, function() {
-        $log.log(id + " is cleared");
-      });
+      for(i=1; i<4; ++i){
+        $cordovaLocalNotification.clear(i, function() {
+          $log.log(i + " is cleared");
+        });
+      }
     } else $log.warn("Plugin disabled"); 
-    if(id==1||id==2||id==3){    //if deleted notif is a user reminder
-      $scope.data[id] = null;   //clear its index
-      window.localStorage['Reminders'] = angular.toJson($scope.data);   //and save $scope.data so deletiion is remembered
-    }
+    
+    window.localStorage['Reminders'] = null;   //and delete Reminders array
+    $scope.data = null;
   }
 
   //Unschedules a local notification as per Delete_Notif but does NOT clear storage or data index; to be used by User Reminder's Toggle()
@@ -130,5 +130,20 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
         alert("Scheduled: " + notifications);
       });      
     } else $log.warn("Plugin disabled");
+  }
+
+  //returns a reminder (id # = 0,1, or 2) as a string in the format HH:MM:SS
+  $scope.Reminder_As_String = function(id){
+    if(id>2){
+      $log.error("Attempted to print Reminder id " + id + ", but there are only 3 reminders!");
+    } else {
+      var hour = $scope.data[id].hours;
+      if(hour<10) hour = 0 + String(hour);
+      var minute = $scope.data[id].minutes;
+      if(minute<10) minute = 0 + String(minute);
+      var second = $scope.data[id].minutes;
+      if(second<10) second = 0 + String(second);
+      return hour + ":" + minute + ":" + second;
+    }
   }
 });
