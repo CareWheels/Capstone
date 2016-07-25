@@ -11,7 +11,6 @@ var app = angular.module('careWheels', [
   'ngCordova',
   'FredrikSandell.worker-pool'
 ])
->>>>>>> c0b8361fd9004d0c4ce6adf16c14087eb6362d05
 
   //contant definition for endpoint base url
   .constant('BASE_URL', 'https://carebank.carewheels.org:8443')
