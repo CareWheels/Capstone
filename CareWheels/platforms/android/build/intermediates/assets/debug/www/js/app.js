@@ -179,11 +179,22 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     ///////////////////////////////////////////////////////////////////////////
 
 
-    var uids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
+    var presenceUids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
+    var fridgeUids = [];
+    var medUids = [];
+    var alertUids = [];
+    var presenceEvents = [];//this will store all events gathered from each presence UID
+    var fridgeEvents = [];
+    var medEvents = [];
+    var alertEvents = [];
+    var sensorData = {//this will be the object sent to analysis
+      "Presence": [],
+      "Fridge": [],
+      "Meds": [],
+      "Alert": []
+    };
     var count = 1;//this will be used in constructing the page urls
-    var events = [];
     var downloadFunc = function(){
-
 
     var dataUrl = "https://apis.sen.se/v2/feeds/";
     $http({
@@ -203,7 +214,19 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         var objects = feeds.objects;
         var objectsLength = objects.length;
         for (var i = 0; i < objectsLength; i++){
-          uids.push(objects[i].uid);
+          console.log("CHECKING UID...");
+          if (objects[i].label == "Presence")
+            console.log("added presence uid");
+            presenceUids.push(objects[i].uid);
+          if (objects[i].label == "Motion-fridge")
+            console.log("added fridge uid");
+            fridgeUids.push(objects[i].uid);
+          if (objects[i].label == "Motion-meds")
+            console.log("added med uid");
+            medUids.push(objects[i].uid);
+          if (objects[i].label == "Alert")
+            console.log("added alert uid");
+            alertUids.push(objects[i].uid);
         };
 /*
           
@@ -237,24 +260,26 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
           //return uids;
         }
 */
+        var presenceLength = presenceUids.length;
+        var fridgeLength = fridgeUids.length;
+        var medLength = medUids.length;
+        var alertLength = alertUids.length;
 
-        //getUid(response);
-        //getUid(testData);
-
-        var arrayLength = uids.length;
-        
-        for (var i = 0; i < arrayLength; i++){//for each uid in uids array
+/////////////////LOOP TO COLLECT PRESENCE OBJECTS AND PUSH TO APPROPRIATE       
+        for (var i = 0; i < presenceLength; i++){//for each uid in uids array
             $http({
-              url:"https://apis.sen.se/v2/feeds/"+uids[i]+"/events/", //get url of next page
+              url:"https://apis.sen.se/v2/feeds/"+presenceUids[i]+"/events/", //get url of next page
               method:'GET',
               headers: {
                 'Authorization': 'Bearer '+input['accesstoken']
               }
             }).then(function(response) {
-                var eventArray = response.data;
-                angular.forEach(eventArray, function(item){
-                  events.push(item.event)
-                })
+                var presenceEventList = response.data;
+                for (var i = 0; i < presenceEventList.totalObjects; i++){
+                  console.log("pushing presence event to array...");
+                  sensorData.Presence.push(presenceEventList.objects[i]);
+                };
+
                 //output.notify(JSON.parse(JSON.stringify(events)));
                 //return events;
                 
@@ -271,33 +296,123 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
             )
         };
 
-        console.log("RETURNING COMPLETE EVENT ARRAY");
-        output.notify(JSON.parse(JSON.stringify(events)));
+/////////////////LOOP TO COLLECT FRIDGE OBJECTS AND PUSH TO APPROPRIATE
+        for (var i = 0; i < fridgeLength; i++){//for each uid in uids array
+            $http({
+              url:"https://apis.sen.se/v2/feeds/"+fridgeUids[i]+"/events/", //get url of next page
+              method:'GET',
+              headers: {
+                'Authorization': 'Bearer '+input['accesstoken']
+              }
+            }).then(function(response) {
+                var fridgeEventList = response.data;
+                for (var i = 0; i < fridgeEventList.totalObjects; i++){
+                  console.log("pushing fridge event to array");
+                  sensorData.Fridge.push(fridgeEventList.objects[i]);
+                };
 
-        
+                //output.notify(JSON.parse(JSON.stringify(events)));
+                //return events;
+                
+            }, function(response) {
+
+                if (response.status === 403){
+                refreshFunc();
+                //try to download from sense, but limit after n attempts
+                //to prevent infinite re-attempts
+                }       
+            
+              console.log("get event fail", response);
+              }
+            )
+        };
+
+/////////////////LOOP TO COLLECT MED OBJECTS AND PUSH TO APPROPRIATE
+        for (var i = 0; i < medLength; i++){//for each uid in uids array
+            $http({
+              url:"https://apis.sen.se/v2/feeds/"+medUids[i]+"/events/", //get url of next page
+              method:'GET',
+              headers: {
+                'Authorization': 'Bearer '+input['accesstoken']
+              }
+            }).then(function(response) {
+                var medEventList = response.data;
+                for (var i = 0; i < medEventList.totalObjects; i++){
+                  console.log("pushing med event to array...");
+                  sensorData.Meds.push(medsEventList.objects[i]);
+                };
+
+                //output.notify(JSON.parse(JSON.stringify(events)));
+                //return events;
+                
+            }, function(response) {
+
+                if (response.status === 403){
+                refreshFunc();
+                //try to download from sense, but limit after n attempts
+                //to prevent infinite re-attempts
+                }       
+            
+              console.log("get event fail", response);
+              }
+            )
+        };
+
+/////////////////LOOP TO COLLECT ALERT OBJECTS AND PUSH TO APPROPRIATE
+        for (var i = 0; i < alertLength; i++){//for each uid in uids array
+            $http({
+              url:"https://apis.sen.se/v2/feeds/"+alertUids[i]+"/events/", //get url of next page
+              method:'GET',
+              headers: {
+                'Authorization': 'Bearer '+input['accesstoken']
+              }
+            }).then(function(response) {
+                var alertEventList = response.data;
+                for (var i = 0; i < alertEventList.totalObjects; i++){
+                  console.log("pushing alert event to array...");
+                  sensorData.Alert.push(alertEventList.objects[i]);
+                };
+
+                //output.notify(JSON.parse(JSON.stringify(events)));
+                //return events;
+                
+            }, function(response) {
+
+                if (response.status === 403){
+                refreshFunc();
+                //try to download from sense, but limit after n attempts
+                //to prevent infinite re-attempts
+                }       
+            
+              console.log("get event fail", response);
+              }
+            )
+        };
+
         //This is the end of the ".then" promise from the intital http GET call to /feeds/ endpoint
         //output.notify(JSON.parse(JSON.stringify(events)));//this will be the successful response of events being sent to main thread
         //console.log("these are the event objects -being sent to main thread.  Victory!", events);
         
-      }, function(response) {//This is the end of the "error" promise from the intital http GET call to /feeds/ endpoint
-        //
+      }, function(response) {//This is the beginning of the "error" promise from the intital http GET call to /feeds/ endpoint
         //if we fail the request to a 403 expired token error
         //call refresh function
-        
         if (response.status === 403){
           refreshFunc();
           //try to download from sense, but limit after n attempts
           //to prevent infinite re-attempts
         }       
-        
         //output.notify(JSON.parse(JSON.stringify(response)));//for testing, DELETE AFTER TESTING
         console.log("download func fail, not sending output of worker thread to main thread.  You don't deserve it! :)", response);
-
+        //EXIT PROMISE
         })
-
+        //END OF ORIGINAL HTTP PROMISE
+   
+        setTimeout(function(){ //This is a bad solution.  Need to develop a promise to return sensorData once all events have been acquired
+        console.log("RETURNING SENSORDATA OBJECT after timeout");
+        output.notify(JSON.parse(JSON.stringify(sensorData)));
+        }, 10000);
+        
       //output event notify
-
-
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -334,7 +449,6 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         }
       )
     };
-
 
     downloadFunc();
     //output.notify(JSON.parse(JSON.stringify(events)));
@@ -388,111 +502,12 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         $scope.update = update;
         console.log(update);
         console.log('notify');
-        //DataService.addToGroup(update); //COMMENTED OUT DURING TESTING, ADD LATER
-
-        //*******************************************
-        //TODO:
-        //Return array of event objects, send to DataService,
-        //then Analysis
-        //*******************************************
-        //BEGINNING OF TESTING AREA
-var sensordata = //will be in the form of an array of event objects for each group member
-[
-    {
-      "profile": null,
-      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
-      "gatewayNodeUid": null,
-      "dateServer": "2016-07-20T17:28:54.691",
-      "geometry": null,
-      "data": {
-        "sound": "None"
-      },
-      "signal": null,
-      "dateEvent": "2016-07-20T17:28:54.691",
-      "expiresAt": "2016-07-21T17:28:54.691",
-      "version": null,
-      "type": "face",
-      "payload": null,
-      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
-    },
-    {
-      "profile": null,
-      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
-      "gatewayNodeUid": null,
-      "dateServer": "2016-07-20T12:55:21.489",
-      "geometry": null,
-      "data": {
-        "sound": "None"
-      },
-      "signal": null,
-      "dateEvent": "2016-07-20T12:55:21.489",
-      "expiresAt": "2016-07-21T12:55:21.489",
-      "version": null,
-      "type": "face",
-      "payload": null,
-      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
-    },
-    {
-      "profile": null,
-      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
-      "gatewayNodeUid": null,
-      "dateServer": "2016-07-20T02:54:35.451",
-      "geometry": null,
-      "data": {
-        "sound": "None"
-      },
-      "signal": null,
-      "dateEvent": "2016-07-20T02:54:35.451",
-      "expiresAt": "2016-07-21T02:54:35.451",
-      "version": null,
-      "type": "face",
-      "payload": null,
-      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
-    },
-    {
-      "profile": null,
-      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
-      "gatewayNodeUid": null,
-      "dateServer": "2016-07-20T02:50:16.043",
-      "geometry": null,
-      "data": {
-        "sound": "None"
-      },
-      "signal": null,
-      "dateEvent": "2016-07-20T02:50:16.043",
-      "expiresAt": "2016-07-21T02:50:16.043",
-      "version": null,
-      "type": "face",
-      "payload": null,
-      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
-    },
-    {
-      "profile": null,
-      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
-      "gatewayNodeUid": null,
-      "dateServer": "2016-07-19T20:37:59.242",
-      "geometry": null,
-      "data": {
-        "sound": "None"
-      },
-      "signal": null,
-      "dateEvent": "2016-07-19T20:37:59.242",
-      "expiresAt": "2016-07-20T20:37:59.242",
-      "version": null,
-      "type": "face",
-      "payload": null,
-      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
-    }
-  ]
-        var memberObject = {
-          "name": "test", //will get name from GroupInfo Service later
-          "sensordata": sensordata
+        var mem = {
+          "name": "xyzTest", //will be pulled from groupInfo service
+          "sensorData": update
         };
+        DataService.addToGroup(mem); //COMMENTED OUT DURING TESTING, ADD LATER
 
-        DataService.addToGroup(memberObject); 
-
-
-/////////END OF TESTING AREA
       });
   };
 });
