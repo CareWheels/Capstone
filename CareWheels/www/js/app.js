@@ -180,11 +180,22 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     ///////////////////////////////////////////////////////////////////////////
 
 
-    var uids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
+    var presenceUids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
+    var fridgeUids = [];
+    var medUids = [];
+    var alertUids = [];
+    var presenceEvents = [];//this will store all events gathered from each presence UID
+    var fridgeEvents = [];
+    var medEvents = [];
+    var alertEvents = [];
+    var sensorData = {//this will be the object sent to analysis
+      "Presence": [],
+      "Fridge": [],
+      "Meds": [],
+      "Alert": []
+    };
     var count = 1;//this will be used in constructing the page urls
-    var events = [];
     var downloadFunc = function(){
-
 
     var dataUrl = "https://apis.sen.se/v2/feeds/";
     $http({
@@ -204,7 +215,19 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         var objects = feeds.objects;
         var objectsLength = objects.length;
         for (var i = 0; i < objectsLength; i++){
-          uids.push(objects[i].uid);
+          console.log("CHECKING UID...");
+          if (objects[i].label == "Presence")
+            console.log("added presence uid");
+            presenceUids.push(objects[i].uid);
+          if (objects[i].label == "Motion-fridge")
+            console.log("added fridge uid");
+            fridgeUids.push(objects[i].uid);
+          if (objects[i].label == "Motion-meds")
+            console.log("added med uid");
+            medUids.push(objects[i].uid);
+          if (objects[i].label == "Alert")
+            console.log("added alert uid");
+            alertUids.push(objects[i].uid);
         };
 /*
           
@@ -236,24 +259,26 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
           //return uids;
         }
 */
+        var presenceLength = presenceUids.length;
+        var fridgeLength = fridgeUids.length;
+        var medLength = medUids.length;
+        var alertLength = alertUids.length;
 
-        //getUid(response);
-        //getUid(testData);
-
-        var arrayLength = uids.length;
-        
-        for (var i = 0; i < arrayLength; i++){//for each uid in uids array
+/////////////////LOOP TO COLLECT PRESENCE OBJECTS AND PUSH TO APPROPRIATE       
+        for (var i = 0; i < presenceLength; i++){//for each uid in uids array
             $http({
-              url:"https://apis.sen.se/v2/feeds/"+uids[i]+"/events/", //get url of next page
+              url:"https://apis.sen.se/v2/feeds/"+presenceUids[i]+"/events/", //get url of next page
               method:'GET',
               headers: {
                 'Authorization': 'Bearer '+input['accesstoken']
               }
             }).then(function(response) {
-                var eventArray = response.data;
-                angular.forEach(eventArray, function(item){
-                  events.push(item.event)
-                })
+                var presenceEventList = response.data;
+                for (var i = 0; i < presenceEventList.totalObjects; i++){
+                  console.log("pushing presence event to array...");
+                  sensorData.Presence.push(presenceEventList.objects[i]);
+                };
+
                 //output.notify(JSON.parse(JSON.stringify(events)));
                 //return events;
                 
@@ -270,33 +295,123 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
             )
         };
 
-        console.log("RETURNING COMPLETE EVENT ARRAY");
-        output.notify(JSON.parse(JSON.stringify(events)));
+/////////////////LOOP TO COLLECT FRIDGE OBJECTS AND PUSH TO APPROPRIATE
+        for (var i = 0; i < fridgeLength; i++){//for each uid in uids array
+            $http({
+              url:"https://apis.sen.se/v2/feeds/"+fridgeUids[i]+"/events/", //get url of next page
+              method:'GET',
+              headers: {
+                'Authorization': 'Bearer '+input['accesstoken']
+              }
+            }).then(function(response) {
+                var fridgeEventList = response.data;
+                for (var i = 0; i < fridgeEventList.totalObjects; i++){
+                  console.log("pushing fridge event to array");
+                  sensorData.Fridge.push(fridgeEventList.objects[i]);
+                };
 
-        
+                //output.notify(JSON.parse(JSON.stringify(events)));
+                //return events;
+                
+            }, function(response) {
+
+                if (response.status === 403){
+                refreshFunc();
+                //try to download from sense, but limit after n attempts
+                //to prevent infinite re-attempts
+                }       
+            
+              console.log("get event fail", response);
+              }
+            )
+        };
+
+/////////////////LOOP TO COLLECT MED OBJECTS AND PUSH TO APPROPRIATE
+        for (var i = 0; i < medLength; i++){//for each uid in uids array
+            $http({
+              url:"https://apis.sen.se/v2/feeds/"+medUids[i]+"/events/", //get url of next page
+              method:'GET',
+              headers: {
+                'Authorization': 'Bearer '+input['accesstoken']
+              }
+            }).then(function(response) {
+                var medEventList = response.data;
+                for (var i = 0; i < medEventList.totalObjects; i++){
+                  console.log("pushing med event to array...");
+                  sensorData.Meds.push(medsEventList.objects[i]);
+                };
+
+                //output.notify(JSON.parse(JSON.stringify(events)));
+                //return events;
+                
+            }, function(response) {
+
+                if (response.status === 403){
+                refreshFunc();
+                //try to download from sense, but limit after n attempts
+                //to prevent infinite re-attempts
+                }       
+            
+              console.log("get event fail", response);
+              }
+            )
+        };
+
+/////////////////LOOP TO COLLECT ALERT OBJECTS AND PUSH TO APPROPRIATE
+        for (var i = 0; i < alertLength; i++){//for each uid in uids array
+            $http({
+              url:"https://apis.sen.se/v2/feeds/"+alertUids[i]+"/events/", //get url of next page
+              method:'GET',
+              headers: {
+                'Authorization': 'Bearer '+input['accesstoken']
+              }
+            }).then(function(response) {
+                var alertEventList = response.data;
+                for (var i = 0; i < alertEventList.totalObjects; i++){
+                  console.log("pushing alert event to array...");
+                  sensorData.Alert.push(alertEventList.objects[i]);
+                };
+
+                //output.notify(JSON.parse(JSON.stringify(events)));
+                //return events;
+                
+            }, function(response) {
+
+                if (response.status === 403){
+                refreshFunc();
+                //try to download from sense, but limit after n attempts
+                //to prevent infinite re-attempts
+                }       
+            
+              console.log("get event fail", response);
+              }
+            )
+        };
+
         //This is the end of the ".then" promise from the intital http GET call to /feeds/ endpoint
         //output.notify(JSON.parse(JSON.stringify(events)));//this will be the successful response of events being sent to main thread
         //console.log("these are the event objects -being sent to main thread.  Victory!", events);
         
-      }, function(response) {//This is the end of the "error" promise from the intital http GET call to /feeds/ endpoint
-        //
+      }, function(response) {//This is the beginning of the "error" promise from the intital http GET call to /feeds/ endpoint
         //if we fail the request to a 403 expired token error
         //call refresh function
-        
         if (response.status === 403){
           refreshFunc();
           //try to download from sense, but limit after n attempts
           //to prevent infinite re-attempts
         }       
-        
-        output.notify(JSON.parse(JSON.stringify(response)));//for testing, DELETE AFTER TESTING
-        console.log("download func fail, not sending output of worker thread to main thread.  You don't deserve it! :)", response);
-
+        //output.notify(JSON.parse(JSON.stringify(response)));//for testing, DELETE AFTER TESTING
+        console.log("download func fail", response);
+        //EXIT PROMISE
         })
-
+        //END OF ORIGINAL HTTP PROMISE
+   
+        setTimeout(function(){ //This is a bad solution.  Need to develop a promise to return sensorData once all events have been acquired
+        console.log("RETURNING SENSORDATA OBJECT after timeout");
+        output.notify(JSON.parse(JSON.stringify(sensorData)));
+        }, 5000);
+        
       //output event notify
-
-
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -333,7 +448,6 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         }
       )
     };
-
 
     downloadFunc();
     //output.notify(JSON.parse(JSON.stringify(events)));
@@ -387,487 +501,12 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         $scope.update = update;
         console.log(update);
         console.log('notify');
-        //DataService.addToGroup(update); //COMMENTED OUT DURING TESTING, ADD LATER
-
-        //*******************************************
-        //TODO:
-        //Return array of event objects, send to DataService,
-        //then Analysis
-        //*******************************************
-        //BEGINNING OF TESTING AREA
-var sensorData = {
-            "Presence" : [
-    {
-      "profile": "MotherStandard",
-      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
-      "gatewayNodeUid": null,
-      "dateServer": "2016-07-25T05:12:08.289",
-      "geometry": null,
-      "data": {
-        "body": "Present",
-        "code": 200
-      },
-      "signal": null,
-      "dateEvent": "2016-07-25T05:12:07",
-      "expiresAt": "2016-08-02T05:12:07",
-      "version": null,
-      "type": "presence",
-      "payload": null,
-      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
-    },
-    {
-      "profile": "MotherStandard",
-      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
-      "gatewayNodeUid": null,
-      "dateServer": "2016-07-25T05:11:08.286",
-      "geometry": null,
-      "data": {
-        "body": "Present",
-        "code": 200
-      },
-      "signal": null,
-      "dateEvent": "2016-07-25T05:11:07",
-      "expiresAt": "2016-08-02T05:11:07",
-      "version": null,
-      "type": "presence",
-      "payload": null,
-      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
-    },
-    {
-      "profile": "MotherStandard",
-      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
-      "gatewayNodeUid": null,
-      "dateServer": "2016-07-25T05:10:08.287",
-      "geometry": null,
-      "data": {
-        "body": "Present",
-        "code": 200
-      },
-      "signal": null,
-      "dateEvent": "2016-07-25T05:10:07",
-      "expiresAt": "2016-08-02T05:10:07",
-      "version": null,
-      "type": "presence",
-      "payload": null,
-      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
-    },
-    {
-      "profile": "MotherStandard",
-      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
-      "gatewayNodeUid": null,
-      "dateServer": "2016-07-25T05:09:08.289",
-      "geometry": null,
-      "data": {
-        "body": "Present",
-        "code": 200
-      },
-      "signal": null,
-      "dateEvent": "2016-07-25T05:09:07",
-      "expiresAt": "2016-08-02T05:09:07",
-      "version": null,
-      "type": "presence",
-      "payload": null,
-      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
-    },
-    {
-      "profile": "MotherStandard",
-      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
-      "gatewayNodeUid": null,
-      "dateServer": "2016-07-25T05:08:08.279",
-      "geometry": null,
-      "data": {
-        "body": "Present",
-        "code": 200
-      },
-      "signal": null,
-      "dateEvent": "2016-07-25T05:08:07",
-      "expiresAt": "2016-08-02T05:08:07",
-      "version": null,
-      "type": "presence",
-      "payload": null,
-      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
-    },
-    {
-      "profile": "MotherStandard",
-      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
-      "gatewayNodeUid": null,
-      "dateServer": "2016-07-25T05:07:08.279",
-      "geometry": null,
-      "data": {
-        "body": "Present",
-        "code": 200
-      },
-      "signal": null,
-      "dateEvent": "2016-07-25T05:07:07",
-      "expiresAt": "2016-08-02T05:07:07",
-      "version": null,
-      "type": "presence",
-      "payload": null,
-      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
-    },
-    {
-      "profile": "MotherStandard",
-      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
-      "gatewayNodeUid": null,
-      "dateServer": "2016-07-25T05:06:08.280",
-      "geometry": null,
-      "data": {
-        "body": "Present",
-        "code": 200
-      },
-      "signal": null,
-      "dateEvent": "2016-07-25T05:06:07",
-      "expiresAt": "2016-08-02T05:06:07",
-      "version": null,
-      "type": "presence",
-      "payload": null,
-      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
-    },
-    {
-      "profile": "MotherStandard",
-      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
-      "gatewayNodeUid": null,
-      "dateServer": "2016-07-25T05:05:08.275",
-      "geometry": null,
-      "data": {
-        "body": "Present",
-        "code": 200
-      },
-      "signal": null,
-      "dateEvent": "2016-07-25T05:05:07",
-      "expiresAt": "2016-08-02T05:05:07",
-      "version": null,
-      "type": "presence",
-      "payload": null,
-      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
-    },
-    {
-      "profile": "MotherStandard",
-      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
-      "gatewayNodeUid": null,
-      "dateServer": "2016-07-25T05:04:08.275",
-      "geometry": null,
-      "data": {
-        "body": "Present",
-        "code": 200
-      },
-      "signal": null,
-      "dateEvent": "2016-07-25T05:04:07",
-      "expiresAt": "2016-08-02T05:04:07",
-      "version": null,
-      "type": "presence",
-      "payload": null,
-      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
-    },
-    {
-      "profile": "MotherStandard",
-      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
-      "gatewayNodeUid": null,
-      "dateServer": "2016-07-25T05:03:08.277",
-      "geometry": null,
-      "data": {
-        "body": "Present",
-        "code": 200
-      },
-      "signal": null,
-      "dateEvent": "2016-07-25T05:03:07",
-      "expiresAt": "2016-08-02T05:03:07",
-      "version": null,
-      "type": "presence",
-      "payload": null,
-      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
-    }
-            ],
-            "Fridge": [
-    {
-      "profile": "WalkStandard",
-      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
-      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
-      "dateServer": "2016-07-24T01:38:32.654",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          45.4818000793457,
-          -122.60050201416016
-        ]
-      },
-      "data": {
-        "durationSeconds": 300,
-        "durationWalkSeconds": 50,
-        "numberSteps": 77
-      },
-      "signal": -68,
-      "dateEvent": "2016-07-24T01:38:32",
-      "expiresAt": null,
-      "version": null,
-      "type": "motion",
-      "payload": null,
-      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
-    },
-    {
-      "profile": "WalkStandard",
-      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
-      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
-      "dateServer": "2016-07-24T01:35:32.880",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          45.4818000793457,
-          -122.60050201416016
-        ]
-      },
-      "data": {
-        "durationSeconds": 300,
-        "durationWalkSeconds": 60,
-        "numberSteps": 85
-      },
-      "signal": -68,
-      "dateEvent": "2016-07-24T01:33:18",
-      "expiresAt": null,
-      "version": null,
-      "type": "motion",
-      "payload": null,
-      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
-    },
-    {
-      "profile": "WalkStandard",
-      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
-      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
-      "dateServer": "2016-07-24T01:35:32.468",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          45.4818000793457,
-          -122.60050201416016
-        ]
-      },
-      "data": {
-        "durationSeconds": 300,
-        "durationWalkSeconds": 10,
-        "numberSteps": 10
-      },
-      "signal": -67,
-      "dateEvent": "2016-07-24T01:28:08",
-      "expiresAt": null,
-      "version": null,
-      "type": "motion",
-      "payload": null,
-      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
-    },
-    {
-      "profile": "WalkStandard",
-      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
-      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
-      "dateServer": "2016-07-24T01:35:32.063",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          45.4818000793457,
-          -122.60050201416016
-        ]
-      },
-      "data": {
-        "durationSeconds": 300,
-        "durationWalkSeconds": 85,
-        "numberSteps": 113
-      },
-      "signal": -67,
-      "dateEvent": "2016-07-24T01:22:57",
-      "expiresAt": null,
-      "version": null,
-      "type": "motion",
-      "payload": null,
-      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
-    },
-    {
-      "profile": "WalkStandard",
-      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
-      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
-      "dateServer": "2016-07-24T01:35:31.653",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          45.4818000793457,
-          -122.60050201416016
-        ]
-      },
-      "data": {
-        "durationSeconds": 300,
-        "durationWalkSeconds": 15,
-        "numberSteps": 15
-      },
-      "signal": -67,
-      "dateEvent": "2016-07-24T01:17:47",
-      "expiresAt": null,
-      "version": null,
-      "type": "motion",
-      "payload": null,
-      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
-    },
-    {
-      "profile": "WalkStandard",
-      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
-      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
-      "dateServer": "2016-07-24T01:35:31.237",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          45.4818000793457,
-          -122.60050201416016
-        ]
-      },
-      "data": {
-        "durationSeconds": 300,
-        "durationWalkSeconds": 80,
-        "numberSteps": 97
-      },
-      "signal": -67,
-      "dateEvent": "2016-07-24T01:12:36",
-      "expiresAt": null,
-      "version": null,
-      "type": "motion",
-      "payload": null,
-      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
-    },
-    {
-      "profile": "WalkStandard",
-      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
-      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
-      "dateServer": "2016-07-24T01:35:30.827",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          45.4818000793457,
-          -122.60050201416016
-        ]
-      },
-      "data": {
-        "durationSeconds": 300,
-        "durationWalkSeconds": 100,
-        "numberSteps": 105
-      },
-      "signal": -68,
-      "dateEvent": "2016-07-24T01:07:25",
-      "expiresAt": null,
-      "version": null,
-      "type": "motion",
-      "payload": null,
-      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
-    },
-    {
-      "profile": "WalkStandard",
-      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
-      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
-      "dateServer": "2016-07-24T01:35:30.417",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          45.4818000793457,
-          -122.60050201416016
-        ]
-      },
-      "data": {
-        "durationSeconds": 300,
-        "durationWalkSeconds": 35,
-        "numberSteps": 22
-      },
-      "signal": -68,
-      "dateEvent": "2016-07-24T01:02:15",
-      "expiresAt": null,
-      "version": null,
-      "type": "motion",
-      "payload": null,
-      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
-    },
-    {
-      "profile": "WalkStandard",
-      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
-      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
-      "dateServer": "2016-07-24T01:35:30.007",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          45.4818000793457,
-          -122.60050201416016
-        ]
-      },
-      "data": {
-        "durationSeconds": 300,
-        "durationWalkSeconds": 55,
-        "numberSteps": 55
-      },
-      "signal": -68,
-      "dateEvent": "2016-07-24T00:57:04",
-      "expiresAt": null,
-      "version": null,
-      "type": "motion",
-      "payload": null,
-      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
-    },
-    {
-      "profile": "WalkStandard",
-      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
-      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
-      "dateServer": "2016-07-24T01:35:29.597",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          45.4818000793457,
-          -122.60050201416016
-        ]
-      },
-      "data": {
-        "durationSeconds": 300,
-        "durationWalkSeconds": 40,
-        "numberSteps": 48
-      },
-      "signal": -68,
-      "dateEvent": "2016-07-24T00:51:53",
-      "expiresAt": null,
-      "version": null,
-      "type": "motion",
-      "payload": null,
-      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
-    },
-    {
-      "profile": "WalkStandard",
-      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
-      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
-      "dateServer": "2016-07-24T01:35:29.189",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          45.4818000793457,
-          -122.60050201416016
-        ]
-      },
-      "data": {
-        "durationSeconds": 300,
-        "durationWalkSeconds": 15,
-        "numberSteps": 22
-      },
-      "signal": -68,
-      "dateEvent": "2016-07-24T00:46:42",
-      "expiresAt": null,
-      "version": null,
-      "type": "motion",
-      "payload": null,
-      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
-    }
-
-            ]
-          
-        };//will be in the form of an array of event objects for each group member
-
-        var memberObject = {
-          "name": "test", //will get name from GroupInfo Service later
-          "sensorData": sensorData
+        var mem = {
+          "name": "xyzTest", //will be pulled from groupInfo service
+          "sensorData": update
         };
+        DataService.addToGroup(mem); //COMMENTED OUT DURING TESTING, ADD LATER
 
-        DataService.addToGroup(memberObject); 
-
-
-/////////END OF TESTING AREA
       });
   };
 });
