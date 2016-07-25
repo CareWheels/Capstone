@@ -177,7 +177,13 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //if expired token error, calls refreshToken function
     //$http request to sen.se with access token to attempt to retrieve feed data
     ///////////////////////////////////////////////////////////////////////////
+
+
+    var uids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
+    var count = 1;//this will be used in constructing the page urls
+    var events = [];
     var downloadFunc = function(){
+
 
     var dataUrl = "https://apis.sen.se/v2/feeds/";
     $http({
@@ -193,29 +199,14 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //or else there will be an error as we attempt to 
         //pass the response back to main thread
 
-        //ideally, this is what we would like to have happen
-        //the response object will be sent back to the main thread
-        //where the feed data can be manipulated for analysis
-
-        //output.notify(JSON.parse(JSON.stringify(response)));
-        //console.log("download func success: page 1", response);
-        var uids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
-        var count = 1;//this will be used in constructing the page urls
-        var getUid = function(arg){//this function will get the uids from every object on a given page
-          //       angular.forEach($scope.companies, function(item){
-         //          console.log(item.technologies);  
-          var feeds = arg;
-          var objects = feeds.objects;
-          //console.log("contents", objects[0].uid);
-
-          var objectsLength = objects.length;
-          for (var i = 0; i < objectsLength; i++){
-            uids.push(objects[i].uid);
-          };
-          //angular.forEach(feeds, function(item){//for each object on the page...
-          //  uids.push(item.uid)//....add uid into array
-          //})
-
+        var feeds = response.data;
+        var objects = feeds.objects;
+        var objectsLength = objects.length;
+        for (var i = 0; i < objectsLength; i++){
+          uids.push(objects[i].uid);
+        };
+/*
+          
           if (feeds.links.next != null){ //this is to handle multiple pages of feed objects returned from sense api
             count++;//for url construction
 
@@ -242,11 +233,14 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               }
             )
           }
+          
           //return uids;
         }
-        getUid(response);
+*/
+
+        //getUid(response);
         //getUid(testData);
-        var events = [];
+
         var arrayLength = uids.length;
         
         for (var i = 0; i < arrayLength; i++){//for each uid in uids array
@@ -257,10 +251,12 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                 'Authorization': 'Bearer '+input['accesstoken']
               }
             }).then(function(response) {
-                var eventArray = response;
+                var eventArray = response.data;
                 angular.forEach(eventArray, function(item){
                   events.push(item.event)
                 })
+                //output.notify(JSON.parse(JSON.stringify(events)));
+                //return events;
                 
             }, function(response) {
 
@@ -273,11 +269,17 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               console.log("get event fail", response);
               }
             )
-        }
-        output.notify(JSON.parse(JSON.stringify(response)));//this will be the successful response of events being sent to main thread
-        console.log("these are the event objects -being sent to main thread.  Victory!", response);
+        };
+
+        console.log("RETURNING COMPLETE EVENT ARRAY");
+        output.notify(JSON.parse(JSON.stringify(events)));
+
         
-      }, function(response) {//this is the error response from initial promise from initial http request
+        //This is the end of the ".then" promise from the intital http GET call to /feeds/ endpoint
+        //output.notify(JSON.parse(JSON.stringify(events)));//this will be the successful response of events being sent to main thread
+        //console.log("these are the event objects -being sent to main thread.  Victory!", events);
+        
+      }, function(response) {//This is the end of the "error" promise from the intital http GET call to /feeds/ endpoint
         //
         //if we fail the request to a 403 expired token error
         //call refresh function
@@ -288,10 +290,14 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
           //to prevent infinite re-attempts
         }       
         
-        //output.notify(JSON.parse(JSON.stringify(response)));
+        //output.notify(JSON.parse(JSON.stringify(response)));//for testing, DELETE AFTER TESTING
         console.log("download func fail, not sending output of worker thread to main thread.  You don't deserve it! :)", response);
 
         })
+
+      //output event notify
+
+
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -331,6 +337,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 
 
     downloadFunc();
+    //output.notify(JSON.parse(JSON.stringify(events)));
     //refreshFunc();
 
   }]);
@@ -352,8 +359,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       //we will need to include all properties which will be needed as params
       //when making refresh/post and download/get requests to sense
 
-      //currently testing with bill's access/refresh tokens
-      return angularWorker.run({refreshtoken:"PjBiwFdKyXwDsfm82FfVVK6IGWLLk0", accesstoken:"A0RegyQMErQ7DgqS1a9f8KxcnAsjt5"});
+      //bill = access-A0RegyQMErQ7DgqS1a9f8KxcnAsjt5, refresh-PjBiwFdKyXwDsfm82FfVVK6IGWLLk0
+      //claude = access-XGDy6rcjvQgBnQbY40fS9p1w1bWqBc, refresh-UMogAOAGq6nUzTEqJovINFjjxAzyMK
+      return angularWorker.run({refreshtoken:"UMogAOAGq6nUzTEqJovINFjjxAzyMK", accesstoken:"XGDy6rcjvQgBnQbY40fS9p1w1bWqBc"});
       
     }, function error(reason) {
 
@@ -379,14 +387,112 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         $scope.status = update.status;
         $scope.update = update;
         console.log(update);
-        console.log('reached notify');
+        console.log('notify');
+        //DataService.addToGroup(update); //COMMENTED OUT DURING TESTING, ADD LATER
+
         //*******************************************
         //TODO:
         //Return array of event objects, send to DataService,
         //then Analysis
         //*******************************************
-        DataService.setCurrentGroup(update);
+        //BEGINNING OF TESTING AREA
+var sensordata = //will be in the form of an array of event objects for each group member
+[
+    {
+      "profile": null,
+      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-20T17:28:54.691",
+      "geometry": null,
+      "data": {
+        "sound": "None"
+      },
+      "signal": null,
+      "dateEvent": "2016-07-20T17:28:54.691",
+      "expiresAt": "2016-07-21T17:28:54.691",
+      "version": null,
+      "type": "face",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": null,
+      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-20T12:55:21.489",
+      "geometry": null,
+      "data": {
+        "sound": "None"
+      },
+      "signal": null,
+      "dateEvent": "2016-07-20T12:55:21.489",
+      "expiresAt": "2016-07-21T12:55:21.489",
+      "version": null,
+      "type": "face",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": null,
+      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-20T02:54:35.451",
+      "geometry": null,
+      "data": {
+        "sound": "None"
+      },
+      "signal": null,
+      "dateEvent": "2016-07-20T02:54:35.451",
+      "expiresAt": "2016-07-21T02:54:35.451",
+      "version": null,
+      "type": "face",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": null,
+      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-20T02:50:16.043",
+      "geometry": null,
+      "data": {
+        "sound": "None"
+      },
+      "signal": null,
+      "dateEvent": "2016-07-20T02:50:16.043",
+      "expiresAt": "2016-07-21T02:50:16.043",
+      "version": null,
+      "type": "face",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": null,
+      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-19T20:37:59.242",
+      "geometry": null,
+      "data": {
+        "sound": "None"
+      },
+      "signal": null,
+      "dateEvent": "2016-07-19T20:37:59.242",
+      "expiresAt": "2016-07-20T20:37:59.242",
+      "version": null,
+      "type": "face",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    }
+  ]
+        var memberObject = {
+          "name": "test", //will get name from GroupInfo Service later
+          "sensordata": sensordata
+        };
 
+        DataService.addToGroup(memberObject); 
+
+
+/////////END OF TESTING AREA
       });
   };
 });
@@ -398,25 +504,26 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 /////////////////////////////////////////////////////////////////////////////////////////
 app.factory('DataService', function() {
 
-  var currentGroupId;
+  var currentGroup = [];
 
   // public API
   return {
-    getCurrentGroup: function () { 
-      if (currentGroupId == null){
+    getGroup: function () { 
+      if (currentGroup == null){
           return console.error("Group data has not been parsed yet!");
         }
-      return currentGroupId; 
+      return currentGroup; 
     },
-    setCurrentGroup: function ( id ) { 
+    addToGroup: function ( id ) { 
       //will be called by data download.  This will be an object
       //which contains up to 5 members, with and array of 3 feeds each
-      currentGroupId = id;
-      console.log('reached service', currentGroupId);
+      objectToAdd = id;
+      console.log('object to add', objectToAdd);
       /////////////////////////////////////////////////////////////////////////////////////////
-      //This is where i will parse the feed object, and save it to currentGroupId
+      //This is where i will parse the feed object, and save it to currentGroup
       /////////////////////////////////////////////////////////////////////////////////////////
-
+      currentGroup.push(objectToAdd);
+      console.log('check currentGroup contents', currentGroup);
 
     }
   };
@@ -432,11 +539,18 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
   $scope.AnalyzeData = function(){
     var testFunc = function(){
     
-    $scope.groupData = DataService.getCurrentGroup();
+    $scope.groupData = DataService.getGroup();
+
+/*
+    if ($scope.groupData.length < 4){
+      console.log("group data array not yet ready for analysis");
+    }
+*/
+
 
     }
-    //testFunc();
-    //console.log('testing analysis controller', $scope.groupData);  
+    testFunc();
+    console.log('contents of $scope.groupData in Analysis', $scope.groupData);  
 
   };
 
