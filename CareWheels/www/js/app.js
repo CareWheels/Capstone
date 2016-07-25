@@ -3,6 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
+
 var app = angular.module('careWheels', ['ionic', 'ngCordova', 'FredrikSandell.worker-pool'])
 
 app.run(function($ionicPlatform) {
@@ -129,8 +130,6 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
     } else $log.warn("Plugin disabled");
   }
 });
-
-
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //Using angular-workers module
@@ -410,7 +409,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
           //to prevent infinite re-attempts
         }       
         //output.notify(JSON.parse(JSON.stringify(response)));//for testing, DELETE AFTER TESTING
-        console.log("download func fail, not sending output of worker thread to main thread.  You don't deserve it! :)", response);
+        console.log("download func fail", response);
         //EXIT PROMISE
         })
         //END OF ORIGINAL HTTP PROMISE
