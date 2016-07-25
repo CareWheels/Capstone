@@ -411,7 +411,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
           //to prevent infinite re-attempts
         }       
         //output.notify(JSON.parse(JSON.stringify(response)));//for testing, DELETE AFTER TESTING
-        console.log("download func fail, not sending output of worker thread to main thread.  You don't deserve it! :)", response);
+        console.log("download func fail", response);
         //EXIT PROMISE
         })
         //END OF ORIGINAL HTTP PROMISE
