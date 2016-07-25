@@ -2,7 +2,10 @@
  * CareWheels - Individual Status Controller
  *
  */
-angular.module('careWheels', ['ionic']).controller('individualStatusController', function($scope){
+
+angular.module('careWheels')
+
+.controller('individualStatusController', function($scope){
 
   $scope.trevor = {
     name: 'Trevor',

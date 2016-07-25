@@ -3,12 +3,9 @@
  *
  */
 
+angular.module('careWheels')
 
-angular.module('careWheels', ['ionic', 'ngAnimate'])
   .controller('groupStatusController', function ($scope, $interval) {
-
-
-
 
     $scope.group = {
       username: 'test01',
@@ -70,13 +67,14 @@ angular.module('careWheels', ['ionic', 'ngAnimate'])
       }
     }
 
+
     $interval(function (){
       var alertArray = [
         $('#topLeftAlert'),
         $('#topRightAlert'),
         $('#bottomLeftAlert'),
         $('#bottomRightAlert')
-      ];
+      ]
 
       for(var i =0; i < alertArray.length; i++){
         if(alertArray[i].css('background-color') === 'rgb(255, 0, 0)'){
@@ -84,8 +82,10 @@ angular.module('careWheels', ['ionic', 'ngAnimate'])
           alertArray[i].fadeIn("slow");
         }
       }
-    }, 2000);
+    }, 2000)
+
   });
+    
 
 
 /*
