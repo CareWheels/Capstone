@@ -215,7 +215,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         var objectsLength = objects.length;
         for (var i = 0; i < objectsLength; i++){
           console.log("CHECKING UID...");
-          if (objects[i].label == "Presence")
+          if (objects[i].label == "xxxx testing")
             console.log("added presence uid");
             presenceUids.push(objects[i].uid);
           if (objects[i].label == "Motion-fridge")
