@@ -104,3 +104,9 @@ embed{
   margin-left: 32px;
 }
 
+.alignLogo {
+  position: relative;
+  margin-left: 50%;
+  right: 125px;
+
+}
