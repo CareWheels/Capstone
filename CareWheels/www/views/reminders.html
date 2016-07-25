@@ -1,38 +1,4 @@
-<!-- i dont think this view is necessary, however i included it just in case -->
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-  <title></title>
-
-  <link href="../../lib/ionic/css/ionic.css" rel="stylesheet">
-  <link href="../../css/style.css" rel="stylesheet">
-
-
-  <meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src  'self' 'unsafe-inline' *">
-
-  <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
-  <link href="css/ionic.app.css" rel="stylesheet">
-  -->
-
-  <!-- ionic/angularjs js -->
-  <script src="../../lib/ionic/js/ionic.bundle.js"></script>
-
-  <!-- cordova script (this will be a 404 during development) -->
-  <script src="../../lib/ngCordova/dist/ng-cordova.js"></script>
-  <script src="../../cordova.js"></script>
-
-  <!-- your app's js -->
-  <script src="../../js/app.js"></script>
-  <script src="../../js/restcontrollers.js"></script>
-  <script src="../js/reminders.js"></script>
-
-</head>
-
-
-<body ng-app="careWheels" ng-controller="remindersController">
 <ion-view>
   <ion-side-menus>
     <ion-side-menu-content>
@@ -45,26 +11,159 @@
       </ion-nav-bar>
 
 
-      <!-- Alert list -->
+      <!-- Reminders list -->
       <ion-content class="moveDown">
         <ion-list>
-          <!-- use ng-repeat here to print all the alerts in the list -->
-
-          <ion-item >
-            <ion-checkbox [(ngModel)]="toggleReminder"></ion-checkbox>
-            <ion-input class="reminderInput" type="number" placeholder="{{reminders.hour}}"></ion-input>
-            <ion-input type="number" placeholder="{{reminders.min}}"></ion-input>
+        <button ng-click="saveReminders()" class="button icon ion-archive">Save Changes</button>
+        <button ng-click="confirmReset()" class="button icon ion-trash-a">Reset Changes</button>
+          <!-- Reminder 0 -->
+          <ion-item>
+            <ul class="list">
+              <li class="item item-toggle">
+                <label class="toggle toggle-balanced  onOffToggle">
+                  OFF
+                  <input type="checkbox"
+                         ng-checked=reminders[0].isOn
+                         ng-model=isOnOffToggled_0
+                         ng-change="toggleOnOff_0()" >
+                  <div class="track">
+                    <div class="handle onOffHandle"></div>
+                  </div>
+                  ON
+                </label>
+                <div class="reminderTime">
+                  {{padZero(reminders[0].hour)}}:{{padZero(reminders[0].min)}} {{reminders[0].amOrPm}}
+                </div>
+              </li>
+              <li class="item range range-positive">
+                Hour:
+                <input type="range" name="volume" min="1" max="12" ng-model="reminders[0].hour">
+                AM&nbsp;
+                <div class="item item-toggle amPmToggle">
+                  <label class="amPmTogglePosition toggle toggle-light">
+                    <input type="checkbox" class="amPmCheckBox"
+                           ng-checked=isPM(reminders[0].amOrPm)
+                           ng-model=isAmPmToggled_0
+                           ng-change="toggleAmPm_0()" >
+                    <div class="track">
+                      <div class="handle"></div>
+                    </div>
+                  </label>
+                </div>
+                &nbsp;PM
+              </li>
+              <li class="item range range-positive">
+                Minute:
+                <input type="range" name="volume" min="0" max="59" ng-model="reminders[0].min">
+              </li>
+            </ul>
           </ion-item>
 
-          <!-- need another row here for a new reminder -->
+
+          <!-- Reminder 1 -->
+          <ion-item>
+            <ul class="list">
+              <li class="item item-toggle">
+                <label class="toggle toggle-balanced  onOffToggle">
+                  OFF
+                  <input type="checkbox"
+                         ng-checked=reminders[1].isOn
+                         ng-model=isOnOffToggled_1
+                         ng-change="toggleOnOff_1()" >
+                  <div class="track">
+                    <div class="handle onOffHandle"></div>
+                  </div>
+                  ON
+                </label>
+                <div class="reminderTime">
+                  {{padZero(reminders[1].hour)}}:{{padZero(reminders[1].min)}} {{reminders[1].amOrPm}}
+                </div>
+              </li>
+              <li class="item range range-positive">
+                Hour:
+                <input type="range" name="volume" min="1" max="12" ng-model="reminders[1].hour">
+                AM&nbsp;
+                <div class="item item-toggle amPmToggle">
+                  <label class="amPmTogglePosition toggle toggle-light">
+                    <input type="checkbox" class="amPmCheckBox"
+                           ng-checked=isPM(reminders[1].amOrPm)
+                           ng-model=isAmPmToggled_1
+                           ng-change="toggleAmPm_1()" >
+                    <div class="track">
+                      <div class="handle"></div>
+                    </div>
+                  </label>
+                </div>
+                &nbsp;PM
+              </li>
+              <li class="item range range-positive">
+                Minute:
+                <input type="range" name="volume" min="0" max="59" ng-model="reminders[1].min">
+              </li>
+            </ul>
+          </ion-item>
+
+
+          <!-- Reminder 2 -->
+          <ion-item>
+            <ul class="list">
+              <li class="item item-toggle">
+                <label class="toggle toggle-balanced  onOffToggle">
+                  OFF
+                  <input type="checkbox"
+                         ng-checked=reminders[2].isOn
+                         ng-model=isOnOffToggled_2
+                         ng-change="toggleOnOff_2()" >
+                  <div class="track">
+                    <div class="handle onOffHandle"></div>
+                  </div>
+                  ON
+                </label>
+                <div class="reminderTime">
+                  {{padZero(reminders[2].hour)}}:{{padZero(reminders[2].min)}} {{reminders[2].amOrPm}}
+                </div>
+              </li>
+              <li class="item range range-positive">
+                Hour:
+                <input type="range" name="volume" min="1" max="12" ng-model="reminders[2].hour">
+                AM&nbsp;
+                <div class="item item-toggle amPmToggle">
+                  <label class="amPmTogglePosition toggle toggle-light">
+                    <input type="checkbox" class="amPmCheckBox"
+                           ng-checked=isPM(reminders[2].amOrPm)
+                           ng-model=isAmPmToggled_2
+                           ng-change="toggleAmPm_2()" >
+                    <div class="track">
+                      <div class="handle"></div>
+                    </div>
+                  </label>
+                </div>
+                &nbsp;PM
+              </li>
+              <li class="item range range-positive">
+                Minute:
+                <input type="range" name="volume" min="0" max="59" ng-model="reminders[2].min">
+              </li>
+            </ul>
+          </ion-item>
+
+
+
+
 
         </ion-list>
-        <div ng-controller="NotificationController">
-          <button id="initnotifbtn" ng-click="Init_Notifs()">Initialize Notifications</button><br>
-          <button id="notifstatusbtn" ng-click="Notifs_Status()">Notifications Status</button><br>
-          <button id="unschedulenotifbtn" ng-click="Toggle_Off_Notif(1)">Toggle Off Reminder 1</button><br>
-          <button id="createnotifbtn" ng-click="Create_Notif(10,11,12,1)">Change Reminder 1</button><br>
-          <button id="createnotifbtn" ng-click="Create_Notif(19, 12, 15, 0)">Create Red Alert</button><br>
+
+        <div >
+          <button id="initnotifbtn" ng-click="Init_Notifs()">Initialize Notifications</button>
+          <br>
+          <button id="notifstatusbtn" ng-click="Notifs_Status()">Notifications Status</button>
+          <br>
+          <button id="unschedulenotifbtn" ng-click="Toggle_Off_Notif(1)">Toggle Off Reminder 1</button>
+          <br>
+          <button id="createnotifbtn0" ng-click="Create_Notif(10,11,12, true, 1)">Change Reminder 1</button>
+          <br>
+          <button id="createnotifbtn1" ng-click="Create_Notif(19, 12, 15, true, 0)">Create Red Alert</button>
+          <br>
           <pre>notifications created {{data}}</pre>
         </div>
       </ion-content>
@@ -72,20 +171,20 @@
     </ion-side-menu-content>
 
 
-
     <ion-side-menu side="right">
       <ion-list>
-        <ion-item>home</ion-item>
-      </ion-list>
-      <ion-list>
-        <ion-item>group</ion-item>
-      </ion-list>
-      <ion-list>
-        <ion-item>etc</ion-item>
+        <!-- make sure to have target point to parent, otherwise
+             it will open the page in the within the menu block.
+
+             also there are two external links on this menu page,
+             these links need to be handled as opening an external
+             app, or the devices native web browser.(cordova plug-in) -->
+        <ion-item ui-sref="groupStatus">CareWheels Group</ion-item>
+        <ion-item ui-sref="reminders">Reminders</ion-item>
+        <ion-item ui-sref="login">Logout</ion-item>
       </ion-list>
     </ion-side-menu>
   </ion-side-menus>
 
 </ion-view>
-</body>
-</html>
+<div ui-view></div>
