@@ -251,7 +251,21 @@ app.controller("NotificationController", function($scope, $log, $cordovaLocalNot
 
     //Schedules a local notification and, if it is a reminder, saves a record of it to local storage. reminderNum must be <4
     //or it will log an error and schedule no notifications.
-    $scope.Create_Notif = function(hours=0, minutes=0, seconds=0, on=true, reminderNum=0){
+    $scope.Create_Notif = function(hours, minutes, seconds, on, reminderNum){
+
+      /* default values */
+      if (hours == undefined || hours == null)
+        hours = 0;
+      if (minutes == undefined || minutes == null)
+        minutes = 0;
+      if (seconds == undefined || seconds == null)
+        seconds = 0;
+      if (on == undefined || on == null)
+        on = true;
+      if (reminderNum == undefined || reminderNum == null)
+        reminderNum = 0;
+
+
       if(reminderNum==0){   //is notif a red alert?
         if(isAndroid){
           $cordovaLocalNotification.schedule({    //omitting 'at' and 'every' params means it occurs once, immediately
