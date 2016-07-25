@@ -85,4 +85,3 @@ angular.module('careWheels', [
 
     return user;
   });
-

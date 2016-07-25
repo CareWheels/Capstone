@@ -65,7 +65,8 @@
 
           <!-- sample rest function calls -->
         <div ng-controller="NotificationController">
-          <button id="createnotifbtn" ng-click="Create_Notif(19, 12, 15, 0)">Set Notification</button><br>
+          <button id="createnotifbtn" ng-click="Init_Notifs()">Initialize Notifications</button><br>
+          <pre>notifications created {{data}}</pre>
         </div>
         <div ng-controller="UserRestController">
           <button id="fetchbtn" ng-click="fetch('test','test123','test7')">Correct UserInfo</button><br>

@@ -70,3 +70,43 @@ embed{
   top: 43px;
 }
 
+.reminderTime {
+  margin-left: 75%;
+  text-align: center;
+  font-size:30px;
+}
+.amPmToggle {
+  height: 60px;
+  padding-right: 57px;
+  right: -2px;
+  border: none;
+}
+.amPmCheckBox {
+  position: inherit;
+}
+.amPmTogglePosition {
+  display: inline-block;
+  margin-left: 10px;
+  margin-top: 0;
+}
+.amPmTrack {
+  position: absolute;
+}
+.amPmfHandle {
+  left: 60px;
+}
+
+.onOffToggle {
+  left: 16px;
+}
+
+.onOffHandle {
+  margin-left: 32px;
+}
+
+.alignLogo {
+  position: relative;
+  margin-left: 50%;
+  right: 125px;
+
+}

@@ -9,5 +9,6 @@ angular.module('careWheels')
         $scope.user = User;
         $scope.groupInfo = GroupInfo;
 
+        $scope.logoImage = 'img/CareWheelsLogo.png';
 
     });
