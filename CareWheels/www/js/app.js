@@ -5,9 +5,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 
-var app = angular.module('careWheels', ['ionic', 'ngCordova', 'FredrikSandell.worker-pool'])
-
-angular.module('careWheels', [
+var app = angular.module('careWheels', [
   'ionic',
   'ui.router',
   'ngCordova',
@@ -62,7 +60,6 @@ angular.module('careWheels', [
     var user = {};
     //window.localStorage['loginCredentials'] = null;
 
-<<<<<<< HEAD
   //prints the in-memory and scheduled status of Reminders, for testing purposes
   $scope.Notifs_Status = function(){
     $scope.data = angular.fromJson(window.localStorage['Reminders']);
