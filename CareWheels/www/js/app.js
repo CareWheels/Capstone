@@ -210,24 +210,32 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //NOTE: need to JSON.parse + stringify the response
         //or else there will be an error as we attempt to 
         //pass the response back to main thread
+        
 
         var feeds = response.data;
         var objects = feeds.objects;
         var objectsLength = objects.length;
         for (var i = 0; i < objectsLength; i++){
           console.log("CHECKING UID...");
-          if (objects[i].label == "Presence")
+          if (objects[i].label == "Presence"){
             console.log("added presence uid");
             presenceUids.push(objects[i].uid);
-          if (objects[i].label == "Motion-fridge")
+          }
+          if (objects[i].label == "Motion"){
             console.log("added fridge uid");
             fridgeUids.push(objects[i].uid);
-          if (objects[i].label == "Motion-meds")
+          }
+          if (objects[i].label == "Motion-medsxxxxtest"){
             console.log("added med uid");
             medUids.push(objects[i].uid);
-          if (objects[i].label == "Alert")
+          }
+          if (objects[i].label == "xxxxtest"){
             console.log("added alert uid");
             alertUids.push(objects[i].uid);
+          }
+          else{
+            continue;
+          }
         };
 /*
           
@@ -263,6 +271,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         var fridgeLength = fridgeUids.length;
         var medLength = medUids.length;
         var alertLength = alertUids.length;
+
 
 /////////////////LOOP TO COLLECT PRESENCE OBJECTS AND PUSH TO APPROPRIATE       
         for (var i = 0; i < presenceLength; i++){//for each uid in uids array
@@ -401,7 +410,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
           //to prevent infinite re-attempts
         }       
         //output.notify(JSON.parse(JSON.stringify(response)));//for testing, DELETE AFTER TESTING
-        console.log("download func fail", response);
+        console.log("download func fail, not sending output of worker thread to main thread.  You don't deserve it! :)", response);
         //EXIT PROMISE
         })
         //END OF ORIGINAL HTTP PROMISE
@@ -409,7 +418,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         setTimeout(function(){ //This is a bad solution.  Need to develop a promise to return sensorData once all events have been acquired
         console.log("RETURNING SENSORDATA OBJECT after timeout");
         output.notify(JSON.parse(JSON.stringify(sensorData)));
-        }, 5000);
+        }, 10000);
         
       //output event notify
     };
