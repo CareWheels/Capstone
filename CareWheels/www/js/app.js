@@ -178,7 +178,13 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //if expired token error, calls refreshToken function
     //$http request to sen.se with access token to attempt to retrieve feed data
     ///////////////////////////////////////////////////////////////////////////
+
+
+    var uids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
+    var count = 1;//this will be used in constructing the page urls
+    var events = [];
     var downloadFunc = function(){
+
 
     var dataUrl = "https://apis.sen.se/v2/feeds/";
     $http({
@@ -194,32 +200,16 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //or else there will be an error as we attempt to 
         //pass the response back to main thread
 
-        //ideally, this is what we would like to have happen
-        //the response object will be sent back to the main thread
-        //where the feed data can be manipulated for analysis
-
-        //output.notify(JSON.parse(JSON.stringify(response)));
-        //console.log("download func success: page 1", response);
-        var uids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
-        var count = 1;//this will be used in constructing the page urls
-        var getUid = function(arg){//this function will get the uids from every object on a given page
-          //       angular.forEach($scope.companies, function(item){
-         //          console.log(item.technologies);  
-          var feeds = arg;
-          var objects = feeds.objects;
-          //console.log("contents", objects[0].uid);
-
-          var objectsLength = objects.length;
-          for (var i = 0; i < objectsLength; i++){
-            uids.push(objects[i].uid);
-          };
-          //angular.forEach(feeds, function(item){//for each object on the page...
-          //  uids.push(item.uid)//....add uid into array
-          //})
-
+        var feeds = response.data;
+        var objects = feeds.objects;
+        var objectsLength = objects.length;
+        for (var i = 0; i < objectsLength; i++){
+          uids.push(objects[i].uid);
+        };
+/*
+          
           if (feeds.links.next != null){ //this is to handle multiple pages of feed objects returned from sense api
             count++;//for url construction
-
             $http({
               url: "https://apis.sen.se/v2/feeds/?page="+count, //get url of next page
               method:'GET',
@@ -231,7 +221,6 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                 console.log("don't go here yet");
                 
             }, function(response) {
-
                 if (response.status === 403){
                 refreshFunc();
                 //FINISH//////
@@ -243,11 +232,14 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               }
             )
           }
+          
           //return uids;
         }
-        getUid(response);
+*/
+
+        //getUid(response);
         //getUid(testData);
-        var events = [];
+
         var arrayLength = uids.length;
         
         for (var i = 0; i < arrayLength; i++){//for each uid in uids array
@@ -258,10 +250,12 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                 'Authorization': 'Bearer '+input['accesstoken']
               }
             }).then(function(response) {
-                var eventArray = response;
+                var eventArray = response.data;
                 angular.forEach(eventArray, function(item){
                   events.push(item.event)
                 })
+                //output.notify(JSON.parse(JSON.stringify(events)));
+                //return events;
                 
             }, function(response) {
 
@@ -274,10 +268,15 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               console.log("get event fail", response);
               }
             )
-        }
+        };
+
+        console.log("RETURNING COMPLETE EVENT ARRAY");
+        output.notify(JSON.parse(JSON.stringify(events)));
+
+        
         //This is the end of the ".then" promise from the intital http GET call to /feeds/ endpoint
-        output.notify(JSON.parse(JSON.stringify(response)));//this will be the successful response of events being sent to main thread
-        console.log("these are the event objects -being sent to main thread.  Victory!", response);
+        //output.notify(JSON.parse(JSON.stringify(events)));//this will be the successful response of events being sent to main thread
+        //console.log("these are the event objects -being sent to main thread.  Victory!", events);
         
       }, function(response) {//This is the end of the "error" promise from the intital http GET call to /feeds/ endpoint
         //
@@ -294,6 +293,10 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         console.log("download func fail, not sending output of worker thread to main thread.  You don't deserve it! :)", response);
 
         })
+
+      //output event notify
+
+
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -333,6 +336,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 
 
     downloadFunc();
+    //output.notify(JSON.parse(JSON.stringify(events)));
     //refreshFunc();
 
   }]);
@@ -354,8 +358,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       //we will need to include all properties which will be needed as params
       //when making refresh/post and download/get requests to sense
 
-      //currently testing with bill's access/refresh tokens
-      return angularWorker.run({refreshtoken:"PjBiwFdKyXwDsfm82FfVVK6IGWLLk0", accesstoken:"A0RegyQMErQ7DgqS1a9f8KxcnAsjt5"});
+      //bill = access-A0RegyQMErQ7DgqS1a9f8KxcnAsjt5, refresh-PjBiwFdKyXwDsfm82FfVVK6IGWLLk0
+      //claude = access-XGDy6rcjvQgBnQbY40fS9p1w1bWqBc, refresh-UMogAOAGq6nUzTEqJovINFjjxAzyMK
+      return angularWorker.run({refreshtoken:"UMogAOAGq6nUzTEqJovINFjjxAzyMK", accesstoken:"XGDy6rcjvQgBnQbY40fS9p1w1bWqBc"});
       
     }, function error(reason) {
 
@@ -390,97 +395,473 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //then Analysis
         //*******************************************
         //BEGINNING OF TESTING AREA
-var testData = //will be in the form of an array of event objects for each group member
-[
+var sensorData = {
+            "Presence" : [
     {
-      "profile": null,
-      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "profile": "MotherStandard",
+      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
       "gatewayNodeUid": null,
-      "dateServer": "2016-07-20T17:28:54.691",
+      "dateServer": "2016-07-25T05:12:08.289",
       "geometry": null,
       "data": {
-        "sound": "None"
+        "body": "Present",
+        "code": 200
       },
       "signal": null,
-      "dateEvent": "2016-07-20T17:28:54.691",
-      "expiresAt": "2016-07-21T17:28:54.691",
+      "dateEvent": "2016-07-25T05:12:07",
+      "expiresAt": "2016-08-02T05:12:07",
       "version": null,
-      "type": "face",
+      "type": "presence",
       "payload": null,
       "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
     },
     {
-      "profile": null,
-      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "profile": "MotherStandard",
+      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
       "gatewayNodeUid": null,
-      "dateServer": "2016-07-20T12:55:21.489",
+      "dateServer": "2016-07-25T05:11:08.286",
       "geometry": null,
       "data": {
-        "sound": "None"
+        "body": "Present",
+        "code": 200
       },
       "signal": null,
-      "dateEvent": "2016-07-20T12:55:21.489",
-      "expiresAt": "2016-07-21T12:55:21.489",
+      "dateEvent": "2016-07-25T05:11:07",
+      "expiresAt": "2016-08-02T05:11:07",
       "version": null,
-      "type": "face",
+      "type": "presence",
       "payload": null,
       "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
     },
     {
-      "profile": null,
-      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "profile": "MotherStandard",
+      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
       "gatewayNodeUid": null,
-      "dateServer": "2016-07-20T02:54:35.451",
+      "dateServer": "2016-07-25T05:10:08.287",
       "geometry": null,
       "data": {
-        "sound": "None"
+        "body": "Present",
+        "code": 200
       },
       "signal": null,
-      "dateEvent": "2016-07-20T02:54:35.451",
-      "expiresAt": "2016-07-21T02:54:35.451",
+      "dateEvent": "2016-07-25T05:10:07",
+      "expiresAt": "2016-08-02T05:10:07",
       "version": null,
-      "type": "face",
+      "type": "presence",
       "payload": null,
       "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
     },
     {
-      "profile": null,
-      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "profile": "MotherStandard",
+      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
       "gatewayNodeUid": null,
-      "dateServer": "2016-07-20T02:50:16.043",
+      "dateServer": "2016-07-25T05:09:08.289",
       "geometry": null,
       "data": {
-        "sound": "None"
+        "body": "Present",
+        "code": 200
       },
       "signal": null,
-      "dateEvent": "2016-07-20T02:50:16.043",
-      "expiresAt": "2016-07-21T02:50:16.043",
+      "dateEvent": "2016-07-25T05:09:07",
+      "expiresAt": "2016-08-02T05:09:07",
       "version": null,
-      "type": "face",
+      "type": "presence",
       "payload": null,
       "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
     },
     {
-      "profile": null,
-      "feedUid": "u58QogqXNFXCCHsmBP2W6mADGmXerSS8",
+      "profile": "MotherStandard",
+      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
       "gatewayNodeUid": null,
-      "dateServer": "2016-07-19T20:37:59.242",
+      "dateServer": "2016-07-25T05:08:08.279",
       "geometry": null,
       "data": {
-        "sound": "None"
+        "body": "Present",
+        "code": 200
       },
       "signal": null,
-      "dateEvent": "2016-07-19T20:37:59.242",
-      "expiresAt": "2016-07-20T20:37:59.242",
+      "dateEvent": "2016-07-25T05:08:07",
+      "expiresAt": "2016-08-02T05:08:07",
       "version": null,
-      "type": "face",
+      "type": "presence",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": "MotherStandard",
+      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-25T05:07:08.279",
+      "geometry": null,
+      "data": {
+        "body": "Present",
+        "code": 200
+      },
+      "signal": null,
+      "dateEvent": "2016-07-25T05:07:07",
+      "expiresAt": "2016-08-02T05:07:07",
+      "version": null,
+      "type": "presence",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": "MotherStandard",
+      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-25T05:06:08.280",
+      "geometry": null,
+      "data": {
+        "body": "Present",
+        "code": 200
+      },
+      "signal": null,
+      "dateEvent": "2016-07-25T05:06:07",
+      "expiresAt": "2016-08-02T05:06:07",
+      "version": null,
+      "type": "presence",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": "MotherStandard",
+      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-25T05:05:08.275",
+      "geometry": null,
+      "data": {
+        "body": "Present",
+        "code": 200
+      },
+      "signal": null,
+      "dateEvent": "2016-07-25T05:05:07",
+      "expiresAt": "2016-08-02T05:05:07",
+      "version": null,
+      "type": "presence",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": "MotherStandard",
+      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-25T05:04:08.275",
+      "geometry": null,
+      "data": {
+        "body": "Present",
+        "code": 200
+      },
+      "signal": null,
+      "dateEvent": "2016-07-25T05:04:07",
+      "expiresAt": "2016-08-02T05:04:07",
+      "version": null,
+      "type": "presence",
+      "payload": null,
+      "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
+    },
+    {
+      "profile": "MotherStandard",
+      "feedUid": "Qtq2Fojqrwhn5psib95fs7ohdGUJsRmK",
+      "gatewayNodeUid": null,
+      "dateServer": "2016-07-25T05:03:08.277",
+      "geometry": null,
+      "data": {
+        "body": "Present",
+        "code": 200
+      },
+      "signal": null,
+      "dateEvent": "2016-07-25T05:03:07",
+      "expiresAt": "2016-08-02T05:03:07",
+      "version": null,
+      "type": "presence",
       "payload": null,
       "nodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6"
     }
-  ]
+            ],
+            "Fridge": [
+    {
+      "profile": "WalkStandard",
+      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
+      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
+      "dateServer": "2016-07-24T01:38:32.654",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.4818000793457,
+          -122.60050201416016
+        ]
+      },
+      "data": {
+        "durationSeconds": 300,
+        "durationWalkSeconds": 50,
+        "numberSteps": 77
+      },
+      "signal": -68,
+      "dateEvent": "2016-07-24T01:38:32",
+      "expiresAt": null,
+      "version": null,
+      "type": "motion",
+      "payload": null,
+      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
+    },
+    {
+      "profile": "WalkStandard",
+      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
+      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
+      "dateServer": "2016-07-24T01:35:32.880",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.4818000793457,
+          -122.60050201416016
+        ]
+      },
+      "data": {
+        "durationSeconds": 300,
+        "durationWalkSeconds": 60,
+        "numberSteps": 85
+      },
+      "signal": -68,
+      "dateEvent": "2016-07-24T01:33:18",
+      "expiresAt": null,
+      "version": null,
+      "type": "motion",
+      "payload": null,
+      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
+    },
+    {
+      "profile": "WalkStandard",
+      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
+      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
+      "dateServer": "2016-07-24T01:35:32.468",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.4818000793457,
+          -122.60050201416016
+        ]
+      },
+      "data": {
+        "durationSeconds": 300,
+        "durationWalkSeconds": 10,
+        "numberSteps": 10
+      },
+      "signal": -67,
+      "dateEvent": "2016-07-24T01:28:08",
+      "expiresAt": null,
+      "version": null,
+      "type": "motion",
+      "payload": null,
+      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
+    },
+    {
+      "profile": "WalkStandard",
+      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
+      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
+      "dateServer": "2016-07-24T01:35:32.063",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.4818000793457,
+          -122.60050201416016
+        ]
+      },
+      "data": {
+        "durationSeconds": 300,
+        "durationWalkSeconds": 85,
+        "numberSteps": 113
+      },
+      "signal": -67,
+      "dateEvent": "2016-07-24T01:22:57",
+      "expiresAt": null,
+      "version": null,
+      "type": "motion",
+      "payload": null,
+      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
+    },
+    {
+      "profile": "WalkStandard",
+      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
+      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
+      "dateServer": "2016-07-24T01:35:31.653",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.4818000793457,
+          -122.60050201416016
+        ]
+      },
+      "data": {
+        "durationSeconds": 300,
+        "durationWalkSeconds": 15,
+        "numberSteps": 15
+      },
+      "signal": -67,
+      "dateEvent": "2016-07-24T01:17:47",
+      "expiresAt": null,
+      "version": null,
+      "type": "motion",
+      "payload": null,
+      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
+    },
+    {
+      "profile": "WalkStandard",
+      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
+      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
+      "dateServer": "2016-07-24T01:35:31.237",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.4818000793457,
+          -122.60050201416016
+        ]
+      },
+      "data": {
+        "durationSeconds": 300,
+        "durationWalkSeconds": 80,
+        "numberSteps": 97
+      },
+      "signal": -67,
+      "dateEvent": "2016-07-24T01:12:36",
+      "expiresAt": null,
+      "version": null,
+      "type": "motion",
+      "payload": null,
+      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
+    },
+    {
+      "profile": "WalkStandard",
+      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
+      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
+      "dateServer": "2016-07-24T01:35:30.827",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.4818000793457,
+          -122.60050201416016
+        ]
+      },
+      "data": {
+        "durationSeconds": 300,
+        "durationWalkSeconds": 100,
+        "numberSteps": 105
+      },
+      "signal": -68,
+      "dateEvent": "2016-07-24T01:07:25",
+      "expiresAt": null,
+      "version": null,
+      "type": "motion",
+      "payload": null,
+      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
+    },
+    {
+      "profile": "WalkStandard",
+      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
+      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
+      "dateServer": "2016-07-24T01:35:30.417",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.4818000793457,
+          -122.60050201416016
+        ]
+      },
+      "data": {
+        "durationSeconds": 300,
+        "durationWalkSeconds": 35,
+        "numberSteps": 22
+      },
+      "signal": -68,
+      "dateEvent": "2016-07-24T01:02:15",
+      "expiresAt": null,
+      "version": null,
+      "type": "motion",
+      "payload": null,
+      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
+    },
+    {
+      "profile": "WalkStandard",
+      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
+      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
+      "dateServer": "2016-07-24T01:35:30.007",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.4818000793457,
+          -122.60050201416016
+        ]
+      },
+      "data": {
+        "durationSeconds": 300,
+        "durationWalkSeconds": 55,
+        "numberSteps": 55
+      },
+      "signal": -68,
+      "dateEvent": "2016-07-24T00:57:04",
+      "expiresAt": null,
+      "version": null,
+      "type": "motion",
+      "payload": null,
+      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
+    },
+    {
+      "profile": "WalkStandard",
+      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
+      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
+      "dateServer": "2016-07-24T01:35:29.597",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.4818000793457,
+          -122.60050201416016
+        ]
+      },
+      "data": {
+        "durationSeconds": 300,
+        "durationWalkSeconds": 40,
+        "numberSteps": 48
+      },
+      "signal": -68,
+      "dateEvent": "2016-07-24T00:51:53",
+      "expiresAt": null,
+      "version": null,
+      "type": "motion",
+      "payload": null,
+      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
+    },
+    {
+      "profile": "WalkStandard",
+      "feedUid": "VgAXFErR6NkQ0UvGG6d7fM2zeKskM9rR",
+      "gatewayNodeUid": "mKst5F1NGU3gezzMyGwYtYY9wdzf5Az6",
+      "dateServer": "2016-07-24T01:35:29.189",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.4818000793457,
+          -122.60050201416016
+        ]
+      },
+      "data": {
+        "durationSeconds": 300,
+        "durationWalkSeconds": 15,
+        "numberSteps": 22
+      },
+      "signal": -68,
+      "dateEvent": "2016-07-24T00:46:42",
+      "expiresAt": null,
+      "version": null,
+      "type": "motion",
+      "payload": null,
+      "nodeUid": "0LD4a8Byko5NmiSQpIQDKtSRO88pg5Ae"
+    }
+
+            ]
+          
+        };//will be in the form of an array of event objects for each group member
+
         var memberObject = {
           "name": "test", //will get name from GroupInfo Service later
-          "events": testData
+          "sensorData": sensorData
         };
 
         DataService.addToGroup(memberObject); 
