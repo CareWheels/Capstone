@@ -2,11 +2,11 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\Nolan\Documents\GitHub\Capstone\CareWheels\platforms\android\build\intermediates\exploded-aar\android\CordovaLib\unspecified\debug\classes.jar"
+        jar="C:\Users\Nolan\Documents\GitHub\Capstone\CareWheels\platforms\android\build\intermediates\exploded-aar\android\CordovaLib\unspecified\debug\jars\classes.jar"
         jumboMode="false"
         revision="23.0.3"
-        sha1="41f549daa61a198e8848e30e6bb30200e2c2db4b">
-        <dex dex="C:\Users\Nolan\Documents\GitHub\Capstone\CareWheels\platforms\android\build\intermediates\pre-dexed\debug\classes-ede38f87d12540ed8f1f57eb0fa1233de35184d4.jar" />
+        sha1="6e60a14c65a264a838b4d11f1a6b9347ce3cff8b">
+        <dex dex="C:\Users\Nolan\Documents\GitHub\Capstone\CareWheels\platforms\android\build\intermediates\pre-dexed\debug\CordovaLib-unspecified-debug_ec0745c21efe50ea06720f1900f26b0bf8f3868b.jar" />
     </item>
 
 </items>
