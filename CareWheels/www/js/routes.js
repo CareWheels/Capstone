@@ -1,6 +1,6 @@
-angular.module('careWheels')
+var app = angular.module('careWheels');
 
-.config(function($stateProvider, $urlRouterProvider) {
+app.config(function($stateProvider, $urlRouterProvider) {
 
   //$urlRouterProvider.otherwise('/');
   $stateProvider
@@ -48,3 +48,7 @@ angular.module('careWheels')
   /* default view (should be login on production) */
   $urlRouterProvider.otherwise('/test');
 });
+
+
+
+
