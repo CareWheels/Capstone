@@ -45,5 +45,6 @@ angular.module('careWheels')
       templateUrl: 'views/testButtons.html'
     });
 
+  /* default view (should be login on production) */
   $urlRouterProvider.otherwise('/test');
 });
