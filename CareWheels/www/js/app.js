@@ -60,19 +60,37 @@ var app = angular.module('careWheels', [
     var user = {};
     //window.localStorage['loginCredentials'] = null;
 
-  //prints the in-memory and scheduled status of Reminders, for testing purposes
-  $scope.Notifs_Status = function(){
-    $scope.data = angular.fromJson(window.localStorage['Reminders']);
-    alert("In memory: \nReminder 1= (" +$scope.data[0].on +") "+ $scope.data[0].hours + ":" + $scope.data[0].minutes + ":" + $scope.data[0].seconds +
-      "\nReminder 2= (" +$scope.data[0].on +") "+ $scope.data[1].hours + ":" + $scope.data[1].minutes + ":" + $scope.data[1].seconds +
-      "\nReminder 3= (" +$scope.data[0].on +") "+ $scope.data[2].hours + ":" + $scope.data[2].minutes + ":" + $scope.data[2].seconds);
-    if(isAndroid){
-      cordova.plugins.notification.local.get([1, 2, 3], function (notifications) {
-        alert("Scheduled: " + notifications);
-      });      
-    } else $log.warn("Plugin disabled");
-  }
-});
+    user.login = function(uname, passwd, rmbr) {
+
+      return $http({
+        url:API.userAndGroupInfo,
+        method: 'POST',
+        data: $httpParamSerializerJQLike({
+            username:uname,
+            password:passwd,
+            usernametofind:uname
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }).then(function(response) {
+        if (rmbr)
+          window.localStorage['loginCredentials'] = angular.toJson({"username":uname, "password":passwd});
+        //store user info
+        //store groupMember info
+        GroupInfo = response.data;
+        $state.go('groupStatus')
+      }, function(response) {
+        //present login failed
+        var alertPopup = $ionicPopup.alert({
+          title: 'Login failed!',
+          template: 'Please check your credentials!'
+        });
+      })
+    };
+
+    return user;
+  });
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //Using angular-workers module
