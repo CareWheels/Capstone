@@ -58,24 +58,19 @@ angular.module('careWheels')
       console.log('clicked carebank');
     };
 
-    function memberAlert(position, color) {
-      switch (position) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-      }
-    }
 
 
+    /** automatically go through each user square, and
+     *  find each 'red' alert, and fade that element in
+     *  and out. (flashing effect)
+     * */
     $interval(function (){
       var alertArray = [
         $('#topLeftAlert'),
         $('#topRightAlert'),
         $('#bottomLeftAlert'),
         $('#bottomRightAlert')
-      ]
-
+      ];
       for(var i =0; i < alertArray.length; i++){
         if(alertArray[i].css('background-color') === 'rgb(255, 0, 0)'){
           alertArray[i].fadeOut("slow");
@@ -85,25 +80,3 @@ angular.module('careWheels')
     }, 2000)
 
   });
-    
-
-
-/*
-*
-*   .animation('.flashAlert',[function(){
- return {
- event: function(element, done){
- console.log("animation hit");
- jQuery(element).fadeIn(500);
- setInterval(function(){
- jQuery(element).fadeOut(500);
- jQuery(element).fadeIn(500);
- }, 2500);
- done();
- }
- }
- }]);
-*
-*
-*
-* */
