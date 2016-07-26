@@ -87,20 +87,26 @@ angular.module('careWheels')
       }
     };
 
-    /* click/press events */
+      /* click/press events */
     $scope.clickTopLeft = function () {
       //todo: goto individualStatus.html for this user
       console.log('clicked top left');
-      $state.go('individualStatus')
+      $state.go('individualStatus');
     };
     $scope.clickTopRight = function () {
       console.log('clicked top right');
+      $state.go('individualStatus');
+
     };
     $scope.clickBottomLeft = function () {
       console.log('clicked bottom left');
+      $state.go('individualStatus');
+
     };
     $scope.clickBottomRight = function () {
       console.log('clicked bottom right');
+      $state.go('individualStatus');
+
     };
     $scope.clickCenter = function () {
       console.log('clicked center');

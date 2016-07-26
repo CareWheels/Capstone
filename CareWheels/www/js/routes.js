@@ -49,6 +49,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/test');
 });
 
-
+app.controller('goBackController', function($scope, $ionicHistory){
+  /* go back button */
+  $scope.goBack = function () { $ionicHistory.goBack(); };
+});
 
 
