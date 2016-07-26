@@ -1,40 +1,58 @@
 <ion-view>
   <ion-nav-title>CareWheels Group</ion-nav-title>
-      <!-- user group block: holds the -->
-      <ion-content class="overflowHide">
+  <!-- user group block: holds the -->
+  <ion-content>
+
+    <ion-list>
+      <ion-item>
         <ul id="userGroup">
           <li class="userSquare topLeft" ng-click="clickTopLeft()">
-            <div id="topLeftAlert" class="alertOverlay" ng-style="{'background-color': '{{group.topLeft.status}}'}"></div>
+            <div id="topLeftAlert" class="alertOverlay"
+                 ng-style="{'background-color': '{{group.topLeft.status}}'}"></div>
             <div class="userImage topLeft"></div>
           </li>
           <li class="userSquare topRight" ng-click="clickTopRight()">
-            <div id="topRightAlert" class="alertOverlay" ng-style="{'background-color': '{{group.topRight.status}}'}"></div>
+            <div id="topRightAlert" class="alertOverlay"
+                 ng-style="{'background-color': '{{group.topRight.status}}'}"></div>
             <div class="userImage topRight"></div>
           </li>
           <li class="userSquare bottomLeft" ng-click="clickBottomLeft()">
-            <div id="bottomLeftAlert" class="alertOverlay" ng-style="{'background-color': '{{group.bottomLeft.status}}'}"></div>
+            <div id="bottomLeftAlert" class="alertOverlay"
+                 ng-style="{'background-color': '{{group.bottomLeft.status}}'}"></div>
             <div class="userImage bottomLeft"></div>
           </li>
           <li class="userSquare bottomRight" ng-click="clickBottomRight()">
-            <div id="bottomRightAlert" class="alertOverlay" ng-style="{'background-color': '{{group.bottomRight.status}}'}"></div>
+            <div id="bottomRightAlert" class="alertOverlay"
+                 ng-style="{'background-color': '{{group.bottomRight.status}}'}"></div>
             <div class="userImage bottomRight"></div>
           </li>
           <li class="userImage centerUser" ng-click="clickCenter()"></li>
         </ul>
-
-        <ul id="careBankBlock" ng-click="clickCareBank()">
-          <li id="careBankHeader" class="smallBorder">CareBank</li>
-          <li id="careBankData" class="smallBorder">
-            <div class="careBankDetail careBankCredits">
-              <h3>Credits</h3>
-              <h3><b>{{group.credits}}</b></h3>
+      </ion-item>
+      <ion-item>
+        <div id="careBankBlock" class="card" ng-click="clickCareBank()">
+          <div id="careBankHeader" class="item item-stable">CareBank</div>
+          <div id="careBankData" class="">
+            <div class="card careBankDetail careBankCredits">
+              <div class="item item-stable miniCardHeader">
+                <h2>Credits</h2>
+              </div>
+              <div class="item item-light miniCardHeader">
+                <h2><b>{{group.credits}}</b></h2>
+              </div>
             </div>
-            <div class="careBankDetail careBankDebits">
-              <h3>Debits</h3>
-              <h3><b>{{group.debits}}</b></h3>
+            <div class=" card careBankDetail careBankDebits">
+              <div class="item item-stable miniCardHeader">
+                <h2>Debits</h2>
+              </div>
+              <div class="item item-light miniCardHeader">
+                <h2><b>{{group.debits}}</b></h2>
+              </div>
             </div>
-          </li>
-        </ul>
-      </ion-content>
+          </div>
+        </div>
 
+      </ion-item>
+    </ion-list>
+  </ion-content>
 </ion-view>

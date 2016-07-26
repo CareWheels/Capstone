@@ -2,37 +2,28 @@ ul {
   list-style: none;
 }
 #careBankBlock{
-  position: relative;
-  /*background-color: #4cd964;*/
+  margin-top:0;
+/*  position: relative;
+  !*background-color: #4cd964;*!
   left: 0;
   padding-left: 0;
-  width: 100%;
-  padding-bottom: 50%;
+  width: 100%;*/
 }
 #careBankHeader {
-  position: relative;
-  width: 200px;
-  height: 34px;
-  margin-left: 50%;
-  left: -100px;
-  margin-top: 10px;
-
-  padding-top: 5px;
   text-align: center;
-  font-size: 30px;
+  font-size: 26px;
 }
 .careBankDetail{
-  position: absolute;
-  width: 50%;
-  height: 100%;
+  display: inline-block;
+  position: inherit;
   text-align: center;
-  padding: 20px;
+  width: 40%;
+  margin: 5%;
+
 }
 .careBankCredits{
-  left: 0;
 }
 .careBankDebits{
-  right: 0;
 }
 
 .smallBorder{
@@ -47,11 +38,7 @@ ul {
   box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.75);
 }
 #careBankData {
-  position: relative;
-  width: 90%;
-  margin-top: 10px;
-  margin-left: 5%;
-  padding-bottom: 30%;
+
 
 }
 #userGroup {
@@ -60,7 +47,11 @@ ul {
   padding-left: 0;
   width: 100%;
   padding-bottom: 100%;
-  margin-top: 43px;
+  -webkit-box-shadow: 0px 3px 10px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 3px 10px 0px rgba(0,0,0,0.75);
+  box-shadow: 0px 3px 10px 0px rgba(0,0,0,0.75);
+  border: 1px solid #737373;
+
 }
 .userSquare {
   position: absolute;
@@ -123,4 +114,8 @@ ul {
 .yellow{
   display: none;
   background-color:yellow;
+}
+
+.miniCardHeader {
+  padding: 3px;
 }
