@@ -1,168 +1,77 @@
 <!DOCTYPE html>
 <html ng-app="careWheels">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <title></title>
-
-    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-
-    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
-    <link href="css/ionic.app.css" rel="stylesheet">
-    -->
-
-    <!-- ionic/angularjs js -->
-    <script src="lib/ionic/js/ionic.bundle.js"></script>
-    <script src="lib/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script src="lib/jquery/jquery.min.js"></script>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+  <title></title>
 
 
-    <!-- cordova script (this will be a 404 during development) -->
-    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
-    <script src="cordova.js"></script>
+  <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+  <link href="css/ionic.app.css" rel="stylesheet">
+  -->
+
+  <!-- ionic/angularjs js -->
+  <script src="lib/ionic/js/ionic.bundle.js"></script>
+  <script src="lib/angular-ui-router/release/angular-ui-router.min.js"></script>
+  <script src="lib/jquery/jquery.min.js"></script>
 
 
-    <!-- your app's js -->
-    <script src="js/app.js"></script>
-    <script src="js/routes.js"></script>
-    <script src="js/restcontrollers.js"></script>
-    <script src="js/login.js"></script>
-    <script src="js/groupStatus.js"></script>
-    <script src="js/reminders.js"></script>
-    <script src="js/individualStatus.js"></script>
+  <!-- cordova script (this will be a 404 during development) -->
+  <script src="lib/ngCordova/dist/ng-cordova.js"></script>
+  <script src="cordova.js"></script>
 
-    <!-- Style sheets -->
-    <link href="css/groupStatus.css" rel="stylesheet">
 
-  </head>
-  <body>
-    <ui-view>
-    <ion-pane>
-      <div ui-view></div>
-      <ion-header-bar class="bar-stable">
-        <h1 class="title">CareWheels Starter</h1>
-      </ion-header-bar>
-      <ion-content>
-        <ul class="nav">
-          <li><h5>temp dev buttons to link to the views</h5></li>
-          <li class="devButton">
-            <a ui-sref="login">Login</a>
-          </li>
-          <li class="devButton">
-            <a ui-sref="groupStatus">Group Status</a>
-          </li>
-          <li class="devButton">
-            <a ui-sref="individualStatus">Individual Status</a>
-          </li>
-          <li class="devButton">
-            <a ui-sref="menu">Menu</a>
-          </li>
-          <li class="devButton">
-            <a ui-sref="reminders">Reminders</a>
-          </li>
-        </ul>
+  <!-- your app's js -->
+  <script src="js/app.js"></script>
+  <script src="js/routes.js"></script>
+  <script src="js/restcontrollers.js"></script>
+  <script src="js/login.js"></script>
+  <script src="js/groupStatus.js"></script>
+  <script src="js/reminders.js"></script>
+  <script src="js/individualStatus.js"></script>
 
-          <!-- sample rest function calls -->
-        <div ng-controller="NotificationController">
-          <button id="createnotifbtn" ng-click="Init_Notifs()">Initialize Notifications</button><br>
-          <pre>notifications created {{data}}</pre>
-        </div>
-        <div ng-controller="UserRestController">
-          <button id="fetchbtn" ng-click="fetch('test','test123','test7')">Correct UserInfo</button><br>
-          <pre>http status code: {{status}}</pre>
-          <!-- <pre>http response data: {{data}}</pre> -->
-        </div>
-        <div ng-controller="UserRestController">
-          <button id="fetchbtn" ng-click="fetch('lockedout','locked','test7')">Wrong UserInfo</button><br>
-          <pre>http status code: {{status}}</pre>
-          <!-- <pre>http response data: {{data}}</pre> -->
-        </div>
-        <div ng-controller="UserRestController">
-          <button id="fetchbtn" ng-click="fetch('','locked','test7')">Missing UserInfo</button><br>
-          <pre>http status code: {{status}}</pre>
-          <!-- <pre>http response data: {{data}}</pre> -->
-        </div>
+  <!-- Style sheets -->
+  <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/groupStatus.css" rel="stylesheet">
 
-        <div ng-controller="ReminderRestController">
-          <button id="fetchbtn" ng-click="fetch('test','test123','test','14:00:00','15:00:00','')">Reminders</button><br>
-          <pre>http status code: {{status}}</pre>
-          <!-- <pre>http response data: {{data}}</pre> -->
-        </div>
-        <div ng-controller="GroupRestController">
-          <button id="fetchbtn" ng-click="fetch('testbilly','testbilly','CareWheel 1')">UserInfo</button><br>
-          <pre>http status code: {{status}}</pre>
-          <!-- <pre>http response data: {{data}}</pre> -->
-        </div>
-        <!-- changes the LastOwnershipTakenTime custom field -->
-        <!-- Looking at the Cyclos Server: LastOwnershipTakenTime takes the form XXXX/XX/XX XX:XX:XX -->
-        <div ng-controller="OwnershipRestController">
-          <button id="fetchbtn" ng-click="fetch('testbilly','testbilly','testbilly','2016/07/09 18:00:00')">LastOwnershipTakenTime</button><br>
-          <pre>http status code: {{status}}</pre>
-          <!-- <pre>http response data: {{data}}</pre> -->
-        </div>
-        <!-- gets the LastOwnershipTakenTime custom field of target member -->
-        <div ng-controller="UserRestController">
-          <button id="fetchbtn" ng-click="getLastOwnershipTimeForUser('b_test_1','password','b_test_1')">GetLastOwnershipTakenTime</button><br>
-          <pre>http status code: {{status}}</pre>
-          <pre>http response data: {{lastOwnershipTime}}</pre>
-        </div>
-        <!-- gets info of Test Group from groupmember -->
-        <div ng-controller="UserAndGroupRestController">
-          <button id="fetchbtn" ng-click="fetch('test','test123','groupmember')">UserInfo of Test Group</button><br>
-          <pre>http status code: {{status}}</pre>
-          <pre>http response data: {{data}}</pre>
-        </div>
-
-        <!-- Tests the userInfo endpoint for a user b_test_1 with valid username and password -->
-        <div ng-controller="UserRestController">
-          <button id="fetchbtn" ng-click="testValidUserPass()">Test_GetUser_ValidUserPass</button><br>
-          <pre>http status code: {{status}}</pre>
-          <pre>Passed: {{pass}}</pre>
-        </div>
-
-        <!-- tests the UpdateLastOwnershipTakenTime endpoint for a new user -->
-        <div ng-controller="OwnershipRestController">
-          <button id="fetchbtn" ng-click="test()">TestUpdateLastOwnership</button><br>
-          <pre>http status code: {{status}}</pre>
-          <pre>sent value: {{ownershipTime}}</pre>
-          <pre>returned field value: {{value}}</pre>
-          <pre>passed: {{pass}}</pre>
-        </div>
-
-        <!-- Tests UpdateLastOwnershipTakenTime enpoint for b_test_1 with incorrect password -->
-        <div ng-controller="OwnershipRestController">
-          <button id="fetchbtn" ng-click="test_passError()">TestUpdateLastOwnership_BadPass</button><br>
-          <pre>http status code: {{status}}</pre>
-          <pre>Returned Error: {{error}}</pre>
-          <pre>passed: {{pass}}</pre>
-        </div>
-
-        <!-- Tests UpdateLastOwnershipTakenTime endpoint for b_test_1 with blank timestamp -->
-        <div ng-controller="OwnershipRestController">
-          <button id="fetchbtn" ng-click="test_blankTime()">TestUpdateLastOwnership_BlankTime</button><br>
-          <pre>http status code: {{status}}</pre>
-          <pre>Returned Error: {{error}}</pre>
-          <pre>passed: {{pass}}</pre>
-        </div>
-
-        <!-- Tests both dailytransactionhistory and credituser endpoints -->
-        <div ng-controller="CreditController">
-          <button id="credbtn" ng-click="creditUser('test', 'test123', '17.38', 'memberSummaryPayment', 'Yellow')">Credit user account function</button><br>
-          <pre>http status code for dailytransactionhistory.php post request: {{status}}</pre>
-          <pre>http response data for dailytransactionhistory.php post request: {{data}}</pre>
-          <pre>http status code for credituser.php post request: {{status2}}</pre>
-          <pre>http response data for credituser.php post request: {{data2}}</pre>
-        </div>
-        <div ng-controller="CreditControllerByDebit">
-          <button id="creddebbtn" ng-click="debitUser('test', 'test123', 'Ben', '10', 'memberSummaryPayment', 'Yellow')">Debit user account function</button><br>
-          <pre>http status code for dailytransactionhistory.php post request: {{status}}</pre>
-          <pre>http response data for dailytransactionhistory.php post request: {{data}}</pre>
-          <pre>http status code for credituser.php post request: {{status2}}</pre>
-          <pre>http response data for credituser.php post request: {{data2}}</pre>
-        </div>
-      </ion-content>
-    </ion-pane>
-    </ui-view>
-  </body>
+</head>
+<body>
+<ion-side-menus>
+  <ion-side-menu-content>
+    <!-- Main content, usually <ion-nav-view> -->
+    <!-- The nav bar that will be updated as we navigate -->
+    <ion-nav-bar class="bar-positive" align-title="center">
+      <ion-nav-title>CareWheels</ion-nav-title>
+      <ion-nav-buttons side="right"><!-- Toggle right side menu -->
+        <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+      </ion-nav-buttons>
+    </ion-nav-bar>
+    <!-- end nav bar -->
+    <!-- where the initial view template will be rendered -->
+    <ion-nav-view>
+    </ion-nav-view>
+  </ion-side-menu-content>
+  <!-- Right menu -->
+  <ion-side-menu side="right" expose-aside-when="large">
+    <ion-list>
+      <a menu-close="true" ui-sref="groupStatus">
+        <ion-item>CareWheels Group</ion-item>
+      </a>
+      <a menu-close="true" ui-sref="reminders">
+        <ion-item>Reminders</ion-item>
+      </a>
+      <a menu-close="true" ui-sref="login">
+        <ion-item>Login</ion-item>
+      </a>
+      <a menu-close="true" ui-sref="individualStatus">
+        <ion-item>Individual Status</ion-item>
+      </a>
+      <a menu-close="true" ui-sref="testButtons">
+        <ion-item>test Buttons</ion-item>
+      </a>
+    </ion-list>
+  </ion-side-menu>
+</ion-side-menus>
+</body>
 </html>

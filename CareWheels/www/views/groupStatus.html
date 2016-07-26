@@ -1,13 +1,4 @@
 <ion-view>
-  <ion-side-menus>
-    <ion-side-menu-content>
-      <ion-nav-bar>
-        <ion-nav-buttons side="left">
-          <h2 class="title">Group Status</h2>
-          <!-- Toggle right side menu -->
-          <button ng-click="toggleRight()" menu-toggle="right" class="button button-icon icon ion-navicon"></button>
-        </ion-nav-buttons>
-      </ion-nav-bar>
 
       <!-- user group block: holds the -->
       <ion-content class="overflowHide">
@@ -45,26 +36,6 @@
           </li>
         </ul>
       </ion-content>
-
-    </ion-side-menu-content>
-
-
-
-    <ion-side-menu side="right">
-      <ion-list>
-        <!-- make sure to have target point to parent, otherwise
-             it will open the page in the within the menu block.
-
-             also there are two external links on this menu page,
-             these links need to be handled as opening an external
-             app, or the devices native web browser.(cordova plug-in) -->
-
-        <ion-item ui-sref="groupStatus">CareWheels Group</ion-item>
-        <ion-item ui-sref="reminders">Reminders</ion-item>
-        <ion-item ui-sref="login">Logout</ion-item>
-      </ion-list>
-    </ion-side-menu>
-  </ion-side-menus>
 
 </ion-view>
 <div ui-view></div>

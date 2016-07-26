@@ -1,15 +1,9 @@
 angular.module('careWheels')
 
-.config(function($stateProvider, $urlRouterProvider) { 
+.config(function($stateProvider, $urlRouterProvider) {
 
   //$urlRouterProvider.otherwise('/');
   $stateProvider
-
-    
-    .state('home', {
-      url: '/',
-      templateUrl: 'index.html'
-    })
 
     .state('login', {
       url: '/login',
@@ -43,7 +37,13 @@ angular.module('careWheels')
       url: '/reminders',
       templateUrl: 'views/reminders.html',
       controller: 'remindersController'
+    })
+
+    /* TESTING; TODO: for testing. dev buttons */
+    .state('testButtons', {
+      url: '/test',
+      templateUrl: 'views/testButtons.html'
     });
 
-  //$urlRouterProvider.otherwise('/groupStatus');
-})
+  $urlRouterProvider.otherwise('/test');
+});
