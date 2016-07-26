@@ -89,7 +89,7 @@ var app = angular.module('careWheels', [
 //TODO: Inject 'GroupInfo' service to access groupmemberinfo object (to obtain sen.se credentials)
 //Will be manually entering credentials in GET/POST requests during testing
 /////////////////////////////////////////////////////////////////////////////////////////
-app.controller('DownloadCtrl', function($scope, $http, WorkerService, DataService) {
+app.controller('DownloadCtrl', function($scope, $http, WorkerService, DataService, GroupInfo) {
 
 
 // The URL must be absolute because of the URL blob specification  
