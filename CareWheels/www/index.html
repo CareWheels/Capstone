@@ -75,13 +75,14 @@
         <!-- Data Download / Worker Thread Test -->
         <div ng-controller="DownloadCtrl">
           <button id= "btn1" ng-click="DownloadData()">DownloadData»</button><br>
-          <pre>Response object sent back to main thread: {{update}}</pre>
+          <pre>Download Progress: {{msg}}</pre>
+          <pre>Download Contents: {{update}}</pre>
         </div>
 
         <!-- Basic Analysis Test -->
         <div ng-controller="AnalysisCtrl">
           <button id= "btn2" ng-click="AnalyzeData()">Analyze Data »</button><br>
-          <pre>Object to be analyzed: {{groupData}}</pre>
+          <pre>Result of analysis: {{analysis}}</pre>
         </div>
 
           <!-- sample rest function calls -->
