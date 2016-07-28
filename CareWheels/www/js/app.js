@@ -157,7 +157,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     var count = 1;//this will be used in constructing the page urls
     var downloadFunc = function(){
 
-    var dataUrl = "https://apis.sen.se/v2/feeds/";
+    var dataUrl = "https://apis.sen.se/v2/nodes/";
     $http({
       url:dataUrl, 
       method:'GET',    
@@ -176,22 +176,46 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         var objects = feeds.objects;
         var objectsLength = objects.length;
         for (var i = 0; i < objectsLength; i++){
-          console.log("CHECKING UID...");
-          if (objects[i].label == "Presence"){
+          console.log("CHECKING NODES...");
+          if (objects[i].label == "presenceDataAnalysisSensor"){
             console.log("added presence uid");
-            presenceUids.push(objects[i].uid);
+            var presFeeds = objects[i].publishes
+            var presLength = presFeeds.length;
+            for (var j = 0; j < presLength; j++){
+              if (presFeeds[j].label == "Presence"){
+              presenceUids.push(presFeeds[j].uid);
+              }
+            }; 
           }
-          if (objects[i].label == "Motion"){
+          if (objects[i].label == "fridgeDataAnalysisSensor"){
             console.log("added fridge uid");
-            fridgeUids.push(objects[i].uid);
+            var fridgeFeeds = objects[i].publishes
+            var fridgeLength = fridgeFeeds.length;
+            for (var j = 0; j < fridgeLength; j++){
+              if (fridgeFeeds[j].label == "Motion"){
+              fridgeUids.push(fridgeFeeds[j].uid);
+              }
+            }; 
           }
           if (objects[i].label == "medicationDataAnalysisSensor"){
             console.log("added med uid");
-            medUids.push(objects[i].uid);
+            var medFeeds = objects[i].publishes
+            var medLength = medFeeds.length;
+            for (var j = 0; j < medLength; j++){
+              if (medFeeds[j].label == "Motion"){
+              medUids.push(medFeeds[j].uid);
+              }
+            }; 
           }
-          if (objects[i].label == "Alert"){
+          if (objects[i].label == "testtesttest"){
             console.log("added alert uid");
-            alertUids.push(objects[i].uid);
+            var alertFeeds = objects[i].publishes
+            var alertLength = alertFeeds.length;
+            for (var j = 0; j < alertLength; j++){
+              if (alertFeeds[j].label == "Alert"){
+              alertUids.push(alertFeeds[j].uid);
+              }
+            }; 
           }
           else{
             continue;
@@ -200,6 +224,8 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       };
 
       getUids(response);
+
+/////////HANDLE > 1 pages from /nodes/ endpoint
 /*
           if (feeds.links.next != null){
             var feedPages = Math.ceil(feeds.totalObjects / 10);
