@@ -9,9 +9,12 @@
 //    $controller('TestCtrl1',{$scope : testCtrl1ViewModel });
 //    testCtrl1ViewModel.myMethod(); //And call the method on the newScope.
 // }]);
-var app = angular.module('careWheels');
+angular.module('careWheels')
 
-app.controller('remindersController', ['$scope', '$controller', '$ionicPopup', function($scope, $controller, $ionicPopup){
+.controller('remindersController', ['$scope', '$controller', '$ionicPopup', function($scope, $controller, $ionicPopup){
+
+  var myUser = angular.fromJson(window.sessionStorage['user']);
+
   var notifViewModel = $scope.$new();
   var restViewModel = $scope.$new();
   $controller('NotificationController',{$scope : notifViewModel });
@@ -221,10 +224,10 @@ app.controller('remindersController', ['$scope', '$controller', '$ionicPopup', f
     console.log("rem1="+rem1+" rem2="+rem2+" rem3="+rem3);
     restViewModel.fetch('test', 'test123', 'test', rem1, rem2, rem3);   //TODO: update with real credentials!
   }
-}]);
+}])
 
 //Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
-app.controller("NotificationController", function($scope, $log, $cordovaLocalNotification){
+.controller("NotificationController", function($scope, $log, $cordovaLocalNotification){
     var isAndroid = window.cordova!=undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
     function Time() {this.hours=0; this.minutes=0; this.seconds=0; this.on=true;};
     //window.localStorage['Reminders'] = null;    //Turning this on simulates starting from fresh storage every time controller is called by view change

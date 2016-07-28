@@ -2,7 +2,6 @@
 
 angular.module('careWheels', [
   'ionic',
-  'ui.router',
   'ngCordova'
 ])
 
@@ -52,9 +51,6 @@ angular.module('careWheels', [
   // User factory
   .factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup) {
     var user = {};
-
-    user.username = "";
-    user.password = "";
     //window.localStorage['loginCredentials'] = null;
 
     user.login = function(uname, passwd, rmbr) {
@@ -75,8 +71,7 @@ angular.module('careWheels', [
           window.localStorage['loginCredentials'] = angular.toJson({"username":uname, "password":passwd});
         //store user info
         //store groupMember info
-        user.username = uname;
-        user.password = passwd;
+        window.sessionStorage['user'] = angular.toJson({"username":uname, "password":passwd});
         GroupInfo = response.data;
         $state.go('groupStatus')
       }, function(response) {
