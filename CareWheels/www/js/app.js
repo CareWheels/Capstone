@@ -170,10 +170,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //NOTE: need to JSON.parse + stringify the response
         //or else there will be an error as we attempt to 
         //pass the response back to main thread
-        var getUids = function(){
+        var getUids = function(arg){
         
-
-        var feeds = response.data;
+        var feeds = arg.data;
         var objects = feeds.objects;
         var objectsLength = objects.length;
         for (var i = 0; i < objectsLength; i++){
@@ -182,7 +181,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
             console.log("added presence uid");
             presenceUids.push(objects[i].uid);
           }
-          if (objects[i].label == "fridgeDataAnalysisSensor"){
+          if (objects[i].label == "Motion"){
             console.log("added fridge uid");
             fridgeUids.push(objects[i].uid);
           }
@@ -190,7 +189,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
             console.log("added med uid");
             medUids.push(objects[i].uid);
           }
-          if (objects[i].label == "xxxxtest"){
+          if (objects[i].label == "Alert"){
             console.log("added alert uid");
             alertUids.push(objects[i].uid);
           }
@@ -198,25 +197,23 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
             continue;
           }
         };
-      }
+      };
 
-      getUids();
-
-
-     /*     
-          if (feeds.links.next != null){ //this is to handle multiple pages of feed objects returned from sense api
-            count++;//for url construction
+      getUids(response);
+/*
+          if (feeds.links.next != null){
+            var feedPages = Math.ceil(feeds.totalObjects / 10);
+            for (var p = 2; p < feedPages + 1; p++){ //this is to handle multiple pages of feed objects returned from sense api
 
             $http({
-              url: "https://apis.sen.se/v2/feeds/?page="+count, //get url of next page
+              url: "https://apis.sen.se/v2/feeds/?page="+p, //get url of next page
               method:'GET',
               headers: {
                 'Authorization': 'Bearer '+input['accesstoken']
               }
             }).then(function(response) {
-                getUids();
-                console.log("Retrieved next page of feed objects. Page: ", count);
-                
+                getUids(response);
+
             }, function(response) {
 
                 if (response.status === 403){
@@ -230,7 +227,8 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               console.log("failed while attempting to retrieve next page of feed objects", response);
               }
             )
-          }
+            } 
+          };
   */
 
         var presenceLength = presenceUids.length;
@@ -259,38 +257,38 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               }
             }).then(function(response) {
                 var presenceEventList = response.data;
-                var eventsLeftToAdd = presenceEventList.totalObjects
+                var eventsLeftToAdd = presenceEventList.totalObjects;
                 if (eventsLeftToAdd < 100){
-                  for (var i = 0; i < eventsLeftToAdd; i++){
-                    console.log("pushing presence event to array...");
-                    sensorData.Presence.push(presenceEventList.objects[i]);
+                  for (var j = 0; j < eventsLeftToAdd; j++){
+                    console.log("pushing presence event to array in first if block...");
+                    sensorData.Presence.push(presenceEventList.objects[j]);
                   };
                 }
                 else { // >100 event objects implies more than one page of data
-                  for (var i = 0; i < eventsLeftToAdd; i++){
-                    console.log("pushing presence event to array...");
-                    sensorData.Presence.push(presenceEventList.objects[i]);
+                  for (var k = 0; k < 100; k++){
+                    console.log("pushing presence event to array in first else block...");
+                    sensorData.Presence.push(presenceEventList.objects[k]);
                     eventsLeftToAdd = eventsLeftToAdd - 100;
                   };
                   var pages = Math.ceil(presenceEventList.totalObjects / 100);
-                  for (var j = 2; j < pages + 1; j++){
+                  for (var m = 2; m < pages + 1; m++){
                     $http({
-                      url:"https://apis.sen.se/v2/feeds/"+presenceUids[i]+"/events/"+"?gt="+prevDay+"&page="+j,
+                      url:"https://apis.sen.se/v2/feeds/"+presenceUids[i]+"/events/"+"?gt="+prevDay+"&page="+m,
                       method:'GET',
                       headers: {
                         'Authorization': 'Bearer '+input['accesstoken']
                       }
                     }).then(function(response) {
                         if (eventsLeftToAdd < 100){
-                          for (var i = 0; i < eventsLeftToAdd; i++){
-                          console.log("pushing presence event from next page to array...");
-                          sensorData.Presence.push(presenceEventList.objects[i]);
+                          for (var n = 0; n < eventsLeftToAdd; n++){
+                          console.log("pushing presence event from next page to array (if block)...");
+                          sensorData.Presence.push(presenceEventList.objects[n]);
                           };
                         }
                         else {
-                          for (var i = 0; i < 100; i++){
-                          console.log("pushing presence event from next page to array...");
-                          sensorData.Presence.push(presenceEventList.objects[i]);
+                          for (var n = 0; n < 100; n++){
+                          console.log("pushing presence event from next page to array (else block)...");
+                          sensorData.Presence.push(presenceEventList.objects[n]);
                           eventsLeftToAdd = eventsLeftToAdd - 100;
                           };
                         };
@@ -302,7 +300,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                         //try to download from sense, but limit after n attempts
                         //to prevent infinite re-attempts
                         }       
-                      console.log("get event fail", response);
+                      console.log("get event fail within inner for loop", response);
                       }
                       )
                   };
@@ -316,7 +314,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                 //to prevent infinite re-attempts
                 }       
             
-              console.log("get event fail", response);
+              console.log("get event fail - Original http call", response);
               }
             )
         };
@@ -324,21 +322,62 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 /////////////////LOOP TO COLLECT FRIDGE OBJECTS AND PUSH TO APPROPRIATE
         for (var i = 0; i < fridgeLength; i++){//for each uid in uids array
             $http({
-              url:"https://apis.sen.se/v2/feeds/"+fridgeUids[i]+"/events/"+"?gt="+prevDay, //get url of next page
+              url:"https://apis.sen.se/v2/feeds/"+fridgeUids[i]+"/events/"+"?gt="+prevDay,
               method:'GET',
               headers: {
                 'Authorization': 'Bearer '+input['accesstoken']
               }
             }).then(function(response) {
                 var fridgeEventList = response.data;
-                for (var i = 0; i < fridgeEventList.totalObjects; i++){
-                  console.log("pushing fridge event to array");
-                  sensorData.Fridge.push(fridgeEventList.objects[i]);
-                };
+                var eventsLeftToAdd = fridgeEventList.totalObjects;
+                if (eventsLeftToAdd < 100){
+                  for (var j = 0; j < eventsLeftToAdd; j++){
+                    console.log("pushing fridge event to array in first if block...");
+                    sensorData.Fridge.push(fridgeEventList.objects[j]);
+                  };
+                }
+                else { // >100 event objects implies more than one page of data
+                  for (var k = 0; k < 100; k++){
+                    console.log("pushing fridge event to array in first else block...");
+                    sensorData.Fridge.push(fridgeEventList.objects[k]);
+                    eventsLeftToAdd = eventsLeftToAdd - 100;
+                  };
+                  var pages = Math.ceil(fridgeEventList.totalObjects / 100);
+                  for (var m = 2; m < pages + 1; m++){
+                    $http({
+                      url:"https://apis.sen.se/v2/feeds/"+fridgeUids[i]+"/events/"+"?gt="+prevDay+"&page="+m,
+                      method:'GET',
+                      headers: {
+                        'Authorization': 'Bearer '+input['accesstoken']
+                      }
+                    }).then(function(response) {
+                        if (eventsLeftToAdd < 100){
+                          for (var n = 0; n < eventsLeftToAdd; n++){
+                          console.log("pushing fridge event from next page to array (if block)...");
+                          sensorData.Fridge.push(fridgeEventList.objects[n]);
+                          };
+                        }
+                        else {
+                          for (var n = 0; n < 100; n++){
+                          console.log("pushing fridge event from next page to array (else block)...");
+                          sensorData.Fridge.push(fridgeEventList.objects[n]);
+                          eventsLeftToAdd = eventsLeftToAdd - 100;
+                          };
+                        };
 
-                //output.notify(JSON.parse(JSON.stringify(events)));
-                //return events;
-                
+                    }, function(response) {
+
+                        if (response.status === 403){
+                        refreshFunc();
+                        //try to download from sense, but limit after n attempts
+                        //to prevent infinite re-attempts
+                        }       
+                      console.log("get event fail within inner for loop", response);
+                      }
+                      )
+                  };
+                };
+     
             }, function(response) {
 
                 if (response.status === 403){
@@ -347,7 +386,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                 //to prevent infinite re-attempts
                 }       
             
-              console.log("get event fail", response);
+              console.log("get event fail - Original http call", response);
               }
             )
         };
@@ -355,21 +394,62 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 /////////////////LOOP TO COLLECT MED OBJECTS AND PUSH TO APPROPRIATE
         for (var i = 0; i < medLength; i++){//for each uid in uids array
             $http({
-              url:"https://apis.sen.se/v2/feeds/"+medUids[i]+"/events/"+"?gt="+prevDay, //get url of next page
+              url:"https://apis.sen.se/v2/feeds/"+medUids[i]+"/events/"+"?gt="+prevDay,
               method:'GET',
               headers: {
                 'Authorization': 'Bearer '+input['accesstoken']
               }
             }).then(function(response) {
                 var medEventList = response.data;
-                for (var i = 0; i < medEventList.totalObjects; i++){
-                  console.log("pushing med event to array...");
-                  sensorData.Meds.push(medsEventList.objects[i]);
-                };
+                var eventsLeftToAdd = medEventList.totalObjects;
+                if (eventsLeftToAdd < 100){
+                  for (var j = 0; j < eventsLeftToAdd; j++){
+                    console.log("pushing med event to array in first if block...");
+                    sensorData.Meds.push(medEventList.objects[j]);
+                  };
+                }
+                else { // >100 event objects implies more than one page of data
+                  for (var k = 0; k < 100; k++){
+                    console.log("pushing med event to array in first else block...");
+                    sensorData.Meds.push(medEventList.objects[k]);
+                    eventsLeftToAdd = eventsLeftToAdd - 100;
+                  };
+                  var pages = Math.ceil(medEventList.totalObjects / 100);
+                  for (var m = 2; m < pages + 1; m++){
+                    $http({
+                      url:"https://apis.sen.se/v2/feeds/"+medUids[i]+"/events/"+"?gt="+prevDay+"&page="+m,
+                      method:'GET',
+                      headers: {
+                        'Authorization': 'Bearer '+input['accesstoken']
+                      }
+                    }).then(function(response) {
+                        if (eventsLeftToAdd < 100){
+                          for (var n = 0; n < eventsLeftToAdd; n++){
+                          console.log("pushing med event from next page to array (if block)...");
+                          sensorData.Meds.push(medEventList.objects[n]);
+                          };
+                        }
+                        else {
+                          for (var n = 0; n < 100; n++){
+                          console.log("pushing med event from next page to array (else block)...");
+                          sensorData.Meds.push(medEventList.objects[n]);
+                          eventsLeftToAdd = eventsLeftToAdd - 100;
+                          };
+                        };
 
-                //output.notify(JSON.parse(JSON.stringify(events)));
-                //return events;
-                
+                    }, function(response) {
+
+                        if (response.status === 403){
+                        refreshFunc();
+                        //try to download from sense, but limit after n attempts
+                        //to prevent infinite re-attempts
+                        }       
+                      console.log("get event fail within inner for loop", response);
+                      }
+                      )
+                  };
+                };
+     
             }, function(response) {
 
                 if (response.status === 403){
@@ -378,7 +458,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                 //to prevent infinite re-attempts
                 }       
             
-              console.log("get event fail", response);
+              console.log("get event fail - Original http call", response);
               }
             )
         };
@@ -386,21 +466,62 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 /////////////////LOOP TO COLLECT ALERT OBJECTS AND PUSH TO APPROPRIATE
         for (var i = 0; i < alertLength; i++){//for each uid in uids array
             $http({
-              url:"https://apis.sen.se/v2/feeds/"+alertUids[i]+"/events/"+"?gt="+prevDay, //get url of next page
+              url:"https://apis.sen.se/v2/feeds/"+alertUids[i]+"/events/"+"?gt="+prevDay,
               method:'GET',
               headers: {
                 'Authorization': 'Bearer '+input['accesstoken']
               }
             }).then(function(response) {
                 var alertEventList = response.data;
-                for (var i = 0; i < alertEventList.totalObjects; i++){
-                  console.log("pushing alert event to array...");
-                  sensorData.Alert.push(alertEventList.objects[i]);
-                };
+                var eventsLeftToAdd = alertEventList.totalObjects;
+                if (eventsLeftToAdd < 100){
+                  for (var j = 0; j < eventsLeftToAdd; j++){
+                    console.log("pushing alert event to array in first if block...");
+                    sensorData.Alert.push(alertEventList.objects[j]);
+                  };
+                }
+                else { // >100 event objects implies more than one page of data
+                  for (var k = 0; k < 100; k++){
+                    console.log("pushing alert event to array in first else block...");
+                    sensorData.Alert.push(alertEventList.objects[k]);
+                    eventsLeftToAdd = eventsLeftToAdd - 100;
+                  };
+                  var pages = Math.ceil(alertEventList.totalObjects / 100);
+                  for (var m = 2; m < pages + 1; m++){
+                    $http({
+                      url:"https://apis.sen.se/v2/feeds/"+alertUids[i]+"/events/"+"?gt="+prevDay+"&page="+m,
+                      method:'GET',
+                      headers: {
+                        'Authorization': 'Bearer '+input['accesstoken']
+                      }
+                    }).then(function(response) {
+                        if (eventsLeftToAdd < 100){
+                          for (var n = 0; n < eventsLeftToAdd; n++){
+                          console.log("pushing alert event from next page to array (if block)...");
+                          sensorData.Alert.push(alertEventList.objects[n]);
+                          };
+                        }
+                        else {
+                          for (var n = 0; n < 100; n++){
+                          console.log("pushing alert event from next page to array (else block)...");
+                          sensorData.Alert.push(alertEventList.objects[n]);
+                          eventsLeftToAdd = eventsLeftToAdd - 100;
+                          };
+                        };
 
-                //output.notify(JSON.parse(JSON.stringify(events)));
-                //return events;
-                
+                    }, function(response) {
+
+                        if (response.status === 403){
+                        refreshFunc();
+                        //try to download from sense, but limit after n attempts
+                        //to prevent infinite re-attempts
+                        }       
+                      console.log("get event fail within inner for loop", response);
+                      }
+                      )
+                  };
+                };
+     
             }, function(response) {
 
                 if (response.status === 403){
@@ -409,7 +530,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                 //to prevent infinite re-attempts
                 }       
             
-              console.log("get event fail", response);
+              console.log("get event fail - Original http call", response);
               }
             )
         };
@@ -427,7 +548,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
           //to prevent infinite re-attempts
         }       
         //output.notify(JSON.parse(JSON.stringify(response)));//for testing, DELETE AFTER TESTING
-        console.log("download func fail", response);
+        console.log("download func failed", response);
         //EXIT PROMISE
         })
         //END OF ORIGINAL HTTP PROMISE
