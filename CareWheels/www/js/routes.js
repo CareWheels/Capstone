@@ -1,15 +1,9 @@
-angular.module('careWheels')
+var app = angular.module('careWheels');
 
-.config(function($stateProvider, $urlRouterProvider) { 
+app.config(function($stateProvider, $urlRouterProvider) {
 
   //$urlRouterProvider.otherwise('/');
   $stateProvider
-
-    
-    .state('home', {
-      url: '/',
-      templateUrl: 'index.html'
-    })
 
     .state('login', {
       url: '/login',
@@ -43,7 +37,21 @@ angular.module('careWheels')
       url: '/reminders',
       templateUrl: 'views/reminders.html',
       controller: 'remindersController'
+    })
+
+    /* TESTING; TODO: for testing. dev buttons */
+    .state('testButtons', {
+      url: '/test',
+      templateUrl: 'views/testButtons.html'
     });
 
-  //$urlRouterProvider.otherwise('/groupStatus');
-})
+  /* default view (should be login on production) */
+  $urlRouterProvider.otherwise('/test');
+});
+
+app.controller('goBackController', function($scope, $ionicHistory){
+  /* go back button */
+  $scope.goBack = function () { $ionicHistory.goBack(); };
+});
+
+
