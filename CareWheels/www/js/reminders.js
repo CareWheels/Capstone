@@ -1,17 +1,19 @@
 /**
  * CareWheels - Reminders Controller
- *
+ * For Reminders component, as defined by Design Document. Used for Reminders view (reminders.html) to manage 3 User Reminders.
+ * Each Reminder is held in live memory in $scope.reminders[], static memory via NotificationController.data[], in custom fields on the
+ * Cyclos server, and in the Notifications Tray (handled by the Notifications component).
  */
 angular.module('careWheels')
 
 .controller('remindersController', ['$scope', '$controller', '$ionicPopup', '$state', function($scope, $controller, $ionicPopup, $state){
 
-  var notifViewModel = $scope.$new();
-  var restViewModel = $scope.$new();
+  var notifViewModel = $scope.$new();   //to access Notifications functions
+  var restViewModel = $scope.$new();    //to access Reminder REST controller
   $controller('NotificationController',{$scope : notifViewModel });
   $controller('ReminderRestController',{$scope : restViewModel });
 
-  $scope.reminders = [
+  $scope.reminders = [    //array of live definitions; to be displayed to user
     {/* Reminder 0 */
       hour: notifViewModel.data[0].hours,
       min: notifViewModel.data[0].minutes, //leading zeros will automatically be added
@@ -33,7 +35,7 @@ angular.module('careWheels')
     }
   ];
 
-  for(i=0; i<3; ++i){
+  for(i=0; i<3; ++i){   //need to convert each from military to conventional time
     if($scope.reminders[i].hour>12){
       $scope.reminders[i].hour -= 12;
       $scope.reminders[i].amOrPm = 'PM';
@@ -136,37 +138,38 @@ angular.module('careWheels')
       return input
   };
 
+  //creates a popup to verify user wants to reset to default Reminder times
   $scope.confirmReset = function() {
      var confirmPopup = $ionicPopup.confirm({
        title: 'Reset',
-       template: 'Are you sure you want to reset all Reminders to their times?'
+       template: 'Are you sure you want to reset all Reminders to their default times?'
      });
 
      confirmPopup.then(function(res) {
-       if(res) {
-        //Delete old reminder files and reset to default
-        notifViewModel.Delete_Reminders();
-        notifViewModel.Init_Notifs();
+       if(res) {    //if yes button was pressed
+        notifViewModel.Delete_Reminders();  //Delete old reminder files and
+        notifViewModel.Init_Notifs();       //reset to default
 
-        //Reset Cyclos fields to default
+        //Reset Cyclos custom fields to default
         var rem1 = notifViewModel.Reminder_As_String(0);
         var rem2 = notifViewModel.Reminder_As_String(1);
         var rem3 = notifViewModel.Reminder_As_String(2);
-        var myUser = angular.fromJson(window.sessionStorage['user']);
-        restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);
-        $state.go($state.current, {}, {reload: true});
+        var myUser = angular.fromJson(window.sessionStorage['user']);   //retrieve user credentials
+        restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);   //will handle generating error if necessary
+        $state.go($state.current, {}, {reload: true});    //reset view so changes are immediately visible
        } else {
          console.log('Reset canceled!');
        }
      });
    };
 
+  //Push live Reminder values to all other locations
   $scope.saveReminders = function() {
     //update Notification component's memory and local reminder times
     for(var index=0; index<3; ++index){
       var myHours = $scope.reminders[index].hour;
-      if($scope.reminders[index].amOrPm == 'PM') myHours = parseInt(myHours)+12;
-      notifViewModel.Create_Notif(myHours, $scope.reminders[index].min, 0, $scope.reminders[index].isOn, index+1);
+      if($scope.reminders[index].amOrPm == 'PM') myHours = parseInt(myHours)+12;    //convert to military time
+      notifViewModel.Create_Notif(myHours, $scope.reminders[index].min, 0, $scope.reminders[index].isOn, index+1);    //this creates Tray notification and also updates Notification file
       console.log(myHours + ":" + $scope.reminders[index].min + ":" + 0 + " " + $scope.reminders[index].isOn + index);
     }
 
@@ -180,7 +183,7 @@ angular.module('careWheels')
     if($scope.reminders[0].isOn){
       var rem3 = notifViewModel.Reminder_As_String(2);
     } else rem3 = '';
-    var myUser = angular.fromJson(window.sessionStorage['user']);
+    var myUser = angular.fromJson(window.sessionStorage['user']);   //retrieve user credentials
     console.log("rem1="+rem1+" rem2="+rem2+" rem3="+rem3);
     restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);
   }
