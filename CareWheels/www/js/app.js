@@ -37,7 +37,62 @@ var app = angular.module('careWheels', [
 
   })
 
+  // API factory for making all php endpoints globally accessible.
+  app.factory('API', function(BASE_URL) {
+    var api = {
+      userAndGroupInfo:     BASE_URL + '/userandgroupmemberinfo.php',
+      userInfo:             BASE_URL + '/userinfo.php',
+      updateUserReminders:  BASE_URL + '/updateuserreminders.php',
+      groupMemberInfo:      BASE_URL + '/groupmemberinfo.php',
+      updateLastOwnership:  BASE_URL + '/updatelastownershiptakentime.php',
+      dailyTrxHist:         BASE_URL + '/dailytransactionhistory.php'
+    };
+    return api;
+  })
 
+  // GroupInfo factory for global GroupInfo
+  app.factory('GroupInfo', function() {
+    return [];
+  })
+
+  // User factory
+  app.factory('User', function(DownloadService, GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup) {
+    var user = {};
+    //window.localStorage['loginCredentials'] = null;
+
+    user.login = function(uname, passwd, rmbr) {
+
+      return $http({
+        url:API.userAndGroupInfo,
+        method: 'POST',
+        data: $httpParamSerializerJQLike({
+            username:uname,
+            password:passwd,
+            usernametofind:uname
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }).then(function(response) {
+        if (rmbr)
+          window.localStorage['loginCredentials'] = angular.toJson({"username":uname, "password":passwd});
+        //store user info
+        //store groupMember info
+        DownloadService.addGroupInfo(response.data);
+        //GroupInfo = response.data;
+        $state.go('groupStatus');
+
+      }, function(response) {
+        //present login failed
+        var alertPopup = $ionicPopup.alert({
+          title: 'Login failed!',
+          template: 'Please check your credentials!'
+        });
+      })
+    };
+
+    return user;
+  });
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -64,9 +119,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
   /////////////////////////////////////////////////////////////////////////////////////////
   //DATA DOWNLOAD FUNCTION
   /////////////////////////////////////////////////////////////////////////////////////////
+  var thesemembers = DownloadService.getGroupInfo();
+  console.log("about to download data for: ", thesemembers);
   $scope.DownloadData = function () {
-    console.log("object from GroupInfo", GroupInfo);
-
       /**
       // This contains the worker body.
       // The function must be self contained.
@@ -641,27 +696,24 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 /////////////////////////////////////////////////////////////////////////////////////////
 app.factory('DownloadService', function() {
 
-  var currentGroup = [];
-
+  var membersToDownload = [];
   // public API
   return {
-    getGroup: function () {
-      if (currentGroup == null){
-          return console.error("Group data has not been parsed yet!");
-        }
-      return currentGroup;
-    },
-    addToGroup: function ( id ) {
-      //will be called by data download.  This will be an object
-      //which contains up to 5 members, with and array of 3 feeds each
-      objectToAdd = id;
-      console.log('object to add', objectToAdd);
-      /////////////////////////////////////////////////////////////////////////////////////////
-      //This is where i will parse the feed object, and save it to currentGroup
-      /////////////////////////////////////////////////////////////////////////////////////////
-      currentGroup.push(objectToAdd);
-      console.log('check currentGroup contents', currentGroup);
+    addGroupInfo: function (group) {
+      var allGroupMembers = group;
 
+    for (i=0; i < allGroupMembers.length; i++){
+        if (allGroupMembers[i].group.name == "CareWheel 1") {
+          membersToDownload.push(allGroupMembers[i]);
+        };
+      }
+      console.log("group members in current users carewheel = ", membersToDownload);
+
+    },
+    getGroupInfo: function () {
+
+      console.log('memberstodownload', membersToDownload);
+      return membersToDownload;
     }
   };
 
@@ -983,58 +1035,3 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
 
 });
 
-  // API factory for making all php endpoints globally accessible.
-  app.factory('API', function(BASE_URL) {
-    var api = {
-      userAndGroupInfo:     BASE_URL + '/userandgroupmemberinfo.php',
-      userInfo:             BASE_URL + '/userinfo.php',
-      updateUserReminders:  BASE_URL + '/updateuserreminders.php',
-      groupMemberInfo:      BASE_URL + '/groupmemberinfo.php',
-      updateLastOwnership:  BASE_URL + '/updatelastownershiptakentime.php',
-      dailyTrxHist:         BASE_URL + '/dailytransactionhistory.php'
-    };
-    return api;
-  })
-
-  // GroupInfo factory for global GroupInfo
-  app.factory('GroupInfo', function() {
-    return [];
-  })
-
-  // User factory
-  app.factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup) {
-    var user = {};
-    //window.localStorage['loginCredentials'] = null;
-
-    user.login = function(uname, passwd, rmbr) {
-
-      return $http({
-        url:API.userAndGroupInfo,
-        method: 'POST',
-        data: $httpParamSerializerJQLike({
-            username:uname,
-            password:passwd,
-            usernametofind:uname
-        }),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }).then(function(response) {
-        if (rmbr)
-          window.localStorage['loginCredentials'] = angular.toJson({"username":uname, "password":passwd});
-        //store user info
-        //store groupMember info
-        GroupInfo = response.data;
-        $state.go('groupStatus');
-
-      }, function(response) {
-        //present login failed
-        var alertPopup = $ionicPopup.alert({
-          title: 'Login failed!',
-          template: 'Please check your credentials!'
-        });
-      })
-    };
-
-    return user;
-  });
