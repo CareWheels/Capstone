@@ -16,25 +16,25 @@ angular.module('careWheels')
   $scope.reminders = [    //array of live definitions; to be displayed to user
     {/* Reminder 0 */
       hour: notifViewModel.data[0].hours,
-      min: notifViewModel.data[0].minutes, //leading zeros will automatically be added
-      amOrPm: 'AM',
-      isPM: false,
+      min: notifViewModel.data[0].minutes, // leading zeros will automatically be added
+      isPM: false,                          // make sure these two values match
+      amOrPm: 'AM',                        // ng-change will update this value
       isOn: notifViewModel.data[0].off
     },
     {/* Reminder 1 */
       hour: notifViewModel.data[1].hours,
       min: notifViewModel.data[1].minutes,
-      amOrPm: 'AM',
-      isPM: false,
-      isOn: notifViewModel.data[1].off
+      isPM: true,
+      amOrPm: 'PM',
+      isOn: notifViewModel.data[1].on
 
     },
     {/* Reminder 2 */
       hour: notifViewModel.data[2].hours,
       min: notifViewModel.data[2].minutes,
-      amOrPm: 'AM',
-      isPM: false,
-      isOn: notifViewModel.data[2].off
+      isPM: true,
+      amOrPm: 'PM',
+      isOn: notifViewModel.data[2].on
     }
   ];
 
@@ -44,84 +44,25 @@ angular.module('careWheels')
       $scope.reminders[i].amOrPm = 'PM';
     }
   }
-/**
-   * PLEASE NOTE: these next 6 functions can be consolidated
-   * into just two functions, by using an array of booleans
-   * and passing an index as a parameter for the following
-   * functions. I attempted to code this, however
-   * I kept getting naming conflict errors with the toggle
-   * booleans.
-   * */
 
-  /** REMINDER 0: ON/OFF toggle **/
-  $scope.toggleOnOff_0 = function(){
-    if ($scope.isOnOffToggled_0 == false) {
-      $scope.reminders[0].isOn = false;
-      $scope.isOnOffToggled_0 = true;
-    } else{
-      $scope.reminders[0].isOn = true;
-      $scope.isOnOffToggled_0 = false;
-    }
-    console.log("Toggled: " + $scope.reminders[0].isOn);
-  };
-  /** REMINDER 0: AM/PM toggle **/
-  $scope.toggleAmPm_0 = function(){
-    if ($scope.isAmPmToggled_0 == false) {
-      $scope.reminders[0].amOrPm = 'AM';
-      $scope.reminders[0].isPM = false;
-      $scope.isAmPmToggled_0 = true;
-    } else{
-      $scope.reminders[0].amOrPm = 'PM';
-      $scope.reminders[0].isPM = true;
-      $scope.isAmPmToggled_0 = false;
-    }
-    console.log("Toggled: " + $scope.reminders[0].amOrPm);
-  };
 
-  /** REMINDER 1: ON/OFF toggle **/
-  $scope.toggleOnOff_1 = function(){
-    if ($scope.isOnOffToggled_1 == false) {
-      $scope.reminders[1].isOn = false;
-      $scope.isOnOffToggled_1 = true;
-    } else{
-      $scope.reminders[1].isOn = true;
-      $scope.isOnOffToggled_1 = false;
-    }
-    console.log("Toggled: " + $scope.reminders[1].isOn);
+  /**
+   *  the following two functions are for the toggles, they dynamically
+   *  update the scope variables. by triggering by angular's 'ng-change'
+   *  */
+  $scope.toggleOnOff = function(index){
+    $scope.reminders[index].isOn = $scope.reminders[index].isOn != false;
+    console.log("Toggled: " + $scope.reminders[index].isOn); ////////////// testing
   };
-  /** REMINDER 1: AM/PM toggle **/
-  $scope.toggleAmPm_1 = function(){
-    if ($scope.isAmPmToggled_1 == false) {
-      $scope.reminders[1].amOrPm = 'AM';
-      $scope.isAmPmToggled_1 = true;
+  $scope.toggleAmPm = function(index){
+    if ($scope.reminders[index].isPM == false) {
+      $scope.reminders[index].isPM = false;
+      $scope.reminders[index].amOrPm = 'AM';
     } else{
-      $scope.reminders[1].amOrPm = 'PM';
-      $scope.isAmPmToggled_1 = false;
+      $scope.reminders[index].isPM = true;
+      $scope.reminders[index].amOrPm = 'PM';
     }
-    console.log("Toggled: " + $scope.reminders[1].amOrPm);
-  };
-
-  /** REMINDER 2 : ON/OFF toggle **/
-  $scope.toggleOnOff_2 = function(){
-    if ($scope.isOnOffToggled_2 == false) {
-      $scope.reminders[2].isOn = false;
-      $scope.isOnOffToggled_2 = true;
-    } else{
-      $scope.reminders[2].isOn = true;
-      $scope.isOnOffToggled_2 = false;
-    }
-    console.log("Toggled: " + $scope.reminders[2].isOn);
-  };
-  /** REMINDER 2: AM/PM toggle **/
-  $scope.toggleAmPm_2 = function(){
-    if ($scope.isAmPmToggled_2 == false) {
-      $scope.reminders[2].amOrPm = 'AM';
-      $scope.isAmPmToggled_2 = true;
-    } else{
-      $scope.reminders[2].amOrPm = 'PM';
-      $scope.isAmPmToggled_2 = false;
-    }
-    console.log("Toggled: " + $scope.reminders[2].amOrPm);
+    console.log("Toggled: " + $scope.reminders[index].amOrPm); ////////////// testing
   };
 
 
