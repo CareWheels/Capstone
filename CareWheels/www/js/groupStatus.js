@@ -5,7 +5,7 @@
 
 angular.module('careWheels')
 
-  .controller('groupStatusController', function ($scope, $interval) {
+  .controller('groupStatusController', function ($scope, $interval, GroupInfo, DownloadService) {
 
     $scope.group = {
       username: 'test01',

@@ -18,7 +18,6 @@ angular.module('careWheels')
       resolve: {
         "auth": function($state, User) {
           var credentials = angular.fromJson(window.localStorage['loginCredentials']);
-
           if (credentials)
             return User.login(credentials.username, credentials.password, true);
           else
@@ -45,5 +44,5 @@ angular.module('careWheels')
       controller: 'remindersController'
     });
 
-  //$urlRouterProvider.otherwise('/groupStatus');
+  $urlRouterProvider.otherwise('/home');
 })
