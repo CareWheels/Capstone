@@ -31,7 +31,53 @@ angular.module('careWheels')
     //else {
     //  return "boo";
     //}
-  }
+  };
+
+
+  /**
+   *  this scope variable holds all the data in an array,
+   *  this is used so 'ng-repeat' can populate the html.
+   *
+   *  array:  index 0 = 12am
+   *          index 1 = 1am
+   *                *
+   *                *
+   *                *
+   *          index 23 = 11pm
+   *  */
+  $scope.userStats = [
+    { //midnight
+      time:     '12am',
+      presence: {
+        status: 'blue',
+        pings:  '* * *'
+      },
+      meals: {
+        status: 'yellow',
+        pings:  '* * * * *'
+      },
+      meds: {
+        status: 'red',
+        pings:  '*'
+      }
+    },
+    { //one am
+      time:     'am',
+      presence: {
+        status: 'blue',
+        pings:  '* * *'
+      },
+      meals: {
+        status: 'yellow',
+        pings:  '* * * * *'
+      },
+      meds: {
+        status: 'red',
+        pings:  '*'
+      }
+    },
+
+  ];
 
   $scope.trevor = {
     name: 'Trevor',

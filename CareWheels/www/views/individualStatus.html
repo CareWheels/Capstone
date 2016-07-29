@@ -11,19 +11,30 @@
 
   <!-- individual status content -->
   <ion-content class="moveDown" ng-controller="individualStatusController">
-    <div class="row header">
-      <div class="col no_border col-25"></div>
-      <div class="col no_border col-25">presence</div>
-      <div class="col no_border col-25">meals</div>
-      <div class="col no_border col-25">meds</div>
-    </div>
-    <div class="row">
-      <div class="col">12am</div>
-      <div class="col" ng-style="{'background':trevor.midnight.presence.status}"></div>
-      <div class="col" ng-style="{'background':trevor.midnight.meals.status}">{{trevor.midnight.meals.pings}}</div>
-      <div class="col" ng-style="{'background':trevor.midnight.meds.status}">{{getPings('midnight', 'meds')}}</div>
-    </div>
-    <div class="row">
+    <ul class="row header">
+      <li class="col no_border col-25"></li>
+      <li class="col no_border col-25">presence</li>
+      <li class="col no_border col-25">meals</li>
+      <li class="col no_border col-25">meds</li>
+    </ul>
+    <ul class="row" ng-repeat="data in userStats">
+        <li class="col">{{data.time}}</li>
+        <li class="col" ng-style="{'background':data.presence.status}">
+          {{data.presence.pings}}
+        </li>
+        <li class="col" ng-style="{'background':data.meals.status}">
+          {{data.meals.pings}}
+        </li>
+        <li class="col" ng-style="{'background':data.meds.status}">
+          {{data.meds.pings}}
+        </li>
+    </ul>
+
+
+
+
+
+    <!--<div class="row">
       <div class="col">1</div>
       <div class="col" ng-style="{'background':trevor.one.presence.status}"></div>
       <div class="col" ng-style="{'background':trevor.one.meals.status}">{{trevor.one.meals.pings}}</div>
@@ -95,7 +106,7 @@
       <div class="col" ng-style="{'background':trevor.twelve.meals.status}">{{trevor.twelve.meals.pings}}</div>
       <div class="col" ng-style="{'background':trevor.twelve.meds.status}">{{trevor.twelve.meds.pings}}</div>
     </div>
-    <!-- Change the rest later -->
+
     <div class="row">
       <div class="col">1</div>
       <div class="col"></div>
@@ -162,6 +173,9 @@
       <div class="col"></div>
       <div class="col"></div>
     </div>
+
+    -->
+
   </ion-content>
     </ion-side-menu-content>
 
