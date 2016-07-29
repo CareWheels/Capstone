@@ -2,7 +2,9 @@
 
 angular.module('careWheels', [
   'ionic',
-  'ngCordova'
+  'ui.router',
+  'ngCordova',
+  'fileloggermodule'
 ])
 
   //contant definition for endpoint base url
