@@ -157,7 +157,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     var count = 1;//this will be used in constructing the page urls
     var downloadFunc = function(){
 
-    var dataUrl = "https://apis.sen.se/v2/nodes/";
+    var dataUrl = "https://apis.sen.se/v2/nodes/";//get page of nodes for this user
     $http({
       url:dataUrl, 
       method:'GET',    
@@ -166,24 +166,23 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       }
     }).then(function(response) {   
 
-        //received response, send to main thread
-        //NOTE: need to JSON.parse + stringify the response
-        //or else there will be an error as we attempt to 
-        //pass the response back to main thread
+        //This function explores the response received from /nodes/
+        //and finds the appropriate uid's within the publishes array
+        //of the node object with the desired label (presence, med, fridge)
         var getUids = function(arg){
         
         var feeds = arg.data;
         var objects = feeds.objects;
         var objectsLength = objects.length;
-        for (var i = 0; i < objectsLength; i++){
+        for (var i = 0; i < objectsLength; i++){//iterate over all node objects on the returned page
           console.log("CHECKING NODES...");
-          if (objects[i].label == "presenceDataAnalysisSensor"){
+          if (objects[i].label == "presenceDataAnalysisSensor"){//match label
             console.log("added presence uid");
             var presFeeds = objects[i].publishes
             var presLength = presFeeds.length;
-            for (var j = 0; j < presLength; j++){
+            for (var j = 0; j < presLength; j++){//iterate over publishes[]
               if (presFeeds[j].label == "Presence"){
-              presenceUids.push(presFeeds[j].uid);
+              presenceUids.push(presFeeds[j].uid);//add uid with the specified label "Presence" to array
               }
             }; 
           }
@@ -207,7 +206,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               }
             }; 
           }
-          if (objects[i].label == "testtesttest"){
+          if (objects[i].label == "testtesttest"){//added this in case we need to find an alert uid
             console.log("added alert uid");
             var alertFeeds = objects[i].publishes
             var alertLength = alertFeeds.length;
@@ -223,7 +222,8 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         };
       };
 
-      getUids(response);
+      getUids(response);//adds all specified node objects (and their published uids) to appropriate arrays
+                        //only for the first page (10 node objects) of response
 
 /////////HANDLE > 1 pages from /nodes/ endpoint
 /*
@@ -647,6 +647,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 
       //bill = access-A0RegyQMErQ7DgqS1a9f8KxcnAsjt5, refresh-PjBiwFdKyXwDsfm82FfVVK6IGWLLk0
       //claude = access-XGDy6rcjvQgBnQbY40fS9p1w1bWqBc, refresh-UMogAOAGq6nUzTEqJovINFjjxAzyMK
+      //
       return angularWorker.run({refreshtoken:"UMogAOAGq6nUzTEqJovINFjjxAzyMK", accesstoken:"XGDy6rcjvQgBnQbY40fS9p1w1bWqBc"});
       
     }, function error(reason) {
