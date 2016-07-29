@@ -18,20 +18,23 @@ angular.module('careWheels')
       hour: notifViewModel.data[0].hours,
       min: notifViewModel.data[0].minutes, //leading zeros will automatically be added
       amOrPm: 'AM',
-      isOn: notifViewModel.data[0].on
+      isPM: false,
+      isOn: notifViewModel.data[0].off
     },
     {/* Reminder 1 */
       hour: notifViewModel.data[1].hours,
       min: notifViewModel.data[1].minutes,
       amOrPm: 'AM',
-      isOn: notifViewModel.data[1].on
+      isPM: false,
+      isOn: notifViewModel.data[1].off
 
     },
     {/* Reminder 2 */
       hour: notifViewModel.data[2].hours,
       min: notifViewModel.data[2].minutes,
       amOrPm: 'AM',
-      isOn: notifViewModel.data[2].on
+      isPM: false,
+      isOn: notifViewModel.data[2].off
     }
   ];
 
@@ -65,9 +68,11 @@ angular.module('careWheels')
   $scope.toggleAmPm_0 = function(){
     if ($scope.isAmPmToggled_0 == false) {
       $scope.reminders[0].amOrPm = 'AM';
+      $scope.reminders[0].isPM = false;
       $scope.isAmPmToggled_0 = true;
     } else{
       $scope.reminders[0].amOrPm = 'PM';
+      $scope.reminders[0].isPM = true;
       $scope.isAmPmToggled_0 = false;
     }
     console.log("Toggled: " + $scope.reminders[0].amOrPm);
@@ -119,13 +124,6 @@ angular.module('careWheels')
     console.log("Toggled: " + $scope.reminders[2].amOrPm);
   };
 
-
-  /**
-   * function for ng-checked, returns a true if set at PM
-   * or a false if set to AM */
-  $scope.isPM = function(element){
-    return element == 'PM';
-  };
 
   /**
    *  this function is used to one leading zero
@@ -196,7 +194,7 @@ angular.module('careWheels')
   //window.localStorage['Reminders'] = null;    //Turning this on simulates starting from fresh storage every time controller is called by view change
   $scope.data = angular.fromJson(window.localStorage['Reminders']);   //needs to be called outside the functions so it persists for all of them
 
-  //To be called during app startup after login; retrieves saved alert times (if they exist) or creates default alerts (if they don't) 
+  //To be called during app startup after login; retrieves saved alert times (if they exist) or creates default alerts (if they don't)
   //and calls Create_Notif for each of them
   $scope.Init_Notifs = function() {
     //$scope.data = angular.fromJson(window.localStorage['Reminders']);
@@ -229,11 +227,11 @@ angular.module('careWheels')
           sound: null   //should be updated to freeware sound
         }).then(function() {
           $log.log("Alert notification has been set");
-        });        
+        });
       } else $log.warn("Plugin disabled");
     } if(reminderNum>0 && reminderNum <4){    //is notif a user reminder?
       var time = new Date($scope.data[0].hours + ":" + $scope.data[0].minutes);    //defaults to current date/time
-      time.setHours(hours);     //update 
+      time.setHours(hours);     //update
       $scope.data[reminderNum-1].hours = hours;
       time.setMinutes(minutes);
       $scope.data[reminderNum-1].minutes = minutes;
@@ -251,8 +249,8 @@ angular.module('careWheels')
           sound: null   //same, hopefully a different sound than red alerts
         }).then(function() {
           $log.log("Notification" + reminderNum + "has been scheduled for " + time.getUTCTime() + ", daily");
-        });    
-      } else $log.warn("Plugin disabled"); 
+        });
+      } else $log.warn("Plugin disabled");
     } else if(reminderNum >=4) $log.warn("Incorrect attempt to create notification for id #" + reminderNum);
   };
 
@@ -265,8 +263,8 @@ angular.module('careWheels')
           $log.log(i + " is cleared");
         });
       }
-    } else $log.warn("Plugin disabled"); 
-    
+    } else $log.warn("Plugin disabled");
+
     window.localStorage['Reminders'] = null;   //and delete Reminders array
     $scope.data = null;
   }
@@ -277,12 +275,12 @@ angular.module('careWheels')
     if(id==1||id==2||id==3){
       $scope.data[id-1].on = false;
       window.localStorage['Reminders'] = angular.toJson($scope.data);   //and save $scope.data so toggle is remembered
-    } 
+    }
     if(isAndroid){
       $cordovaLocalNotification.clear(id, function() {
         $log.log(id + " is cleared");
       });
-    } else $log.warn("Plugin disabled"); 
+    } else $log.warn("Plugin disabled");
   }
 
   //prints the in-memory and scheduled status of Reminders, for testing purposes
@@ -294,7 +292,7 @@ angular.module('careWheels')
     if(isAndroid){
       cordova.plugins.notification.local.get([1, 2, 3], function (notifications) {
         alert("Scheduled: " + notifications);
-      });      
+      });
     } else $log.warn("Plugin disabled");
   }
 
