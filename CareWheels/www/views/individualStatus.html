@@ -17,24 +17,8 @@
       <li class="col no_border col-25">meals</li>
       <li class="col no_border col-25">meds</li>
     </ul>
-    <ul class="row" ng-repeat="data in userStats">
-        <li class="col">{{data.time}}</li>
-        <li class="col" ng-style="{'background':data.presence.status}">
-          {{data.presence.pings}}
-        </li>
-        <li class="col" ng-style="{'background':data.meals.status}">
-          {{data.meals.pings}}
-        </li>
-        <li class="col" ng-style="{'background':data.meds.status}">
-          {{data.meds.pings}}
-        </li>
-    </ul>
 
-
-
-
-
-    <!--<div class="row">
+    <div class="row">
       <div class="col">1</div>
       <div class="col" ng-style="{'background':trevor.one.presence.status}"></div>
       <div class="col" ng-style="{'background':trevor.one.meals.status}">{{trevor.one.meals.pings}}</div>
@@ -174,7 +158,6 @@
       <div class="col"></div>
     </div>
 
-    -->
 
   </ion-content>
     </ion-side-menu-content>
@@ -198,3 +181,23 @@
   </ion-side-menus>
 </ion-view>
 <div ui-view></div>
+
+
+<!--    Example of how to use ng-repeat
+
+<ul class="row" ng-repeat="data in userStats">
+  <li class="col">{{data.time}}</li>
+  <li class="col" ng-style="{'background':data.presence.status}">
+    {{data.presence.pings}}
+  </li>
+  <li class="col" ng-style="{'background':data.meals.status}">
+    {{data.meals.pings}}
+  </li>
+  <li class="col" ng-style="{'background':data.meds.status}">
+    {{data.meds.pings}}
+  </li>
+</ul>
+
+-->
+
+
