@@ -20,7 +20,6 @@
 
     <!-- cordova script (this will be a 404 during development) -->
     <script src="lib/ngCordova/dist/ng-cordova.js"></script>
-    <script src="lib/filelogger.min.js"></script>
     <script src="cordova.js"></script>
 
 
@@ -32,7 +31,6 @@
     <script src="js/groupStatus.js"></script>
     <script src="js/reminders.js"></script>
     <script src="js/individualStatus.js"></script>
-    <script src="js/filelogger.ctrl.js"></script>
 
     <!-- Style sheets -->
     <link href="css/groupStatus.css" rel="stylesheet">
@@ -162,31 +160,6 @@
           <pre>http response data for dailytransactionhistory.php post request: {{data}}</pre>
           <pre>http status code for credituser.php post request: {{status2}}</pre>
           <pre>http response data for credituser.php post request: {{data2}}</pre>
-        </div>
-        <div ng-controller="fileloggerCtrl">
-          <button class="button button-block button-positive" ng-click="initLogCurrentDate()">Init log to current date
-          </button>
-
-          <form ng-submit="initLogCustomDate()">
-            <div class="list ">
-              <div class="item item-input-inset">
-                <label class="item item-input-wrapper">
-                  <!--<span class="input-label">Custom Date</span>-->
-                  <input type="text" placeholder="yyyy-MM-dd" ng-model="inputDate.text">
-                </label>
-                <button type="submit" class="button button-positive">Init log to custom date
-                </button>
-              </div>
-            </div>
-          </form>
-
-          <button class="button button-block button-positive" ng-click="someLog()">Generate Log</button>
-          <button class="button button-block button-positive" ng-click="viewLog()">View Log</button>
-          <pre>{{viewLogStatus}}</pre>
-          <button class="button button-block button-positive" ng-click="logFileInfo()">Log file information</button>
-          <pre>{{logFileInfoStatus}}</pre>
-          <button class="button button-block button-positive" ng-click="deleteLogFile()">Delete Log File</button>
-          <pre>{{deleteLogFileStatus}}</pre>
         </div>
       </ion-content>
     </ion-pane>
