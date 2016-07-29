@@ -4,7 +4,7 @@
  */
 angular.module('careWheels')
 
-.controller('remindersController', ['$scope', '$controller', '$ionicPopup', function($scope, $controller, $ionicPopup){
+.controller('remindersController', ['$scope', '$controller', '$ionicPopup', '$state', function($scope, $controller, $ionicPopup, $state){
 
   var notifViewModel = $scope.$new();
   var restViewModel = $scope.$new();
@@ -57,6 +57,7 @@ angular.module('careWheels')
       $scope.reminders[0].isOn = true;
       $scope.isOnOffToggled_0 = false;
     }
+    console.log("Toggled: " + $scope.reminders[0].isOn);
   };
   /** REMINDER 0: AM/PM toggle **/
   $scope.toggleAmPm_0 = function(){
@@ -67,6 +68,7 @@ angular.module('careWheels')
       $scope.reminders[0].amOrPm = 'PM';
       $scope.isAmPmToggled_0 = false;
     }
+    console.log("Toggled: " + $scope.reminders[0].amOrPm);
   };
 
   /** REMINDER 1: ON/OFF toggle **/
@@ -78,6 +80,7 @@ angular.module('careWheels')
       $scope.reminders[1].isOn = true;
       $scope.isOnOffToggled_1 = false;
     }
+    console.log("Toggled: " + $scope.reminders[1].isOn);
   };
   /** REMINDER 1: AM/PM toggle **/
   $scope.toggleAmPm_1 = function(){
@@ -88,6 +91,7 @@ angular.module('careWheels')
       $scope.reminders[1].amOrPm = 'PM';
       $scope.isAmPmToggled_1 = false;
     }
+    console.log("Toggled: " + $scope.reminders[1].amOrPm);
   };
 
   /** REMINDER 2 : ON/OFF toggle **/
@@ -99,6 +103,7 @@ angular.module('careWheels')
       $scope.reminders[2].isOn = true;
       $scope.isOnOffToggled_2 = false;
     }
+    console.log("Toggled: " + $scope.reminders[2].isOn);
   };
   /** REMINDER 2: AM/PM toggle **/
   $scope.toggleAmPm_2 = function(){
@@ -109,6 +114,7 @@ angular.module('careWheels')
       $scope.reminders[2].amOrPm = 'PM';
       $scope.isAmPmToggled_2 = false;
     }
+    console.log("Toggled: " + $scope.reminders[2].amOrPm);
   };
 
 
@@ -148,6 +154,7 @@ angular.module('careWheels')
         var rem3 = notifViewModel.Reminder_As_String(2);
         var myUser = angular.fromJson(window.sessionStorage['user']);
         restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);
+        $state.go($state.current, {}, {reload: true});
        } else {
          console.log('Reset canceled!');
        }

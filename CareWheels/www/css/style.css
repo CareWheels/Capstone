@@ -70,6 +70,10 @@ embed{
   top: 43px;
 }
 
+.moveDownMore{
+  top: 83px;
+}
+
 .reminderTime {
   margin-left: 75%;
   text-align: center;
