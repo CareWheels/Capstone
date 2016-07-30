@@ -38,16 +38,16 @@ angular.module('careWheels')
     name: 'Trevor',
     midnight: {
       presence: {
-        status: 'yellow'
+        status: 'blue'
       },
       meals: {
         status: 'yellow',
         pings: ''
       },
       meds: {
-      	status: 'yellow',
-        //pings = $scope.getPings(3)
-        pings: ''
+      	status: 'blue',
+        //pings = $scope.getPings(midnight, meds)
+        //pings: ''
       }
     },
     one: {
