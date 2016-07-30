@@ -9,13 +9,15 @@
           <button ng-click="toggleRight()" menu-toggle="right" class="button button-icon icon ion-navicon"></button>
         </ion-nav-buttons>
       </ion-nav-bar>
+      <div class="bar bar-subheader">
+        <button ng-click="saveReminders()" class="button icon ion-archive">Save Changes</button>
+        <button ng-click="confirmReset()" class="button icon ion-trash-a">Reset Changes</button>
+      </div>
 
 
       <!-- Reminders list -->
-      <ion-content class="moveDown">
+      <ion-content class="moveDownMore">
         <ion-list>
-        <button ng-click="saveReminders()" class="button icon ion-archive">Save Changes</button>
-        <button ng-click="confirmReset()" class="button icon ion-trash-a">Reset Changes</button>
           <!-- Reminder 0 -->
           <ion-item>
             <ul class="list">
@@ -23,9 +25,8 @@
                 <label class="toggle toggle-balanced  onOffToggle">
                   OFF
                   <input type="checkbox"
-                         ng-checked=reminders[0].isOn
-                         ng-model=isOnOffToggled_0
-                         ng-change="toggleOnOff_0()" >
+                         ng-model=reminders[0].isOn
+                         ng-change="toggleOnOff(0)" >
                   <div class="track">
                     <div class="handle onOffHandle"></div>
                   </div>
@@ -42,9 +43,8 @@
                 <div class="item item-toggle amPmToggle">
                   <label class="amPmTogglePosition toggle toggle-light">
                     <input type="checkbox" class="amPmCheckBox"
-                           ng-checked=isPM(reminders[0].amOrPm)
-                           ng-model=isAmPmToggled_0
-                           ng-change="toggleAmPm_0()" >
+                           ng-model=reminders[0].isPM
+                           ng-change="toggleAmPm(0)" >
                     <div class="track">
                       <div class="handle"></div>
                     </div>
@@ -67,9 +67,8 @@
                 <label class="toggle toggle-balanced  onOffToggle">
                   OFF
                   <input type="checkbox"
-                         ng-checked=reminders[1].isOn
-                         ng-model=isOnOffToggled_1
-                         ng-change="toggleOnOff_1()" >
+                         ng-model=reminders[1].isOn
+                         ng-change="toggleOnOff(1)" >
                   <div class="track">
                     <div class="handle onOffHandle"></div>
                   </div>
@@ -86,9 +85,8 @@
                 <div class="item item-toggle amPmToggle">
                   <label class="amPmTogglePosition toggle toggle-light">
                     <input type="checkbox" class="amPmCheckBox"
-                           ng-checked=isPM(reminders[1].amOrPm)
-                           ng-model=isAmPmToggled_1
-                           ng-change="toggleAmPm_1()" >
+                           ng-model=reminders[1].isPM
+                           ng-change="toggleAmPm(1)" >
                     <div class="track">
                       <div class="handle"></div>
                     </div>
@@ -111,9 +109,8 @@
                 <label class="toggle toggle-balanced  onOffToggle">
                   OFF
                   <input type="checkbox"
-                         ng-checked=reminders[2].isOn
-                         ng-model=isOnOffToggled_2
-                         ng-change="toggleOnOff_2()" >
+                         ng-model=reminders[2].isOn
+                         ng-change="toggleOnOff(2)" >
                   <div class="track">
                     <div class="handle onOffHandle"></div>
                   </div>
@@ -130,9 +127,8 @@
                 <div class="item item-toggle amPmToggle">
                   <label class="amPmTogglePosition toggle toggle-light">
                     <input type="checkbox" class="amPmCheckBox"
-                           ng-checked=isPM(reminders[2].amOrPm)
-                           ng-model=isAmPmToggled_2
-                           ng-change="toggleAmPm_2()" >
+                           ng-model=reminders[2].isPM
+                           ng-change="toggleAmPm(2)" >
                     <div class="track">
                       <div class="handle"></div>
                     </div>
@@ -146,26 +142,7 @@
               </li>
             </ul>
           </ion-item>
-
-
-
-
-
         </ion-list>
-
-        <div >
-          <button id="initnotifbtn" ng-click="Init_Notifs()">Initialize Notifications</button>
-          <br>
-          <button id="notifstatusbtn" ng-click="Notifs_Status()">Notifications Status</button>
-          <br>
-          <button id="unschedulenotifbtn" ng-click="Toggle_Off_Notif(1)">Toggle Off Reminder 1</button>
-          <br>
-          <button id="createnotifbtn0" ng-click="Create_Notif(10,11,12, true, 1)">Change Reminder 1</button>
-          <br>
-          <button id="createnotifbtn1" ng-click="Create_Notif(19, 12, 15, true, 0)">Create Red Alert</button>
-          <br>
-          <pre>notifications created {{data}}</pre>
-        </div>
       </ion-content>
 
     </ion-side-menu-content>
@@ -175,7 +152,6 @@
       <ion-list>
         <!-- make sure to have target point to parent, otherwise
              it will open the page in the within the menu block.
-
              also there are two external links on this menu page,
              these links need to be handled as opening an external
              app, or the devices native web browser.(cordova plug-in) -->

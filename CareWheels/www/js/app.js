@@ -72,6 +72,7 @@ angular.module('careWheels', [
           window.localStorage['loginCredentials'] = angular.toJson({"username":uname, "password":passwd});
         //store user info
         //store groupMember info
+        window.sessionStorage['user'] = angular.toJson({"username":uname, "password":passwd});
         GroupInfo = response.data;
         $state.go('groupStatus')
       }, function(response) {
