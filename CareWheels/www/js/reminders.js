@@ -19,7 +19,7 @@ angular.module('careWheels')
       min: notifViewModel.data[0].minutes, // leading zeros will automatically be added
       isPM: false,                          // make sure these two values match
       amOrPm: 'AM',                        // ng-change will update this value
-      isOn: notifViewModel.data[0].off
+      isOn: notifViewModel.data[0].on
     },
     {/* Reminder 1 */
       hour: notifViewModel.data[1].hours,
@@ -90,11 +90,14 @@ angular.module('careWheels')
         notifViewModel.Init_Notifs();       //reset to default
 
         //Reset Cyclos custom fields to default
-        var rem1 = notifViewModel.Reminder_As_String(0);
-        var rem2 = notifViewModel.Reminder_As_String(1);
-        var rem3 = notifViewModel.Reminder_As_String(2);
         var myUser = angular.fromJson(window.sessionStorage['user']);   //retrieve user credentials
-        restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);   //will handle generating error if necessary
+        if(myUser!=undefined){
+          var rem1 = notifViewModel.Reminder_As_String(0);
+          var rem2 = notifViewModel.Reminder_As_String(1);
+          var rem3 = notifViewModel.Reminder_As_String(2);
+          
+          restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);   //will handle generating error if necessary
+        } else console.error("Cannot contact server because user credentials are undefined.");
         $state.go($state.current, {}, {reload: true});    //reset view so changes are immediately visible
        } else {
          console.log('Reset canceled!');
@@ -105,26 +108,28 @@ angular.module('careWheels')
   //Push live Reminder values to all other locations
   $scope.saveReminders = function() {
     //update Notification component's memory and local reminder times
-    for(var index=0; index<3; ++index){
-      var myHours = $scope.reminders[index].hour;
-      if($scope.reminders[index].amOrPm == 'PM') myHours = parseInt(myHours)+12;    //convert to military time
-      notifViewModel.Create_Notif(myHours, $scope.reminders[index].min, 0, $scope.reminders[index].isOn, index+1);    //this creates Tray notification and also updates Notification file
-      console.log(myHours + ":" + $scope.reminders[index].min + ":" + 0 + " " + $scope.reminders[index].isOn + index);
+    for(var i=0; i<3; ++i){
+      var myHours = $scope.reminders[i].hour;
+      if($scope.reminders[i].amOrPm == 'PM') myHours = parseInt(myHours)+12;    //convert to military time
+      notifViewModel.Create_Notif(myHours, $scope.reminders[i].min, 0, $scope.reminders[i].isOn, i+1);    //this creates Tray notification and also updates Notification file
+      console.log(myHours + ":" + $scope.reminders[i].min + ":" + 0 + " " + $scope.reminders[i].isOn + i);
     }
-
-    //update Cyclos server's reminder fields
-    if($scope.reminders[0].isOn){
-      var rem1 = notifViewModel.Reminder_As_String(0);
-    } else rem1 = '';
-    if($scope.reminders[0].isOn){
-      var rem2 = notifViewModel.Reminder_As_String(1);
-    } else rem2 = '';
-    if($scope.reminders[0].isOn){
-      var rem3 = notifViewModel.Reminder_As_String(2);
-    } else rem3 = '';
     var myUser = angular.fromJson(window.sessionStorage['user']);   //retrieve user credentials
-    console.log("rem1="+rem1+" rem2="+rem2+" rem3="+rem3);
-    restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);
+    if(myUser!=undefined){    //do we have user credentials?
+      //update Cyclos server's reminder fields
+      if($scope.reminders[0].isOn){
+        var rem1 = notifViewModel.Reminder_As_String(0);
+      } else rem1 = '';
+      if($scope.reminders[1].isOn){
+        var rem2 = notifViewModel.Reminder_As_String(1);
+      } else rem2 = '';
+      if($scope.reminders[2].isOn){
+        var rem3 = notifViewModel.Reminder_As_String(2);
+      } else rem3 = '';
+      
+      console.log("rem1="+rem1+" rem2="+rem2+" rem3="+rem3);
+      restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);
+    } else console.warn("Cannot contact server because user credentials are undefined.");
   }
 }])
 
@@ -246,9 +251,9 @@ angular.module('careWheels')
       if(hour<10) hour = 0 + String(hour);
       var minute = $scope.data[id].minutes;
       if(minute<10) minute = 0 + String(minute);
-      var second = $scope.data[id].minutes;
-      if(second<10) second = 0 + String(second);
-      return hour + ":" + minute + ":" + second;
+      //var second = $scope.data[id].minutes;   //seconds can only be 00 currently
+      //if(second<10) second = 0 + String(second);
+      return hour + ":" + minute + ":00"; //+ second;
     }
   }
 });
