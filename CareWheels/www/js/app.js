@@ -46,7 +46,19 @@ angular.module('careWheels', [
 
   // GroupInfo factory for global GroupInfo
   .factory('GroupInfo', function() {
-    return [];
+    var groupInfo = {};
+
+    groupInfo.saveLocal = function(data) {
+
+      return window.sessionStorage['groupInfo'] = angular.toJson(data);
+    };
+
+    groupInfo.retrieveLocal = function() {
+
+      return angular.fromJson(window.sessionStorage['groupInfo']);
+    };
+
+    return groupInfo;
   })
 
   // User factory
@@ -73,7 +85,7 @@ angular.module('careWheels', [
         //store user info
         //store groupMember info
         window.sessionStorage['user'] = angular.toJson({"username":uname, "password":passwd});
-        GroupInfo = response.data;
+        GroupInfo.saveLocal(response.data);
         $state.go('groupStatus')
       }, function(response) {
         //present login failed
@@ -82,6 +94,11 @@ angular.module('careWheels', [
           template: 'Please check your credentials!'
         });
       })
+    };
+
+    user.retrieveLocal = function() {
+
+      return angular.fromJson(window.sessionStorage['user']);
     };
 
     return user;
