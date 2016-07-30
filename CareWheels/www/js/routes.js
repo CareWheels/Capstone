@@ -1,6 +1,6 @@
-angular.module('careWheels')
+var app = angular.module('careWheels');
 
-.config(function($stateProvider, $urlRouterProvider) { 
+app.config(function($stateProvider, $urlRouterProvider) {
 
   //$urlRouterProvider.otherwise('/');
   $stateProvider
@@ -8,7 +8,8 @@ angular.module('careWheels')
     
     .state('home', {
       url: '/',
-      templateUrl: 'index.html'
+      templateUrl: 'index.html',
+      controller: 'DownloadCtrl'
     })
 
     .state('login', {
@@ -44,5 +45,9 @@ angular.module('careWheels')
       controller: 'remindersController'
     });
 
-  $urlRouterProvider.otherwise('/home');
+  //$urlRouterProvider.otherwise('/home');
 })
+app.controller('goBackController', function($scope, $ionicHistory){
+  /* go back button */
+  $scope.goBack = function () { $ionicHistory.goBack(); };
+});

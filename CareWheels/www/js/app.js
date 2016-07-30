@@ -80,7 +80,9 @@ var app = angular.module('careWheels', [
         //store groupMember info
         DownloadService.addGroupInfo(response.data);
         //GroupInfo = response.data;
-        $state.go('groupStatus');
+        //$state.go('groupStatus');
+        $state.go('home');
+
 
       }, function(response) {
         //present login failed
@@ -119,8 +121,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
   /////////////////////////////////////////////////////////////////////////////////////////
   //DATA DOWNLOAD FUNCTION
   /////////////////////////////////////////////////////////////////////////////////////////
-  var thesemembers = DownloadService.getGroupInfo();
-  console.log("about to download data for: ", thesemembers);
+
   $scope.DownloadData = function () {
       /**
       // This contains the worker body.
@@ -584,8 +585,12 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //END OF ORIGINAL HTTP PROMISE
    
         setTimeout(function(){ //This is a bad solution.  Need to develop a promise to return sensorData once all events have been acquired
+        var mem = {
+          "name": input['name'],
+          "sensorData": sensorData
+        };
         console.log("RETURNING SENSORDATA OBJECT after timeout");
-        output.notify(JSON.parse(JSON.stringify(sensorData)));
+        output.notify(JSON.parse(JSON.stringify(mem)));
         }, 5000);
         
       //output event notify
@@ -652,8 +657,11 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       //bill = access-A0RegyQMErQ7DgqS1a9f8KxcnAsjt5, refresh-PjBiwFdKyXwDsfm82FfVVK6IGWLLk0
       //claude = access-XGDy6rcjvQgBnQbY40fS9p1w1bWqBc, refresh-UMogAOAGq6nUzTEqJovINFjjxAzyMK
       //
-      return angularWorker.run({refreshtoken:"UMogAOAGq6nUzTEqJovINFjjxAzyMK", accesstoken:"XGDy6rcjvQgBnQbY40fS9p1w1bWqBc"});
-      
+        var thesemembers = DownloadService.getGroupInfo();
+        console.log("about to download data for: ", thesemembers);
+        for(i=0; i < thesemembers.length; i++ ){
+          return angularWorker.run({name: thesemembers[i].name, refreshtoken: thesemembers[i].customValues[2], accesstoken: thesemembers[i].customValues[1]});
+      }
     }, function error(reason) {
 
         console.log('callback error');
@@ -679,13 +687,12 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         $scope.update = update;
         console.log('Download Complete');
         $scope.msg = "Download Complete";
-        var mem = {
-          "name": "xyzTest", //will be pulled from groupInfo service
-          "sensorData": update
-        };
-        DataService.addToGroup(mem); //COMMENTED OUT DURING TESTING, ADD LATER
+
+        DataService.addToGroup(update); //COMMENTED OUT DURING TESTING, ADD LATER
 
       });
+
+      ////end of for loop for each user
   };
 });
 
