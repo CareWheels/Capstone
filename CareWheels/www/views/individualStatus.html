@@ -8,7 +8,13 @@
       <li class="col no_border col-25">meals</li>
       <li class="col no_border col-25">meds</li>
     </ul>
-
+    
+    <div class="row">
+      <div class="col">12am</div>
+      <div class="col" ng-style="{'background':trevor.midnight.presence.status}"></div>
+      <div class="col" ng-style="{'background':trevor.midnight.meals.status}">{{trevor.midnight.meals.pings}}</div>
+      <div class="col" ng-style="{'background':trevor.midnight.meds.status}">{{getPings('midnight', 'meds')}}</div> 
+    </div>
     <div class="row">
       <div class="col">1</div>
       <div class="col" ng-style="{'background':trevor.one.presence.status}"></div>
