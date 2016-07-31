@@ -4,10 +4,10 @@
  */
 angular.module('careWheels')
 
-    .controller('loginController', function($scope, User, GroupInfo){
+    .controller('loginController', function($rootScope, $scope, User, GroupInfo){
         $scope.rememberMe = false;
-        $scope.user = User;
-        $scope.groupInfo = GroupInfo;
+        $rootScope.user = User;
+        $rootScope.groupInfo = GroupInfo;
 
         $scope.logoImage = 'img/CareWheelsLogo.png';
 
