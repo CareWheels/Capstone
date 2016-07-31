@@ -1,14 +1,5 @@
 <ion-view class="overflow-scroll">
-  <ion-side-menus>
-    <ion-side-menu-content>
-      <ion-nav-bar>
-        <ion-nav-buttons side="left">
-          <h2 class="title">Sensor Status, {{trevor.name}}</h2>
-          <!-- Toggle right side menu -->
-          <button ng-click="toggleRight()" menu-toggle="right" class="button button-icon icon ion-navicon"></button>
-        </ion-nav-buttons>
-      </ion-nav-bar>
-
+  <ion-nav-title>Individual Status</ion-nav-title>
   <!-- individual status content -->
   <ion-content class="moveDown">
     <div class="row header">
@@ -162,25 +153,5 @@
       <div class="col"></div>
     </div>
   </ion-content>
-    </ion-side-menu-content>
-
-
-
-    <ion-side-menu side="right">
-      <ion-list>
-        <!-- make sure to have target point to parent, otherwise
-             it will open the page in the within the menu block.
-
-             also there are two external links on this menu page,
-             these links need to be handled as opening an external
-             app, or the devices native web browser.(cordova plug-in) -->
-
-        <ion-item ui-sref="groupStatus">CareWheels Group</ion-item>
-        <ion-item ui-sref="reminders">Reminders</ion-item>
-        <ion-item ui-sref="login">Logout</ion-item>
-      </ion-list>
-    </ion-side-menu>
-  </ion-side-menus>
 <!-- </ion-view> -->
 </ion-view>
-<div ui-view></div>
