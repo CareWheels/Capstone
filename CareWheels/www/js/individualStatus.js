@@ -17,37 +17,309 @@ angular.module('careWheels')
           //This is where you put the function call to get the pings for this time.
           return "* * * * * *";
         }
-        //code block
-        //break;
     case 'one':
-        //Do the same here
-        break;
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'two':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'three':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "* *";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'four':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "* * *";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'five':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'six':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'seven':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "*";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "*";
+        }
+    case 'eight':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'nine':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'ten':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'eleven':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'twelve':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'thirteen':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'fourteen':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'fifteen':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'sixteen':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'seventeen':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'eighteen':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'nineteen':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'twenty':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'twentyone':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'twentytwo':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+    case 'twentythree':
+        if (type === 'meals'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
+        else if (type === 'meds'){
+          //This is where you put the function call to get the pings for this time.
+          return "";
+        }
     default:
         return 'error';
     }
-    //if ( === 3){
-    //  return "* * *";
-    //}
-    //else {
-    //  return "boo";
-    //}
+  };
+
+  $scope.getPresence = function(time) {
+    switch(time) {
+    case 'midnight':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'one':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'two':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'three':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'four':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'five':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'six':
+        //This is where you put the function call to get the presence for this time.
+        return "grey";
+    case 'seven':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'eight':
+        //This is where you put the function call to get the presence for this time.
+        return "grey";
+    case 'nine':
+        //This is where you put the function call to get the presence for this time.
+        return "grey";
+    case 'ten':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'eleven':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'twelve':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'thirteen':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'fourteen':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'fifteen':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'sixteen':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'seventeen':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'eighteen':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'nineteen':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'twenty':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'twentyone':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'twentytwo':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    case 'twentythree':
+        //This is where you put the function call to get the presence for this time.
+        return "blue";
+    default:
+        return 'error';
+    }
   };
 
 
   $scope.trevor = {
-    name: 'Trevor',
+    name: 'Kylo',
     midnight: {
       presence: {
         status: 'blue'
       },
       meals: {
-        status: 'yellow',
-        pings: ''
+        status: 'yellow'
       },
       meds: {
-      	status: 'blue',
-        //pings = $scope.getPings(midnight, meds)
-        //pings: ''
+      	status: 'blue'
       }
     },
     one: {
@@ -55,12 +327,10 @@ angular.module('careWheels')
         status: 'blue'
       },
       meals: {
-        status: 'yellow',
-        pings: ''
+        status: 'yellow'
       },
       meds: {
-      	status: 'blue',
-        pings: ''
+      	status: 'blue'
       }
     },
     two: {
@@ -68,12 +338,10 @@ angular.module('careWheels')
         status: 'blue'
       },
       meals: {
-        status: 'yellow',
-        pings: ''
+        status: 'yellow'
       },
       meds: {
-      	status: 'blue',
-        pings: ''
+      	status: 'blue'
       }
     },
     three: {
@@ -81,12 +349,10 @@ angular.module('careWheels')
         status: 'blue'
       },
       meals: {
-        status: 'blue',
-        pings: '* *'
+        status: 'blue'
       },
       meds: {
-      	status: 'blue',
-        pings: ''
+      	status: 'blue'
       }
     },
     four: {
@@ -94,12 +360,10 @@ angular.module('careWheels')
         status: 'blue'
       },
       meals: {
-        status: 'blue',
-        pings: '* * *'
+        status: 'blue'
       },
       meds: {
-      	status: 'blue',
-        pings: ''
+      	status: 'blue'
       }
     },
     five: {
@@ -107,12 +371,10 @@ angular.module('careWheels')
         status: 'blue'
       },
       meals: {
-        status: 'blue',
-        pings: ''
+        status: 'blue'
       },
       meds: {
-      	status: 'red',
-        pings: ''
+      	status: 'red'
       }
     },
     six: {
@@ -120,12 +382,10 @@ angular.module('careWheels')
         status: 'grey'
       },
       meals: {
-        status: 'blue',
-        pings: ''
+        status: 'blue'
       },
       meds: {
-      	status: 'red',
-        pings: ''
+      	status: 'red'
       }
     },
     seven: {
@@ -133,77 +393,186 @@ angular.module('careWheels')
         status: 'blue'
       },
       meals: {
-        status: 'blue',
-        pings: '*'
+        status: 'blue'
       },
       meds: {
-      	status: 'blue',
-        pings: '*'
+      	status: 'blue'
       }
     },
     eight: {
       presence: {
-        status: ''
+        status: 'grey'
       },
       meals: {
-        status: '',
-        pings: ''
+        status: 'blue'
       },
       meds: {
-      	status: '',
-        pings: ''
+      	status: 'blue'
       }
     },
     nine: {
       presence: {
-        status: ''
+        status: 'grey'
       },
       meals: {
-        status: '',
-        pings: ''
+        status: 'blue'
       },
       meds: {
-      	status: '',
-        pings: ''
+      	status: 'blue'
       }
     },
     ten: {
       presence: {
-        status: ''
+        status: 'blue'
       },
       meals: {
-        status: '',
-        pings: ''
+        status: 'blue'
       },
       meds: {
-      	status: '',
-        pings: ''
+      	status: 'blue'
       }
     },
     eleven: {
       presence: {
-        status: ''
+        status: 'blue'
       },
       meals: {
-        status: '',
-        pings: ''
+        status: 'blue'
       },
       meds: {
-      	status: '',
-        pings: ''
+      	status: 'blue'
       }
     },
     twelve: {
       presence: {
-        status: ''
+        status: 'blue'
       },
       meals: {
-        status: '',
-        pings: ''
+        status: 'blue'
       },
       meds: {
-      	status: '',
-        pings: ''
+      	status: 'blue'
+      }
+    },
+    thirteen: {
+      presence: {
+        status: 'blue'
+      },
+      meals: {
+        status: 'blue'
+      },
+      meds: {
+        status: 'blue'
+      }
+    },
+    fourteen: {
+      presence: {
+        status: 'blue'
+      },
+      meals: {
+        status: 'blue'
+      },
+      meds: {
+        status: 'blue'
+      }
+    },
+    fifteen: {
+      presence: {
+        status: 'blue'
+      },
+      meals: {
+        status: 'blue'
+      },
+      meds: {
+        status: 'blue'
+      }
+    },
+    sixteen: {
+      presence: {
+        status: 'blue'
+      },
+      meals: {
+        status: 'blue'
+      },
+      meds: {
+        status: 'blue'
+      }
+    },
+    seventeen: {
+      presence: {
+        status: 'blue'
+      },
+      meals: {
+        status: 'blue'
+      },
+      meds: {
+        status: 'blue'
+      }
+    },
+    eighteen: {
+      presence: {
+        status: 'blue'
+      },
+      meals: {
+        status: 'blue'
+      },
+      meds: {
+        status: 'blue'
+      }
+    },
+    nineteen: {
+      presence: {
+        status: 'blue'
+      },
+      meals: {
+        status: 'blue'
+      },
+      meds: {
+        status: 'blue'
+      }
+    },
+    twenty: {
+      presence: {
+        status: 'blue'
+      },
+      meals: {
+        status: 'blue'
+      },
+      meds: {
+        status: 'blue'
+      }
+    },
+    twentyone: {
+      presence: {
+        status: 'blue'
+      },
+      meals: {
+        status: 'blue'
+      },
+      meds: {
+        status: 'blue'
+      }
+    },
+    twentytwo: {
+      presence: {
+        status: 'blue'
+      },
+      meals: {
+        status: 'blue'
+      },
+      meds: {
+        status: 'blue'
+      }
+    },
+    twentythree: {
+      presence: {
+        status: 'blue'
+      },
+      meals: {
+        status: 'blue'
+      },
+      meds: {
+        status: 'blue'
       }
     }
   };
