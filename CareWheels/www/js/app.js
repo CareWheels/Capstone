@@ -13,9 +13,9 @@ var app = angular.module('careWheels', [
 ])
 
   //contant definition for endpoint base url
-  .constant('BASE_URL', 'https://carebank.carewheels.org:8443')
+  app.constant('BASE_URL', 'https://carebank.carewheels.org:8443')
 
-  .run(function($ionicPlatform, $ionicHistory, $state) {
+  app.run(function($ionicPlatform, $ionicHistory, $state) {
 
 //    window.localStorage['loginCredentials'] = null;
 
@@ -38,7 +38,7 @@ var app = angular.module('careWheels', [
   })
 
   // API factory for making all php endpoints globally accessible.
-  .factory('API', function(BASE_URL) {
+  app.factory('API', function(BASE_URL) {
     var api = {
       userAndGroupInfo:     BASE_URL + '/userandgroupmemberinfo.php',
       userInfo:             BASE_URL + '/userinfo.php',
@@ -51,28 +51,56 @@ var app = angular.module('careWheels', [
   })
 
   // GroupInfo factory for global GroupInfo
-  .factory('GroupInfo', function() {
+  app.factory('GroupInfo', function() {
     return [];
   })
 
   // User factory
-  .factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup) {
+
+  app.factory('User', function(DownloadService, GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
     var user = {};
     //window.localStorage['loginCredentials'] = null;
 
-  //prints the in-memory and scheduled status of Reminders, for testing purposes
-  $scope.Notifs_Status = function(){
-    $scope.data = angular.fromJson(window.localStorage['Reminders']);
-    alert("In memory: \nReminder 1= (" +$scope.data[0].on +") "+ $scope.data[0].hours + ":" + $scope.data[0].minutes + ":" + $scope.data[0].seconds +
-      "\nReminder 2= (" +$scope.data[0].on +") "+ $scope.data[1].hours + ":" + $scope.data[1].minutes + ":" + $scope.data[1].seconds +
-      "\nReminder 3= (" +$scope.data[0].on +") "+ $scope.data[2].hours + ":" + $scope.data[2].minutes + ":" + $scope.data[2].seconds);
-    if(isAndroid){
-      cordova.plugins.notification.local.get([1, 2, 3], function (notifications) {
-        alert("Scheduled: " + notifications);
+    user.login = function(uname, passwd, rmbr) {
+      $ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
+        template: '<ion-spinner></ion-spinner>'+
+                  '<p>Contacting Server...</p>'
       });
-    } else $log.warn("Plugin disabled");
-  }
-});
+      return $http({
+        url:API.userAndGroupInfo,
+        method: 'POST',
+        data: $httpParamSerializerJQLike({
+            username:uname,
+            password:passwd,
+            usernametofind:uname
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }).then(function(response) {
+        if (rmbr)
+          window.localStorage['loginCredentials'] = angular.toJson({"username":uname, "password":passwd});
+        //store user info
+        //store groupMember info
+
+        window.sessionStorage['user'] = angular.toJson({"username":uname, "password":passwd});
+        GroupInfo = response.data;
+        DownloadService.addGroupInfo(response.data);
+        $ionicLoading.hide();   //make sure to hide loading screen
+        $state.go('testButtons')
+        //$state.go('groupStatus')
+
+      }, function(response) {
+        //present login failed
+        var alertPopup = $ionicPopup.alert({
+          title: 'Login failed!',
+          template: 'Please check your credentials!'
+        });
+      })
+    };
+    return user;
+  });
+
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //Using angular-workers module
@@ -89,17 +117,17 @@ var app = angular.module('careWheels', [
 //TODO: Inject 'GroupInfo' service to access groupmemberinfo object (to obtain sen.se credentials)
 //Will be manually entering credentials in GET/POST requests during testing
 /////////////////////////////////////////////////////////////////////////////////////////
-app.controller('DownloadCtrl', function($scope, $http, WorkerService, DataService) {
+app.controller('DownloadCtrl', function($scope, $http, WorkerService, DataService, GroupInfo, DownloadService, User) {
 
 
-// The URL must be absolute because of the URL blob specification
+// The URL must be absolute because of the URL blob specification  
 WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js");
 
   /////////////////////////////////////////////////////////////////////////////////////////
   //DATA DOWNLOAD FUNCTION
   /////////////////////////////////////////////////////////////////////////////////////////
-  $scope.DownloadData = function () {
 
+  $scope.DownloadData = function () {
       /**
       // This contains the worker body.
       // The function must be self contained.
@@ -112,6 +140,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       // All communication must be performed through the output parameter.
    */
 
+
   var workerPromise = WorkerService.createAngularWorker(['input', 'output', '$http', '$httpParamSerializerJQLike', function (input, output, $http, $httpParamSerializerJQLike) {
 
     ///////////////////////////////////////////////////////////////////////////
@@ -121,7 +150,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //$http request to sen.se with access token to attempt to retrieve feed data
     ///////////////////////////////////////////////////////////////////////////
 
-
+    var carewheelMembers = input['carewheelMembers'];
     var presenceUids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
     var fridgeUids = [];
     var medUids = [];
@@ -137,111 +166,189 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       "Alert": []
     };
     var count = 1;//this will be used in constructing the page urls
-    var downloadFunc = function(){
+    var downloadFunc = function(name, accesstoken, refreshtoken){
 
-    var dataUrl = "https://apis.sen.se/v2/feeds/";
+    var dataUrl = "https://apis.sen.se/v2/nodes/";//get page of nodes for this user
     $http({
-      url:dataUrl,
-      method:'GET',
+      url:dataUrl, 
+      method:'GET',    
       headers: {
-        'Authorization': 'Bearer '+input['accesstoken']
+        'Authorization': 'Bearer '+accesstoken
       }
-    }).then(function(response) {
+    }).then(function(response) {   
 
-        //received response, send to main thread
-        //NOTE: need to JSON.parse + stringify the response
-        //or else there will be an error as we attempt to
-        //pass the response back to main thread
-
-
-        var feeds = response.data;
+        //This function explores the response received from /nodes/
+        //and finds the appropriate uid's within the publishes array
+        //of the node object with the desired label (presence, med, fridge)
+        var getUids = function(arg){
+        
+        var feeds = arg.data;
         var objects = feeds.objects;
         var objectsLength = objects.length;
-        for (var i = 0; i < objectsLength; i++){
-          console.log("CHECKING UID...");
-          if (objects[i].label == "Presence"){
+        for (var i = 0; i < objectsLength; i++){//iterate over all node objects on the returned page
+          console.log("CHECKING NODES...");
+          if (objects[i].label == "presenceDataAnalysisSensor"){//match label
             console.log("added presence uid");
-            presenceUids.push(objects[i].uid);
+            var presFeeds = objects[i].publishes
+            var presLength = presFeeds.length;
+            for (var j = 0; j < presLength; j++){//iterate over publishes[]
+              if (presFeeds[j].label == "Presence"){
+              presenceUids.push(presFeeds[j].uid);//add uid with the specified label "Presence" to array
+              }
+            }; 
           }
-          if (objects[i].label == "Motion"){
+          if (objects[i].label == "fridgeDataAnalysisSensor"){
             console.log("added fridge uid");
-            fridgeUids.push(objects[i].uid);
+            var fridgeFeeds = objects[i].publishes
+            var fridgeLength = fridgeFeeds.length;
+            for (var j = 0; j < fridgeLength; j++){
+              if (fridgeFeeds[j].label == "Motion"){
+              fridgeUids.push(fridgeFeeds[j].uid);
+              }
+            }; 
           }
-          if (objects[i].label == "Motion-medsxxxxtest"){
+          if (objects[i].label == "medicationDataAnalysisSensor"){
             console.log("added med uid");
-            medUids.push(objects[i].uid);
+            var medFeeds = objects[i].publishes
+            var medLength = medFeeds.length;
+            for (var j = 0; j < medLength; j++){
+              if (medFeeds[j].label == "Motion"){
+              medUids.push(medFeeds[j].uid);
+              }
+            }; 
           }
-          if (objects[i].label == "xxxxtest"){
+          if (objects[i].label == "testtesttest"){//added this in case we need to find an alert uid
             console.log("added alert uid");
-            alertUids.push(objects[i].uid);
+            var alertFeeds = objects[i].publishes
+            var alertLength = alertFeeds.length;
+            for (var j = 0; j < alertLength; j++){
+              if (alertFeeds[j].label == "Alert"){
+              alertUids.push(alertFeeds[j].uid);
+              }
+            }; 
           }
           else{
             continue;
           }
         };
-/*
+      };
 
-          if (feeds.links.next != null){ //this is to handle multiple pages of feed objects returned from sense api
-            count++;//for url construction
+      getUids(response);//adds all specified node objects (and their published uids) to appropriate arrays
+                        //only for the first page (10 node objects) of response
+
+/////////HANDLE > 1 pages from /nodes/ endpoint
+/*
+          if (feeds.links.next != null){
+            var feedPages = Math.ceil(feeds.totalObjects / 10);
+            for (var p = 2; p < feedPages + 1; p++){ //this is to handle multiple pages of feed objects returned from sense api
             $http({
-              url: "https://apis.sen.se/v2/feeds/?page="+count, //get url of next page
+              url: "https://apis.sen.se/v2/feeds/?page="+p, //get url of next page
               method:'GET',
               headers: {
                 'Authorization': 'Bearer '+input['accesstoken']
               }
             }).then(function(response) {
-                //TODO
-                console.log("don't go here yet");
-
+                getUids(response);
             }, function(response) {
                 if (response.status === 403){
                 refreshFunc();
+                console.log("refreshed while retrieving next page of feed objects ");
                 //FINISH//////
                 //try to download from sense, but limit after n attempts
                 //to prevent infinite re-attempts
-                }
-
-              console.log("download func fail on next page", response);
+                }       
+            
+              console.log("failed while attempting to retrieve next page of feed objects", response);
               }
             )
-          }
+            } 
+          };
+  */
 
-          //return uids;
-        }
-*/
         var presenceLength = presenceUids.length;
         var fridgeLength = fridgeUids.length;
         var medLength = medUids.length;
         var alertLength = alertUids.length;
+        //use lt or gt at end of url to only return events occuring within the last 24 hours
+        //1994-11-05T08:15:30-05:00 corresponds to November 5, 1994, 8:15:30 am, US Eastern Standard Time
+        var date = new Date();
+        date.setDate(date.getDate()-1);
+        var prevDay = date.toISOString();
+        
+        ///////////////////
+        //TODO
+        //handle additional pages of event objects by constructing url for those pages
+        //e.g. add &page=15 to get event objects on page 15 if available
+        ///////////////////
 
-
-/////////////////LOOP TO COLLECT PRESENCE OBJECTS AND PUSH TO APPROPRIATE
+/////////////////LOOP TO COLLECT PRESENCE OBJECTS AND PUSH TO APPROPRIATE       
         for (var i = 0; i < presenceLength; i++){//for each uid in uids array
             $http({
-              url:"https://apis.sen.se/v2/feeds/"+presenceUids[i]+"/events/", //get url of next page
+              url:"https://apis.sen.se/v2/feeds/"+presenceUids[i]+"/events/"+"?gt="+prevDay,
               method:'GET',
               headers: {
-                'Authorization': 'Bearer '+input['accesstoken']
+                'Authorization': 'Bearer '+accesstoken
               }
             }).then(function(response) {
                 var presenceEventList = response.data;
-                for (var i = 0; i < presenceEventList.totalObjects; i++){
-                  console.log("pushing presence event to array...");
-                  sensorData.Presence.push(presenceEventList.objects[i]);
+                var eventsLeftToAdd = presenceEventList.totalObjects;
+                if (eventsLeftToAdd < 100){
+                  for (var j = 0; j < eventsLeftToAdd; j++){
+                    console.log("pushing presence event to array in first if block...");
+                    sensorData.Presence.push(presenceEventList.objects[j]);
+                  };
+                }
+                else { // >100 event objects implies more than one page of data
+                  for (var k = 0; k < 100; k++){
+                    console.log("pushing presence event to array in first else block...");
+                    sensorData.Presence.push(presenceEventList.objects[k]);
+                    eventsLeftToAdd = eventsLeftToAdd - 100;
+                  };
+                  var pages = Math.ceil(presenceEventList.totalObjects / 100);
+                  for (var m = 2; m < pages + 1; m++){
+                    $http({
+                      url:"https://apis.sen.se/v2/feeds/"+presenceUids[i]+"/events/"+"?gt="+prevDay+"&page="+m,
+                      method:'GET',
+                      headers: {
+                        'Authorization': 'Bearer '+accesstoken
+                      }
+                    }).then(function(response) {
+                        if (eventsLeftToAdd < 100){
+                          for (var n = 0; n < eventsLeftToAdd; n++){
+                          console.log("pushing presence event from next page to array (if block)...");
+                          sensorData.Presence.push(presenceEventList.objects[n]);
+                          };
+                        }
+                        else {
+                          for (var n = 0; n < 100; n++){
+                          console.log("pushing presence event from next page to array (else block)...");
+                          sensorData.Presence.push(presenceEventList.objects[n]);
+                          eventsLeftToAdd = eventsLeftToAdd - 100;
+                          };
+                        };
+
+                    }, function(response) {
+
+                        if (response.status === 403){
+                        refreshFunc();
+                        //try to download from sense, but limit after n attempts
+                        //to prevent infinite re-attempts
+                        }       
+                      console.log("get event fail within inner for loop", response);
+                      }
+                      )
+                  };
                 };
-
-                //output.notify(JSON.parse(JSON.stringify(events)));
-                //return events;
-
+     
             }, function(response) {
 
                 if (response.status === 403){
                 refreshFunc();
                 //try to download from sense, but limit after n attempts
                 //to prevent infinite re-attempts
-                }
-
-              console.log("get event fail", response);
+                }       
+            
+              console.log("get event fail - Original http call", response);
               }
             )
         };
@@ -249,30 +356,71 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 /////////////////LOOP TO COLLECT FRIDGE OBJECTS AND PUSH TO APPROPRIATE
         for (var i = 0; i < fridgeLength; i++){//for each uid in uids array
             $http({
-              url:"https://apis.sen.se/v2/feeds/"+fridgeUids[i]+"/events/", //get url of next page
+              url:"https://apis.sen.se/v2/feeds/"+fridgeUids[i]+"/events/"+"?gt="+prevDay,
               method:'GET',
               headers: {
-                'Authorization': 'Bearer '+input['accesstoken']
+                'Authorization': 'Bearer '+accesstoken
               }
             }).then(function(response) {
                 var fridgeEventList = response.data;
-                for (var i = 0; i < fridgeEventList.totalObjects; i++){
-                  console.log("pushing fridge event to array");
-                  sensorData.Fridge.push(fridgeEventList.objects[i]);
+                var eventsLeftToAdd = fridgeEventList.totalObjects;
+                if (eventsLeftToAdd < 100){
+                  for (var j = 0; j < eventsLeftToAdd; j++){
+                    console.log("pushing fridge event to array in first if block...");
+                    sensorData.Fridge.push(fridgeEventList.objects[j]);
+                  };
+                }
+                else { // >100 event objects implies more than one page of data
+                  for (var k = 0; k < 100; k++){
+                    console.log("pushing fridge event to array in first else block...");
+                    sensorData.Fridge.push(fridgeEventList.objects[k]);
+                    eventsLeftToAdd = eventsLeftToAdd - 100;
+                  };
+                  var pages = Math.ceil(fridgeEventList.totalObjects / 100);
+                  for (var m = 2; m < pages + 1; m++){
+                    $http({
+                      url:"https://apis.sen.se/v2/feeds/"+fridgeUids[i]+"/events/"+"?gt="+prevDay+"&page="+m,
+                      method:'GET',
+                      headers: {
+                        'Authorization': 'Bearer '+accesstoken
+                      }
+                    }).then(function(response) {
+                        if (eventsLeftToAdd < 100){
+                          for (var n = 0; n < eventsLeftToAdd; n++){
+                          console.log("pushing fridge event from next page to array (if block)...");
+                          sensorData.Fridge.push(fridgeEventList.objects[n]);
+                          };
+                        }
+                        else {
+                          for (var n = 0; n < 100; n++){
+                          console.log("pushing fridge event from next page to array (else block)...");
+                          sensorData.Fridge.push(fridgeEventList.objects[n]);
+                          eventsLeftToAdd = eventsLeftToAdd - 100;
+                          };
+                        };
+
+                    }, function(response) {
+
+                        if (response.status === 403){
+                        refreshFunc();
+                        //try to download from sense, but limit after n attempts
+                        //to prevent infinite re-attempts
+                        }       
+                      console.log("get event fail within inner for loop", response);
+                      }
+                      )
+                  };
                 };
-
-                //output.notify(JSON.parse(JSON.stringify(events)));
-                //return events;
-
+     
             }, function(response) {
 
                 if (response.status === 403){
                 refreshFunc();
                 //try to download from sense, but limit after n attempts
                 //to prevent infinite re-attempts
-                }
-
-              console.log("get event fail", response);
+                }       
+            
+              console.log("get event fail - Original http call", response);
               }
             )
         };
@@ -280,30 +428,71 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 /////////////////LOOP TO COLLECT MED OBJECTS AND PUSH TO APPROPRIATE
         for (var i = 0; i < medLength; i++){//for each uid in uids array
             $http({
-              url:"https://apis.sen.se/v2/feeds/"+medUids[i]+"/events/", //get url of next page
+              url:"https://apis.sen.se/v2/feeds/"+medUids[i]+"/events/"+"?gt="+prevDay,
               method:'GET',
               headers: {
-                'Authorization': 'Bearer '+input['accesstoken']
+                'Authorization': 'Bearer '+accesstoken
               }
             }).then(function(response) {
                 var medEventList = response.data;
-                for (var i = 0; i < medEventList.totalObjects; i++){
-                  console.log("pushing med event to array...");
-                  sensorData.Meds.push(medsEventList.objects[i]);
+                var eventsLeftToAdd = medEventList.totalObjects;
+                if (eventsLeftToAdd < 100){
+                  for (var j = 0; j < eventsLeftToAdd; j++){
+                    console.log("pushing med event to array in first if block...");
+                    sensorData.Meds.push(medEventList.objects[j]);
+                  };
+                }
+                else { // >100 event objects implies more than one page of data
+                  for (var k = 0; k < 100; k++){
+                    console.log("pushing med event to array in first else block...");
+                    sensorData.Meds.push(medEventList.objects[k]);
+                    eventsLeftToAdd = eventsLeftToAdd - 100;
+                  };
+                  var pages = Math.ceil(medEventList.totalObjects / 100);
+                  for (var m = 2; m < pages + 1; m++){
+                    $http({
+                      url:"https://apis.sen.se/v2/feeds/"+medUids[i]+"/events/"+"?gt="+prevDay+"&page="+m,
+                      method:'GET',
+                      headers: {
+                        'Authorization': 'Bearer '+accesstoken
+                      }
+                    }).then(function(response) {
+                        if (eventsLeftToAdd < 100){
+                          for (var n = 0; n < eventsLeftToAdd; n++){
+                          console.log("pushing med event from next page to array (if block)...");
+                          sensorData.Meds.push(medEventList.objects[n]);
+                          };
+                        }
+                        else {
+                          for (var n = 0; n < 100; n++){
+                          console.log("pushing med event from next page to array (else block)...");
+                          sensorData.Meds.push(medEventList.objects[n]);
+                          eventsLeftToAdd = eventsLeftToAdd - 100;
+                          };
+                        };
+
+                    }, function(response) {
+
+                        if (response.status === 403){
+                        refreshFunc();
+                        //try to download from sense, but limit after n attempts
+                        //to prevent infinite re-attempts
+                        }       
+                      console.log("get event fail within inner for loop", response);
+                      }
+                      )
+                  };
                 };
-
-                //output.notify(JSON.parse(JSON.stringify(events)));
-                //return events;
-
+     
             }, function(response) {
 
                 if (response.status === 403){
                 refreshFunc();
                 //try to download from sense, but limit after n attempts
                 //to prevent infinite re-attempts
-                }
-
-              console.log("get event fail", response);
+                }       
+            
+              console.log("get event fail - Original http call", response);
               }
             )
         };
@@ -311,30 +500,71 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 /////////////////LOOP TO COLLECT ALERT OBJECTS AND PUSH TO APPROPRIATE
         for (var i = 0; i < alertLength; i++){//for each uid in uids array
             $http({
-              url:"https://apis.sen.se/v2/feeds/"+alertUids[i]+"/events/", //get url of next page
+              url:"https://apis.sen.se/v2/feeds/"+alertUids[i]+"/events/"+"?gt="+prevDay,
               method:'GET',
               headers: {
-                'Authorization': 'Bearer '+input['accesstoken']
+                'Authorization': 'Bearer '+accesstoken
               }
             }).then(function(response) {
                 var alertEventList = response.data;
-                for (var i = 0; i < alertEventList.totalObjects; i++){
-                  console.log("pushing alert event to array...");
-                  sensorData.Alert.push(alertEventList.objects[i]);
+                var eventsLeftToAdd = alertEventList.totalObjects;
+                if (eventsLeftToAdd < 100){
+                  for (var j = 0; j < eventsLeftToAdd; j++){
+                    console.log("pushing alert event to array in first if block...");
+                    sensorData.Alert.push(alertEventList.objects[j]);
+                  };
+                }
+                else { // >100 event objects implies more than one page of data
+                  for (var k = 0; k < 100; k++){
+                    console.log("pushing alert event to array in first else block...");
+                    sensorData.Alert.push(alertEventList.objects[k]);
+                    eventsLeftToAdd = eventsLeftToAdd - 100;
+                  };
+                  var pages = Math.ceil(alertEventList.totalObjects / 100);
+                  for (var m = 2; m < pages + 1; m++){
+                    $http({
+                      url:"https://apis.sen.se/v2/feeds/"+alertUids[i]+"/events/"+"?gt="+prevDay+"&page="+m,
+                      method:'GET',
+                      headers: {
+                        'Authorization': 'Bearer '+accesstoken
+                      }
+                    }).then(function(response) {
+                        if (eventsLeftToAdd < 100){
+                          for (var n = 0; n < eventsLeftToAdd; n++){
+                          console.log("pushing alert event from next page to array (if block)...");
+                          sensorData.Alert.push(alertEventList.objects[n]);
+                          };
+                        }
+                        else {
+                          for (var n = 0; n < 100; n++){
+                          console.log("pushing alert event from next page to array (else block)...");
+                          sensorData.Alert.push(alertEventList.objects[n]);
+                          eventsLeftToAdd = eventsLeftToAdd - 100;
+                          };
+                        };
+
+                    }, function(response) {
+
+                        if (response.status === 403){
+                        refreshFunc();
+                        //try to download from sense, but limit after n attempts
+                        //to prevent infinite re-attempts
+                        }       
+                      console.log("get event fail within inner for loop", response);
+                      }
+                      )
+                  };
                 };
-
-                //output.notify(JSON.parse(JSON.stringify(events)));
-                //return events;
-
+     
             }, function(response) {
 
                 if (response.status === 403){
                 refreshFunc();
                 //try to download from sense, but limit after n attempts
                 //to prevent infinite re-attempts
-                }
-
-              console.log("get event fail", response);
+                }       
+            
+              console.log("get event fail - Original http call", response);
               }
             )
         };
@@ -342,7 +572,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //This is the end of the ".then" promise from the intital http GET call to /feeds/ endpoint
         //output.notify(JSON.parse(JSON.stringify(events)));//this will be the successful response of events being sent to main thread
         //console.log("these are the event objects -being sent to main thread.  Victory!", events);
-
+        
       }, function(response) {//This is the beginning of the "error" promise from the intital http GET call to /feeds/ endpoint
         //if we fail the request to a 403 expired token error
         //call refresh function
@@ -350,18 +580,22 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
           refreshFunc();
           //try to download from sense, but limit after n attempts
           //to prevent infinite re-attempts
-        }
+        }       
         //output.notify(JSON.parse(JSON.stringify(response)));//for testing, DELETE AFTER TESTING
-        console.log("download func fail", response);
+        console.log("download func failed", response);
         //EXIT PROMISE
         })
         //END OF ORIGINAL HTTP PROMISE
-
+   
         setTimeout(function(){ //This is a bad solution.  Need to develop a promise to return sensorData once all events have been acquired
+        var mem = {
+          "name": name,
+          "sensorData": sensorData
+        };
         console.log("RETURNING SENSORDATA OBJECT after timeout");
-        output.notify(JSON.parse(JSON.stringify(sensorData)));
-        }, 10000);
-
+        output.notify(JSON.parse(JSON.stringify(mem)));
+        }, 5000);
+        
       //output event notify
     };
 
@@ -376,14 +610,14 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //var refreshUrl = "http://jsonplaceholder.typicode.com/posts/1";
     var refreshUrl = "https://apis.sen.se/v2/oauth2/refresh/";
     $http({
-      url:refreshUrl,
-      method:'POST',
+      url:refreshUrl, 
+      method:'POST',    
       data: $httpParamSerializerJQLike({
         //refreshtoken:input['refreshtoken']
-      }),
+      }), 
       headers: {
         //'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer '+input['refreshtoken']
+        'Authorization': 'Bearer '+refreshtoken
       }
     }).then(function(response) {
 
@@ -400,7 +634,12 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       )
     };
 
-    downloadFunc();
+    console.log("about to download data for: ", carewheelMembers);
+    for(z=0; z < carewheelMembers.length; z++ ){
+            //return angularWorker.run({name: thesemembers[z].name, refreshtoken: thesemembers[z].customValues[2], accesstoken: thesemembers[z].customValues[1]});
+ 
+    downloadFunc(carewheelMembers[z].name, carewheelMembers[z].customValues[1].stringValue, carewheelMembers[z].customValues[2].stringValue);
+    };
     //output.notify(JSON.parse(JSON.stringify(events)));
     //refreshFunc();
 
@@ -414,6 +653,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 //(this will be a javascript object containing sensor download data)
 /////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+        
     workerPromise
       .then(function success(angularWorker) {
       //The input must be serializable
@@ -425,7 +667,15 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 
       //bill = access-A0RegyQMErQ7DgqS1a9f8KxcnAsjt5, refresh-PjBiwFdKyXwDsfm82FfVVK6IGWLLk0
       //claude = access-XGDy6rcjvQgBnQbY40fS9p1w1bWqBc, refresh-UMogAOAGq6nUzTEqJovINFjjxAzyMK
-      return angularWorker.run({refreshtoken:"UMogAOAGq6nUzTEqJovINFjjxAzyMK", accesstoken:"XGDy6rcjvQgBnQbY40fS9p1w1bWqBc"});
+      //
+        //var thesemembers = DownloadService.getGroupInfo();
+
+        //input to worker thread will accept "thesemembers" array variable, which contains token credentials for user's
+        //group members within his/her carewheel
+        //return angularWorker.run({name: thesemembers[z].name, refreshtoken: thesemembers[z].customValues[2], accesstoken: thesemembers[z].customValues[1]});
+        var thesemembers = DownloadService.getGroupInfo();
+        return angularWorker.run({carewheelMembers: thesemembers});
+
 
     }, function error(reason) {
 
@@ -449,17 +699,45 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //handle update
         $scope.data = update.data;
         $scope.status = update.status;
-        $scope.update = update;
-        console.log(update);
-        console.log('notify');
-        var mem = {
-          "name": "xyzTest", //will be pulled from groupInfo service
-          "sensorData": update
-        };
-        DataService.addToGroup(mem); //COMMENTED OUT DURING TESTING, ADD LATER
+        //$scope.update = update;
+        console.log('Download Complete');
+        $scope.msg = "Download Complete";
+
+        DataService.addToGroup(update); //COMMENTED OUT DURING TESTING, ADD LATER
 
       });
+      ////end of for loop for each user
   };
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//This factory 
+//We inject this service into groupStatusController, so that it can tell us what group (which people)
+//to download data for
+/////////////////////////////////////////////////////////////////////////////////////////
+app.factory('DownloadService', function() {
+
+  var membersToDownload = [];
+  // public API
+  return {
+    addGroupInfo: function (group) {
+      var allGroupMembers = group;
+
+    for (i=0; i < allGroupMembers.length; i++){
+        if (allGroupMembers[i].group.name == "CareWheel 1") {
+          membersToDownload.push(allGroupMembers[i]);
+        };
+      }
+      console.log("group members in current users carewheel = ", membersToDownload);
+
+    },
+    getGroupInfo: function () {
+
+      console.log('memberstodownload', membersToDownload);
+      return membersToDownload;
+    }
+  };
+
 });
 
 
@@ -488,14 +766,12 @@ app.factory('DataService', function() {
       //This is where i will parse the feed object, and save it to currentGroup
       /////////////////////////////////////////////////////////////////////////////////////////
       currentGroup.push(objectToAdd);
-      // console.log('check currentGroup contents', currentGroup);
       console.log('check currentGroup contents', currentGroup);
 
     }
   };
 
 });
-
 /////////////////////////////////////////////////////////////////////////////////////////
 //Controller for Sensor Data Analysis
 //Will receive parsed feed data from the injected DataService factory
