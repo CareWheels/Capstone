@@ -62,11 +62,15 @@ angular.module('careWheels', [
   })
 
   // User factory
-  .factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup) {
+  .factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
     var user = {};
     //window.localStorage['loginCredentials'] = null;
 
     user.login = function(uname, passwd, rmbr, callback) {
+      $ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
+        template: '<ion-spinner></ion-spinner>'+
+                  '<p>Contacting Server...</p>'
+      });
 
       return $http({
         url:API.userAndGroupInfo,
@@ -86,8 +90,8 @@ angular.module('careWheels', [
         //store groupMember info
         window.sessionStorage['user'] = angular.toJson({"username":uname, "password":passwd});
         GroupInfo.saveLocal(response.data);
+        $ionicLoading.hide();   //make sure to hide loading screen
         callback();
-        //$state.go('app.groupStatus')
       }, function(response) {
         //present login failed
         var alertPopup = $ionicPopup.alert({
