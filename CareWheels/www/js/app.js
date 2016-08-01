@@ -722,7 +722,7 @@ app.factory('DownloadService', function() {
       var allGroupMembers = group;
 
     for (i=0; i < allGroupMembers.length; i++){
-        if (allGroupMembers[i].group.name == "CareWheel 1") {
+        if (allGroupMembers[i].group.name == "CareWheel 1") {//Need to determine if we need to download users sen.se data
           membersToDownload.push(allGroupMembers[i]);
         };
       }
@@ -760,10 +760,9 @@ app.factory('DataService', function() {
       //which contains up to 5 members, with and array of 3 feeds each
       objectToAdd = id;
       console.log('object to add', objectToAdd);
-      /////////////////////////////////////////////////////////////////////////////////////////
-      //This is where i will parse the feed object, and save it to currentGroup
-      /////////////////////////////////////////////////////////////////////////////////////////
+      //if (currentGroup.length < 4){
       currentGroup.push(objectToAdd);
+      //}
       console.log('check currentGroup contents', currentGroup);
 
     }
