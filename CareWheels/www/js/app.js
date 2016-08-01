@@ -489,7 +489,7 @@ app.factory('DataService', function() {
       /////////////////////////////////////////////////////////////////////////////////////////
       currentGroup.push(objectToAdd);
       // console.log('check currentGroup contents', currentGroup);
-      console.log("Group data download success!");
+      console.log('check currentGroup contents', currentGroup);
 
     }
   };
@@ -833,6 +833,31 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
         // fridgeAlertLevel a value set by the calculation of fridgeAlertPoints, should be used as to
         // what the user's current fridge alert level should be, 0 = blue, 1 = yellow, 2 = red. Currently
         // the same as fridgeAlertPoints, may change in the future as algroithm becomes more complex.
+        //
+        // medsMatrix a [24][60] matrix containing the number of meds motion pings during each
+        // minute described by the second dimension of the matrix.
+
+        // medsHitsByHour a 24 element matrix, an element is true if the medsMatrix had a ping anytime
+        // during that corresponding hour, false otherwise.
+
+        // medsInterval1Starthour a hard coded hour for the time meds interval 1 begins.
+        // medsInterval2StarHour a hard coded hour for the time meds interval 2 begins.
+        // medsInterval3StartHour a hard coded hour for the time meds interval 3 begins.
+
+        // medsAlertInterval1 a boolean indicating true if there was no meds pings
+        // during meds interval 1, false otherwise.
+        // medsAlertInterval2 a boolean indicating true if there was no meds pings
+        // during meds interval 2, false otherwise.
+        // medsAlertInterval3 a boolean indicating true if there was no meds pings
+        // during meds interval 3, false otherwise.
+
+        // medsAlertPoints the internally calculated value of medsAlertIntervals that were true
+        // and could not be set to false due to exceptions. Currently the same as medsAlertLevel.
+
+        // medsAlertLevel a value set by the calculation of medsAlertPoints, should be used as to
+        // what the user's current meds alert level should be, 0 = blue, 1 = yellow, 2 = red. Currently
+        // the same as medsAlertPoints, may change in the future as algroithm becomes more complex.
+
 
         analysisData = {
 
@@ -880,7 +905,7 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
 
     };
     testFunc();
-    console.log('contents of $scope.groupData.analysisData in Analysis', $scope.groupData.analysisData);
+    console.log('contents of $scope.groupData in Analysis', $scope.groupData);
 
   };
 
