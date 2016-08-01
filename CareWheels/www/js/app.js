@@ -66,7 +66,7 @@ angular.module('careWheels', [
     var user = {};
     //window.localStorage['loginCredentials'] = null;
 
-    user.login = function(uname, passwd, rmbr) {
+    user.login = function(uname, passwd, rmbr, callback) {
 
       return $http({
         url:API.userAndGroupInfo,
@@ -86,7 +86,8 @@ angular.module('careWheels', [
         //store groupMember info
         window.sessionStorage['user'] = angular.toJson({"username":uname, "password":passwd});
         GroupInfo.saveLocal(response.data);
-        $state.go('groupStatus')
+        callback();
+        //$state.go('app.groupStatus')
       }, function(response) {
         //present login failed
         var alertPopup = $ionicPopup.alert({

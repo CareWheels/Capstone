@@ -5,45 +5,69 @@ angular.module('careWheels')
   //$urlRouterProvider.otherwise('/');
   $stateProvider
 
-    
-    .state('home', {
-      url: '/',
-      templateUrl: 'index.html'
+    .state('app', {
+      url: '/app',
+      abstract: true,
+      templateUrl: 'views/menu.html',
+      controller: 'loginController'
     })
 
-    .state('login', {
-      url: '/login',
-      templateUrl: 'views/login.html',
-      controller: 'loginController',
-      resolve: {
-        "auth": function($state, User) {
-          var credentials = angular.fromJson(window.localStorage['loginCredentials']);
+    // .state('app.login', {
+    //   url: '/login',
+    //   views: {
+    //     'menuContent': {
+    //       templateUrl: 'views/login.html',
+    //       controller: 'loginController'
+    //     },
+    //     resolve: {
+    //       "auth": function($state, User) {
+    //         var credentials = angular.fromJson(window.localStorage['loginCredentials']);
 
-          if (credentials)
-            return User.login(credentials.username, credentials.password, true);
-          else
-            $state.go('login');
-        }
-      }
-    })
+    //         if (credentials)
+    //           return User.login(credentials.username, credentials.password, true);
+    //       }
+    //     }
+    //   }
+    // })
 
-    .state('groupStatus', {
+    .state('app.groupStatus', {
       url: '/groupStatus',
-      templateUrl: 'views/groupStatus.html',
-      controller: 'groupStatusController'
+     	views: {
+         'menuContent': {
+           templateUrl: 'views/groupStatus.html',
+           controller: 'groupStatusController'
+         }
+       }
     })
 
     .state('individualStatus', {
       url: '/individualStatus',
-      templateUrl: 'views/individualStatus.html',
-      controller: 'individualStatusController'
+      views: {
+        'menuContent': {
+          templateUrl: 'views/individualStatus.html',
+          controller: 'individualStatusController'
+        }
+      }
     })
 
-    .state('reminders', {
+    .state('app.reminders', {
       url: '/reminders',
-      templateUrl: 'views/reminders.html',
-      controller: 'remindersController'
+      views: {
+        'menuContent': {
+          templateUrl: 'views/reminders.html',
+          controller: 'remindersController'
+        }
+      }
     });
+    
+    // .state('app.tests', {
+    //   url: '/tests',
+    //   views: {
+    //     'menuContent': {
+    //       templateUrl: 'views/tests.html'
+    //     }
+    //   }
+    // });
 
-  //$urlRouterProvider.otherwise('/groupStatus');
+  $urlRouterProvider.otherwise('/app/groupStatus');
 })

@@ -1,21 +1,25 @@
-<ion-pane>
-  <ion-content>
-    <div class="alignLogo">
-      <img ng-src="{{logoImage}}">
-    </div>
-    <div class="list list-inset">
-      <label class="item item-input">
-        <input type="text" placeholder="Username" ng-model="username">
-      </label>
-      <label class="item item-input">
-        <input type="password" placeholder="Password" ng-model="password">
-      </label>
-      </br>
-      <ion-list>
-        <ion-checkbox ng-model="rememberMe">Remember Credentials</ion-checkbox>
-      </ion-list>
-    </div>
-    <button class="button button-block button-calm" ng-click="user.login(username, password, rememberMe)">Login</button>
-  </ion-content>
-</ion-pane>
-<div ui-view></div>
+<ion-modal-view>
+ <ion-header-bar>
+  <h1 class="title">Login</h1>
+ </ion-header-bar>
+  <ion-view view-title="Login">
+    <ion-content>
+      <div class="alignLogo">
+        <img ng-src="{{logoImage}}">
+      </div>
+      <div class="list list-inset">
+        <label class="item item-input">
+          <input type="text" placeholder="Username" ng-model="username">
+        </label>
+        <label class="item item-input">
+          <input type="password" placeholder="Password" ng-model="password">
+        </label>
+        </br>
+        <ion-list>
+          <ion-checkbox ng-model="rememberMe">Remember Credentials</ion-checkbox>
+        </ion-list>
+      </div>
+      <button class="button button-block button-calm" ng-click="doLogin(username, password, rememberMe)">Login</button>
+    </ion-content>
+  </ion-view>
+</ion-modal-view>
