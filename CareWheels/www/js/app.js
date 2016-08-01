@@ -57,7 +57,7 @@ var app = angular.module('careWheels', [
 
   // User factory
 
-  .factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
+  app.factory('User', function(DownloadService, GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
     var user = {};
     //window.localStorage['loginCredentials'] = null;
 
@@ -84,9 +84,11 @@ var app = angular.module('careWheels', [
         //store groupMember info
 
         window.sessionStorage['user'] = angular.toJson({"username":uname, "password":passwd});
-        GroupInfo = response.data;
+        //GroupInfo = response.data;
+        DownloadService.addGroupInfo(response.data);
         $ionicLoading.hide();   //make sure to hide loading screen
-        $state.go('groupStatus')
+        $state.go('testButtons')
+        //$state.go('groupStatus')
 
       }, function(response) {
         //present login failed
@@ -138,6 +140,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       // All communication must be performed through the output parameter.
    */
 
+
   var workerPromise = WorkerService.createAngularWorker(['input', 'output', '$http', '$httpParamSerializerJQLike', function (input, output, $http, $httpParamSerializerJQLike) {
 
     ///////////////////////////////////////////////////////////////////////////
@@ -147,7 +150,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //$http request to sen.se with access token to attempt to retrieve feed data
     ///////////////////////////////////////////////////////////////////////////
 
-
+    var carewheelMembers = input['carewheelMembers'];
     var presenceUids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
     var fridgeUids = [];
     var medUids = [];
@@ -163,14 +166,14 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       "Alert": []
     };
     var count = 1;//this will be used in constructing the page urls
-    var downloadFunc = function(){
+    var downloadFunc = function(name, accesstoken, refreshtoken){
 
     var dataUrl = "https://apis.sen.se/v2/nodes/";//get page of nodes for this user
     $http({
       url:dataUrl, 
       method:'GET',    
       headers: {
-        'Authorization': 'Bearer '+input['accesstoken']
+        'Authorization': 'Bearer '+accesstoken
       }
     }).then(function(response) {   
 
@@ -287,7 +290,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               url:"https://apis.sen.se/v2/feeds/"+presenceUids[i]+"/events/"+"?gt="+prevDay,
               method:'GET',
               headers: {
-                'Authorization': 'Bearer '+input['accesstoken']
+                'Authorization': 'Bearer '+accesstoken
               }
             }).then(function(response) {
                 var presenceEventList = response.data;
@@ -310,7 +313,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                       url:"https://apis.sen.se/v2/feeds/"+presenceUids[i]+"/events/"+"?gt="+prevDay+"&page="+m,
                       method:'GET',
                       headers: {
-                        'Authorization': 'Bearer '+input['accesstoken']
+                        'Authorization': 'Bearer '+accesstoken
                       }
                     }).then(function(response) {
                         if (eventsLeftToAdd < 100){
@@ -359,7 +362,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               url:"https://apis.sen.se/v2/feeds/"+fridgeUids[i]+"/events/"+"?gt="+prevDay,
               method:'GET',
               headers: {
-                'Authorization': 'Bearer '+input['accesstoken']
+                'Authorization': 'Bearer '+accesstoken
               }
             }).then(function(response) {
                 var fridgeEventList = response.data;
@@ -382,7 +385,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                       url:"https://apis.sen.se/v2/feeds/"+fridgeUids[i]+"/events/"+"?gt="+prevDay+"&page="+m,
                       method:'GET',
                       headers: {
-                        'Authorization': 'Bearer '+input['accesstoken']
+                        'Authorization': 'Bearer '+accesstoken
                       }
                     }).then(function(response) {
                         if (eventsLeftToAdd < 100){
@@ -431,7 +434,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               url:"https://apis.sen.se/v2/feeds/"+medUids[i]+"/events/"+"?gt="+prevDay,
               method:'GET',
               headers: {
-                'Authorization': 'Bearer '+input['accesstoken']
+                'Authorization': 'Bearer '+accesstoken
               }
             }).then(function(response) {
                 var medEventList = response.data;
@@ -454,7 +457,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                       url:"https://apis.sen.se/v2/feeds/"+medUids[i]+"/events/"+"?gt="+prevDay+"&page="+m,
                       method:'GET',
                       headers: {
-                        'Authorization': 'Bearer '+input['accesstoken']
+                        'Authorization': 'Bearer '+accesstoken
                       }
                     }).then(function(response) {
                         if (eventsLeftToAdd < 100){
@@ -503,7 +506,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               url:"https://apis.sen.se/v2/feeds/"+alertUids[i]+"/events/"+"?gt="+prevDay,
               method:'GET',
               headers: {
-                'Authorization': 'Bearer '+input['accesstoken']
+                'Authorization': 'Bearer '+accesstoken
               }
             }).then(function(response) {
                 var alertEventList = response.data;
@@ -526,7 +529,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                       url:"https://apis.sen.se/v2/feeds/"+alertUids[i]+"/events/"+"?gt="+prevDay+"&page="+m,
                       method:'GET',
                       headers: {
-                        'Authorization': 'Bearer '+input['accesstoken']
+                        'Authorization': 'Bearer '+accesstoken
                       }
                     }).then(function(response) {
                         if (eventsLeftToAdd < 100){
@@ -589,7 +592,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
    
         setTimeout(function(){ //This is a bad solution.  Need to develop a promise to return sensorData once all events have been acquired
         var mem = {
-          "name": input['name'],
+          "name": name,
           "sensorData": sensorData
         };
         console.log("RETURNING SENSORDATA OBJECT after timeout");
@@ -617,7 +620,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       }), 
       headers: {
         //'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer '+input['refreshtoken']
+        'Authorization': 'Bearer '+refreshtoken
       }
     }).then(function(response) {
 
@@ -634,7 +637,12 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       )
     };
 
-    downloadFunc();
+    console.log("about to download data for: ", carewheelMembers);
+    for(z=0; z < carewheelMembers.length; z++ ){
+            //return angularWorker.run({name: thesemembers[z].name, refreshtoken: thesemembers[z].customValues[2], accesstoken: thesemembers[z].customValues[1]});
+ 
+    downloadFunc(carewheelMembers[z].name, carewheelMembers[z].customValues[1].stringValue, carewheelMembers[z].customValues[2].stringValue);
+    };
     //output.notify(JSON.parse(JSON.stringify(events)));
     //refreshFunc();
 
@@ -648,6 +656,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 //(this will be a javascript object containing sensor download data)
 /////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+        
     workerPromise
       .then(function success(angularWorker) {
       //The input must be serializable
@@ -660,11 +671,15 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       //bill = access-A0RegyQMErQ7DgqS1a9f8KxcnAsjt5, refresh-PjBiwFdKyXwDsfm82FfVVK6IGWLLk0
       //claude = access-XGDy6rcjvQgBnQbY40fS9p1w1bWqBc, refresh-UMogAOAGq6nUzTEqJovINFjjxAzyMK
       //
+        //var thesemembers = DownloadService.getGroupInfo();
+
+        //input to worker thread will accept "thesemembers" array variable, which contains token credentials for user's
+        //group members within his/her carewheel
+        //return angularWorker.run({name: thesemembers[z].name, refreshtoken: thesemembers[z].customValues[2], accesstoken: thesemembers[z].customValues[1]});
         var thesemembers = DownloadService.getGroupInfo();
-        console.log("about to download data for: ", thesemembers);
-        for(i=0; i < thesemembers.length; i++ ){
-          return angularWorker.run({name: thesemembers[i].name, refreshtoken: thesemembers[i].customValues[2], accesstoken: thesemembers[i].customValues[1]});
-      }
+        return angularWorker.run({carewheelMembers: thesemembers});
+
+
     }, function error(reason) {
 
         console.log('callback error');
@@ -687,14 +702,13 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //handle update
         $scope.data = update.data;
         $scope.status = update.status;
-        $scope.update = update;
+        //$scope.update = update;
         console.log('Download Complete');
         $scope.msg = "Download Complete";
 
         DataService.addToGroup(update); //COMMENTED OUT DURING TESTING, ADD LATER
 
       });
-
       ////end of for loop for each user
   };
 });
