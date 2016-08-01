@@ -51,6 +51,8 @@ app.config(function($stateProvider, $urlRouterProvider) {
 
 app.controller('goBackController', function($scope, $ionicHistory){
   /* go back button */
-  $scope.goBack = function () { $ionicHistory.goBack(); };
+  $scope.goBack = function () { 
+    $ionicHistory.goBack(); 
+  };
 });
 
