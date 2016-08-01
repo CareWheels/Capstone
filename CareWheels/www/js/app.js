@@ -488,6 +488,7 @@ app.factory('DataService', function() {
       //This is where i will parse the feed object, and save it to currentGroup
       /////////////////////////////////////////////////////////////////////////////////////////
       currentGroup.push(objectToAdd);
+      // console.log('check currentGroup contents', currentGroup);
       console.log('check currentGroup contents', currentGroup);
 
     }
@@ -516,6 +517,7 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
         // Shortcuts to our data
         var presenceData = JSON.parse($scope.groupData[z].Presence);
         var fridgeData = JSON.parse($scope.groupData[z].Fridge);
+        var medsData = JSON.parse($scope.groupData[z].Meds);
 
         // Setup our presence  and fridge matrices
         var w = 0;
@@ -532,6 +534,16 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
         var fridgeAlertInterval3 = true;
         var fridgeAlertPoints = 0;
         var fridgeAlertLevel = 0;
+        var medsMatrix = [];
+        var medsHitsByHour = [];
+        var medsInterval1StartHour = 6;
+        var medsInterval2StartHour = 11;
+        var medsInterval3StartHour = 16;
+        var medsAlertInterval1 = true;
+        var medsAlertInterval2 = true;
+        var medsAlertInterval3 = true;
+        var medsAlertPoints = 0;
+        var medsAlertLevel = 0;
         var now = new Date();
         var currentHour = now.getHours();
         var currentMin = now.getMinutes();
@@ -542,14 +554,17 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
           presenceMatrix[w] = [];
           fridgeMatrix[w] = [];
           fridgeHitsByHour[w] = 0;
+          medsMatrix[w] = [];
+          medsHitsByHour[w] = 0;
+          constantPresence[w] = true;
+          presenceByHour[w] = false;
 
           for(var y = 0; y < 60; ++y) {
             presenceMatrix[w][y] = false;
             fridgeMatrix[w][y] = 0;
+            medsMatrix[w][y] = 0;
           }
 
-          constantPresence[w] = true;
-          presenceByHour[w] = false;
         }
 
         // Populate our matrices
@@ -564,7 +579,6 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
           if(presenceData[w].data.code = 404) {
             constantPresence[hour] = false;
           }
-
         }
 
         for(w =0; w < fridgeData; ++w) {
@@ -572,6 +586,13 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
           var min = new Date(fridgeData[w].dateEvent).getMinutes();
 
           fridgeMatrix[hour][min] += 1;
+        }
+
+        for(w =0; w < medsData; ++w) {
+          var hour = new Date(medsData[w].dateEvent).getHours();
+          var min = new Date(medsData[w].dateEvent).getMinutes();
+
+          medsMatrix[hour][min] += 1;
         }
 
         //Presence of user pre-current hour: at end of hour, Displayed analysis as prescribed by
@@ -614,6 +635,14 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
           }
         }
 
+        //Analyze the meds for hits by hour
+        for(w = 0; w < currentHour; ++w) {
+
+          for(var y = 0; y < 60; ++y) {
+            medsHitsByHour += medsMatrix[w][y];
+          }
+        }
+
         // Begin clearing the fridgeAlertInterval's if we have criteria to do so.
         // If they opened their fridge during an interval OR
         //     If a person isn't constantly at home during an interval we will consider
@@ -642,6 +671,34 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
           }
         }
 
+        // Begin clearing the medsAlertInterval's if we have criteria to do so.
+        // If they moved their medication during an interval OR
+        //     If a person isn't constantly at home during an interval we will consider
+        //     that they ate somewhere else during that interval
+        // Interval 1: 6:00am to 10:59am
+        for(w = 5; w < 10; ++w) {
+
+          if(medsHitsByHour[w] > 0 || !constantPresence[w]) {
+            medsAlertInterval1 = false;
+          }
+        }
+
+        // Interval 2: 11:00am to 3:59pm
+        for(w = 10; w < 15; ++w) {
+
+          if(medsHitsByHour[w] > 0 || !constantPresence[w]) {
+            medsAlertInterval2 = false;
+          }
+        }
+
+        // Interval 3: 4:00pm to 9:59pm
+        for(w = 15; w < 21; ++w) {
+
+          if(medsHitsByHour[w] > 0 || !constantPresence[w]) {
+            medsAlertInterval3 = false;
+          }
+        }
+
         // Use this hard coded date until we can pull it from each member in currentGroup
         var lastOwnershipTimeTaken = new Date("2016-01-01T01:35:29.189");
         var lastOwnershipHour = lastOwnershipTimeTaken.getHours();
@@ -661,6 +718,25 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
 
           if(lastOwnershipHour >= fridgeInterval3StartHour) {
             fridgeAlertInterval3 = false;
+          }
+
+        }
+
+        // If the last ownership time taken was on the same day,
+        // we will check to see when that time was, and if after or within an
+        // interval we will set the meds alert to false.
+        if(now.toDateString() == lastOwnershipTimeTaken.toDateString()) {
+
+          if(lastOwnershipHour >= fridgeInterval1StartHour) {
+            medsAlertInterval1 = false;
+          }
+
+          if(lastOwnershipHour >= fridgeInterval2StartHour) {
+            medsAlertInterval2 = false;
+          }
+
+          if(lastOwnershipHour >= fridgeInterval3StartHour) {
+            medsAlertInterval3 = false;
           }
 
         }
@@ -689,6 +765,30 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
 
           // Set the users fridgeAlert level to 2 for red alert.
           fridgeAlertLevel = 2;
+
+          // **************************
+          // Call local notifications here to send a red alert out for this person.
+          // **************************
+        }
+
+        // We have finished processing all exceptions to meds interval alerts
+        // when there are no meds hits. Begin adding up meds alert points.
+        if(medsAlertInterval1) {
+          medsAlertPoints += 1;
+        }
+
+        if(medsAlertInterval2) {
+          medsAlertPoints += 1;
+        }
+
+        if(medsAlertInterval3) {
+          medsAlertPoints += 1;
+        }
+
+        // If they've missed any medications set
+        // their alert level to red.
+        if(medsAlertPoints > 0) {
+          medsAlertLevel = 2;
 
           // **************************
           // Call local notifications here to send a red alert out for this person.
@@ -733,6 +833,31 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
         // fridgeAlertLevel a value set by the calculation of fridgeAlertPoints, should be used as to
         // what the user's current fridge alert level should be, 0 = blue, 1 = yellow, 2 = red. Currently
         // the same as fridgeAlertPoints, may change in the future as algroithm becomes more complex.
+        //
+        // medsMatrix a [24][60] matrix containing the number of meds motion pings during each
+        // minute described by the second dimension of the matrix.
+
+        // medsHitsByHour a 24 element matrix, an element is true if the medsMatrix had a ping anytime
+        // during that corresponding hour, false otherwise.
+
+        // medsInterval1Starthour a hard coded hour for the time meds interval 1 begins.
+        // medsInterval2StarHour a hard coded hour for the time meds interval 2 begins.
+        // medsInterval3StartHour a hard coded hour for the time meds interval 3 begins.
+
+        // medsAlertInterval1 a boolean indicating true if there was no meds pings
+        // during meds interval 1, false otherwise.
+        // medsAlertInterval2 a boolean indicating true if there was no meds pings
+        // during meds interval 2, false otherwise.
+        // medsAlertInterval3 a boolean indicating true if there was no meds pings
+        // during meds interval 3, false otherwise.
+
+        // medsAlertPoints the internally calculated value of medsAlertIntervals that were true
+        // and could not be set to false due to exceptions. Currently the same as medsAlertLevel.
+
+        // medsAlertLevel a value set by the calculation of medsAlertPoints, should be used as to
+        // what the user's current meds alert level should be, 0 = blue, 1 = yellow, 2 = red. Currently
+        // the same as medsAlertPoints, may change in the future as algroithm becomes more complex.
+
 
         analysisData = {
 
@@ -748,7 +873,17 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
           "fridgeAlertInterval2": fridgeAlertInterval2,
           "fridgeAlertInterval3": fridgeAlertInterval3,
           "fridgeAlertPoints": fridgeAlertPoints,
-          "fridgeAlertLevel": fridgeAlertLevel
+          "fridgeAlertLevel": fridgeAlertLevel,
+          "medsMatrix": medsMatrix,
+          "medsHitsByHour": medsHitsByHour,
+          "medsInterval1StartHour": medsInterval1StartHour,
+          "medsInterval2StartHour": medsInterval2StartHour,
+          "medsInterval3StartHour": medsInterval3StartHour,
+          "medsAlertInterval1": medsAlertInterval1,
+          "medsAlertInterval2": medsAlertInterval2,
+          "medsAlertInterval3": medsAlertInterval3,
+          "medsAlertPoints": medsAlertPoints,
+          "medsAlertLevel": medsAlertLevel
         }
 
         // This is just a modification of what Zach has done.
