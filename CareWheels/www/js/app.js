@@ -46,7 +46,19 @@ angular.module('careWheels', [
 
   // GroupInfo factory for global GroupInfo
   .factory('GroupInfo', function() {
-    return [];
+    var groupInfo = {};
+
+    groupInfo.saveLocal = function(data) {
+
+      return window.sessionStorage['groupInfo'] = angular.toJson(data);
+    };
+
+    groupInfo.retrieveLocal = function() {
+
+      return angular.fromJson(window.sessionStorage['groupInfo']);
+    };
+
+    return groupInfo;
   })
 
   // User factory
@@ -54,11 +66,12 @@ angular.module('careWheels', [
     var user = {};
     //window.localStorage['loginCredentials'] = null;
 
-    user.login = function(uname, passwd, rmbr) {
+    user.login = function(uname, passwd, rmbr, callback) {
       $ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
         template: '<ion-spinner></ion-spinner>'+
                   '<p>Contacting Server...</p>'
       });
+
       return $http({
         url:API.userAndGroupInfo,
         method: 'POST',
@@ -76,9 +89,9 @@ angular.module('careWheels', [
         //store user info
         //store groupMember info
         window.sessionStorage['user'] = angular.toJson({"username":uname, "password":passwd});
-        GroupInfo = response.data;
+        GroupInfo.saveLocal(response.data);
         $ionicLoading.hide();   //make sure to hide loading screen
-        $state.go('groupStatus')
+        callback();
       }, function(response) {
         //present login failed
         var alertPopup = $ionicPopup.alert({
@@ -87,5 +100,11 @@ angular.module('careWheels', [
         });
       })
     };
+
+    user.retrieveLocal = function() {
+
+      return angular.fromJson(window.sessionStorage['user']);
+    };
+
     return user;
   });
