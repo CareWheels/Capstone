@@ -5,12 +5,12 @@
 
 angular.module('careWheels')
   .controller('groupStatusController',
-    function ($scope, $interval, $state, $http, $log, $httpParamSerializerJQLike, GroupInfo, DownloadService) {
+  function ($scope, $interval, $state, $http, $log, $httpParamSerializerJQLike) {
 
 
     /******************** TESTING *****************************/
-    //var usergroup = $scope.data = angular.fromJson(window.localStorage['UserGroup']);
-    //console.log(usergroup);
+      //var usergroup = $scope.data = angular.fromJson(window.localStorage['UserGroup']);
+      //console.log(usergroup);
     $scope.url = 'https://carebank.carewheels.org:8443/userandgroupmemberinfo.php';
     $scope.fetch = function(userIn, passIn, tofindIn) {
       $scope.code = null;
@@ -39,7 +39,7 @@ angular.module('careWheels')
     };
 
     var groupObject = $scope.fetch('chris', 'locked', 'bill');
-      console.log($scope.data);
+    console.log($scope.data);
     setTimeout(function(){
       console.log($scope.data[0].photoUrl); //bill
       console.log($scope.data[1].photoUrl); //spoke 1
@@ -50,7 +50,7 @@ angular.module('careWheels')
 
     /************** END TEST BLOCK ***************************/
 
-      /* TODO: this is currently mocked data */
+    /* TODO: this is currently mocked data */
     $scope.group = {
       /* self */
       username: 'test01',
@@ -87,7 +87,7 @@ angular.module('careWheels')
       }
     };
 
-      /* click/press events */
+    /* click/press events */
     $scope.clickTopLeft = function () {
       //todo: goto individualStatus.html for this user
       console.log('clicked top left');
