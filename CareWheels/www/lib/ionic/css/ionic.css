@@ -4321,9 +4321,15 @@ a.subdued {
   left: 0;
   z-index: 9; }
 
-.bar .back-button.hide,
+/* nav bar back button */
+.bar .back-button.hide {
+  display: none;
+}
+
+/* other nav buttons */
 .bar .buttons .hide {
-  display: none; }
+  display: inherit; /*stops the menu button from hiding*/
+}
 
 .nav-bar-tabs-top .bar {
   background-image: none; }
