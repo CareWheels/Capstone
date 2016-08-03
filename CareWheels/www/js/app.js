@@ -52,8 +52,11 @@ var app = angular.module('careWheels', [
 
   // GroupInfo factory for global GroupInfo
 
-  .factory('GroupInfo', function() {
+  app.factory('GroupInfo', function() {
     var groupInfo = {};
+    var currentGroup = [];
+    var analyzedGroup = [];
+
 
     groupInfo.saveLocal = function(data) {
 
@@ -65,13 +68,29 @@ var app = angular.module('careWheels', [
       return angular.fromJson(window.sessionStorage['groupInfo']);
     };
 
+    groupInfo.addSensorDataToGroup = function(id) {//this will add each individual group member into the currentGroup array. Their carebank data will have been added within the DataDownload function
+      currentGroup.push(id);
+    };
+
+    groupInfo.retrieveGroupAfterDownload = function(){//currentGroup will contain all 5 groupmembers (with carebank data and sense data)
+      return currentGroup;
+    };
+
+    groupInfo.addAnalysisToGroup = function(member){
+      analyzedGroup.push(member);
+    };
+
+    groupInfo.retrieveAnalyzedGroup = function(){
+      return analyzedGroup;
+    };
+
     return groupInfo;
 
   })
 
   // User factory
 
-  app.factory('User', function(DownloadService, GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
+  app.factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
     var user = {};
     //window.localStorage['loginCredentials'] = null;
 
@@ -118,72 +137,3 @@ var app = angular.module('careWheels', [
     };
     return user;
   });
-
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-//This factory
-//We inject this service into groupStatusController, so that it can tell us what group (which people)
-//to download data for
-/////////////////////////////////////////////////////////////////////////////////////////
-app.factory('DownloadService', function() {
-
-  var membersToDownload = [];
-  // public API
-  return {
-    addGroupInfo: function (group) {
-      var allGroupMembers = group;
-
-    for (i=0; i < allGroupMembers.length; i++){
-        if (allGroupMembers[i].group.name == "CareWheel 1") {//Need to determine if we need to download users sen.se data
-          membersToDownload.push(allGroupMembers[i]);
-        };
-      }
-      console.log("group members in current users carewheel = ", membersToDownload);
-
-    },
-    getGroupInfo: function () {
-      return membersToDownload;
-    }
-  };
-
-});
-
-
-/////////////////////////////////////////////////////////////////////////////////////////
-//Factory for parsing feed data returned from promise in DownloadCtrl above
-//We can then inject this service into AnalysisCtrl
-/////////////////////////////////////////////////////////////////////////////////////////
-app.factory('DataService', function() {
-
-  var currentGroup = [];
-  var analyzedData = [];
-
-  // public API
-  return {
-    getGroup: function () {
-      if (currentGroup == null){
-          return console.error("Group data has not been parsed yet!");
-        }
-      return currentGroup;
-    },
-    addToGroup: function ( id ) {
-      //will be called by data download.  This will be an object
-      //which contains up to 5 members, with and array of 3 feeds each
-      objectToAdd = id;
-      //if (currentGroup.length < 4){
-      currentGroup.push(objectToAdd);
-      //}
-
-    },
-    addAnalyzedData: function (dataAfterAnalysis) {//called after analysis is finished
-       analyzedData.push(dataAfterAnalysis);
-       console.log('check analyzed data contents', analyzedData);
-    },
-    getAnalyzedData: function () {//called by groupmember summary screen
-      return analyzedData;
-    }
-  };
-
-});
-

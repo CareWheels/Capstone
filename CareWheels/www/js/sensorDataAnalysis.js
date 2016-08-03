@@ -3,12 +3,12 @@ var app = angular.module('careWheels')
 //Controller for Sensor Data Analysis
 //Will receive parsed feed data from the injected DataService factory
 /////////////////////////////////////////////////////////////////////////////////////////
-app.controller('AnalysisCtrl', function($scope, DataService) {
+app.controller('AnalysisCtrl', function($scope, GroupInfo) {
 
   $scope.AnalyzeData = function(){
     var testFunc = function(){
 
-      $scope.groupData = DataService.getGroup();
+      $scope.groupData = GroupInfo.retrieveGroupAfterDownload();
       console.log('contents of $scope.groupData before analysis ', $scope.groupData);
 
       // Excluding Medication analysis for now
@@ -394,16 +394,19 @@ app.controller('AnalysisCtrl', function($scope, DataService) {
           "medsAlertLevel": medsAlertLevel
         }
 
-        var memberName = $scope.groupData[z].name;
-        var sensorData = $scope.groupData[z].sensorData;
+        $scope.groupData[z].analysisData = analysisData;
+        var memberObject = $scope.groupData[z];
+        //var sensorData = $scope.groupData[z].sensorData;
         // This is just a modification of what Zach has done.
-        var memberObject = {
-          "name": memberName,
-          "sensorData": sensorData,
-          "analysisData": analysisData
-        };
+        //var memberObject = {
+        //  "name": memberName,
+        //  "sensorData": sensorData,
+        //  "analysisData": analysisData
+        //};
         //DataService.addToGroup(memberObject);
-        DataService.addAnalyzedData(memberObject);
+        console.log("member after analysis", memberObject);
+        GroupInfo.addAnalysisToGroup(memberObject);
+        GroupInfo.retrieveAnalyzedGroup();
 
       }
 

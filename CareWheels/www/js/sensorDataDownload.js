@@ -9,7 +9,7 @@ var app = angular.module('careWheels')
 /////////////////////////////////////////////////////////////////////////////////////////
 //Sensor Data Download controller
 /////////////////////////////////////////////////////////////////////////////////////////
-app.controller('DownloadCtrl', function($scope, $http, WorkerService, DataService, GroupInfo, DownloadService, User) {
+app.controller('DownloadCtrl', function($scope, $http, WorkerService, GroupInfo, User) {
 
 
 // The URL must be absolute because of the URL blob specification  
@@ -58,7 +58,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       "Alert": []
     };
     var count = 1;//this will be used in constructing the page urls
-    var downloadFunc = function(name, accesstoken, refreshtoken){
+    var downloadFunc = function(thisMember, accesstoken, refreshtoken){
 
     var dataUrl = "https://apis.sen.se/v2/nodes/";//get page of nodes for this user
     $http({
@@ -79,7 +79,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         var objectsLength = objects.length;
         for (var i = 0; i < objectsLength; i++){//iterate over all node objects on the returned page
           console.log("CHECKING NODES...");
-          if (objects[i].label == "presenceDataAnalysisSensor"){//match label
+          if (objects[i].label == "presenceCareBank"){//match label
             console.log("added presence uid");
             var presFeeds = objects[i].publishes
             var presLength = presFeeds.length;
@@ -89,7 +89,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               }
             }; 
           }
-          if (objects[i].label == "fridgeDataAnalysisSensor"){
+          if (objects[i].label == "fridgeCareBank"){
             console.log("added fridge uid");
             var fridgeFeeds = objects[i].publishes
             var fridgeLength = fridgeFeeds.length;
@@ -99,7 +99,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               }
             }; 
           }
-          if (objects[i].label == "medicationDataAnalysisSensor"){
+          if (objects[i].label == "medsCareBank"){
             console.log("added med uid");
             var medFeeds = objects[i].publishes
             var medLength = medFeeds.length;
@@ -483,12 +483,12 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //END OF ORIGINAL HTTP PROMISE
    
         setTimeout(function(){ //This is a bad solution.  Need to develop a promise to return sensorData once all events have been acquired
-        var mem = {
-          "name": name,
-          "sensorData": sensorData
-        };
+        //var mem = {
+        //  "sensorData": sensorData
+        //};
+        thisMember.sensorData = sensorData;
         console.log("RETURNING SENSORDATA OBJECT after timeout");
-        output.notify(JSON.parse(JSON.stringify(mem)));
+        output.notify(JSON.parse(JSON.stringify(thisMember)));
         }, 5000);
         
       //output event notify
@@ -533,7 +533,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     for(z=0; z < carewheelMembers.length; z++ ){
             //return angularWorker.run({name: thesemembers[z].name, refreshtoken: thesemembers[z].customValues[2], accesstoken: thesemembers[z].customValues[1]});
  
-    downloadFunc(carewheelMembers[z].name, carewheelMembers[z].customValues[1].stringValue, carewheelMembers[z].customValues[2].stringValue);
+    downloadFunc(carewheelMembers[z], carewheelMembers[z].customValues[1].stringValue, carewheelMembers[z].customValues[2].stringValue);
     };
     //output.notify(JSON.parse(JSON.stringify(events)));
     //refreshFunc();
@@ -568,7 +568,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //input to worker thread will accept "thesemembers" array variable, which contains token credentials for user's
         //group members within his/her carewheel
         //return angularWorker.run({name: thesemembers[z].name, refreshtoken: thesemembers[z].customValues[2], accesstoken: thesemembers[z].customValues[1]});
-        var thesemembers = DownloadService.getGroupInfo();
+        var thesemembers = GroupInfo.retrieveLocal();
         return angularWorker.run({carewheelMembers: thesemembers});
 
 
@@ -598,7 +598,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         console.log('Download Complete');
         $scope.msg = "Download Complete";
 
-        DataService.addToGroup(update); //COMMENTED OUT DURING TESTING, ADD LATER
+        GroupInfo.addSensorDataToGroup(update); //COMMENTED OUT DURING TESTING, ADD LATER
 
       });
       ////end of for loop for each user
