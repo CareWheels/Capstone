@@ -91,21 +91,21 @@ angular.module('careWheels')
     $scope.clickTopLeft = function () {
       //todo: goto individualStatus.html for this user
       console.log('clicked top left');
-      $state.go('individualStatus');
+      $state.go('app.individualStatus');
     };
     $scope.clickTopRight = function () {
       console.log('clicked top right');
-      $state.go('individualStatus');
+      $state.go('app.individualStatus');
 
     };
     $scope.clickBottomLeft = function () {
       console.log('clicked bottom left');
-      $state.go('individualStatus');
+      $state.go('app.individualStatus');
 
     };
     $scope.clickBottomRight = function () {
       console.log('clicked bottom right');
-      $state.go('individualStatus');
+      $state.go('app.individualStatus');
 
     };
     $scope.clickCenter = function () {

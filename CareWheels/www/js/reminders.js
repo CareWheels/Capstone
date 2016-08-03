@@ -4,12 +4,14 @@
  * Each Reminder is held in live memory in $scope.reminders[], static memory via NotificationController.data[], in custom fields on the
  * Cyclos server, and in the Notifications Tray (handled by the Notifications component).
  */
+
 angular.module('careWheels')
 
 .controller('remindersController', ['$scope', '$controller', '$ionicPopup', '$state', function($scope, $controller, $ionicPopup, $state, User){
 
   var notifViewModel = $scope.$new();   //to access Notifications functions
   var restViewModel = $scope.$new();    //to access Reminder REST controller
+
   $controller('NotificationController',{$scope : notifViewModel });
   $controller('ReminderRestController',{$scope : restViewModel });
 
@@ -95,7 +97,7 @@ angular.module('careWheels')
           var rem1 = notifViewModel.Reminder_As_String(0);
           var rem2 = notifViewModel.Reminder_As_String(1);
           var rem3 = notifViewModel.Reminder_As_String(2);
-          
+
           restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);   //will handle generating error if necessary
         } else console.error("Cannot contact server because user credentials are undefined.");
         $state.go($state.current, {}, {reload: true});    //reset view so changes are immediately visible
@@ -126,7 +128,7 @@ angular.module('careWheels')
       if($scope.reminders[2].isOn){
         var rem3 = notifViewModel.Reminder_As_String(2);
       } else rem3 = '';
-      
+
       console.log("rem1="+rem1+" rem2="+rem2+" rem3="+rem3);
       restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);
     } else console.warn("Cannot contact server because user credentials are undefined.");
@@ -135,6 +137,7 @@ angular.module('careWheels')
 
 //Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
 .controller("NotificationController", function($scope, $log, $cordovaLocalNotification){
+
   var isAndroid = window.cordova!=undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
   function Time() {this.hours=0; this.minutes=0; this.seconds=0; this.on=true;};
   //window.localStorage['Reminders'] = null;    //Turning this on simulates starting from fresh storage every time controller is called by view change
