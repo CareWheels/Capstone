@@ -40,7 +40,7 @@ angular.module('careWheels')
        }
     })
 
-    .state('individualStatus', {
+    .state('app.individualStatus', {
       url: '/individualStatus',
       views: {
         'menuContent': {
@@ -59,7 +59,7 @@ angular.module('careWheels')
         }
       }
     })
-    
+
     .state('app.tests', {
       url: '/tests',
       views: {
@@ -68,7 +68,7 @@ angular.module('careWheels')
         }
       }
     });
-    
+
   $urlRouterProvider.otherwise('/app/groupStatus');
 })
 
