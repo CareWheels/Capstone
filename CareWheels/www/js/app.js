@@ -51,8 +51,22 @@ var app = angular.module('careWheels', [
   })
 
   // GroupInfo factory for global GroupInfo
-  app.factory('GroupInfo', function() {
-    return [];
+
+  .factory('GroupInfo', function() {
+    var groupInfo = {};
+
+    groupInfo.saveLocal = function(data) {
+
+      return window.sessionStorage['groupInfo'] = angular.toJson(data);
+    };
+
+    groupInfo.retrieveLocal = function() {
+
+      return angular.fromJson(window.sessionStorage['groupInfo']);
+    };
+
+    return groupInfo;
+
   })
 
   // User factory
@@ -61,11 +75,12 @@ var app = angular.module('careWheels', [
     var user = {};
     //window.localStorage['loginCredentials'] = null;
 
-    user.login = function(uname, passwd, rmbr) {
+    user.login = function(uname, passwd, rmbr, callback) {
       $ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
         template: '<ion-spinner></ion-spinner>'+
                   '<p>Contacting Server...</p>'
       });
+
       return $http({
         url:API.userAndGroupInfo,
         method: 'POST',
@@ -84,11 +99,10 @@ var app = angular.module('careWheels', [
         //store groupMember info
 
         window.sessionStorage['user'] = angular.toJson({"username":uname, "password":passwd});
-        GroupInfo = response.data;
-        DownloadService.addGroupInfo(response.data);
+
+        GroupInfo.saveLocal(response.data);
         $ionicLoading.hide();   //make sure to hide loading screen
-        $state.go('testButtons')
-        //$state.go('groupStatus')
+        callback();
 
       }, function(response) {
         //present login failed
@@ -98,12 +112,17 @@ var app = angular.module('careWheels', [
         });
       })
     };
+    user.retrieveLocal = function() {
+
+      return angular.fromJson(window.sessionStorage['user']);
+    };
     return user;
   });
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
-//This factory 
+
+//This factory
 //We inject this service into groupStatusController, so that it can tell us what group (which people)
 //to download data for
 /////////////////////////////////////////////////////////////////////////////////////////

@@ -52,6 +52,20 @@
       <pre>http status code: {{status}}</pre>
       <!-- <pre>http response data: {{data}}</pre> -->
     </div>
+
+    <!-- Data Download / Worker Thread Test -->
+    <div ng-controller="DownloadCtrl">
+      <button id= "fetchbtn" ng-click="DownloadData()">DownloadData»</button><br>
+      <pre>Download Progress: {{msg}}</pre>
+      <pre>Download Contents: {{update}}</pre>
+    </div>
+
+    <!-- Basic Analysis Test -->
+    <div ng-controller="AnalysisCtrl">
+      <button id= "fetchbtn" ng-click="AnalyzeData()">Analyze Data »</button><br>
+      <pre>Result of analysis: {{analysis}}</pre>
+    </div>
+
     <!-- changes the LastOwnershipTakenTime custom field -->
     <!-- Looking at the Cyclos Server: LastOwnershipTakenTime takes the form XXXX/XX/XX XX:XX:XX -->
     <div ng-controller="OwnershipRestController">
