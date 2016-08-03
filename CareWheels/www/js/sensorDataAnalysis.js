@@ -394,6 +394,25 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
           "medsAlertLevel": medsAlertLevel
         }
 
+        $scope.analysis += "GROUP MEMBER: " + z + " " + "\n"
+                           + "Member name: " + $scope.groupData[z].username + "\n"
+                           + "presenceMatrix: " + analysisData.presenceMatrix + "\n"
+                           + "presenceByHour: " + analysisData.presenceByHour + "\n"
+                           + "fridgeMatrix: " + analysisData.fridgeMatrix + "\n"
+                           + "fridgeHitsByhour: " + analysisData.fridgeHitsByHour + "\n"
+                           + "fridgeAlertInterval1: " + analysisData.fridgeAlertInterval1 + "\n"
+                           + "fridgeAlertInterval2: " + analysisData.fridgeAlertInterval2 + "\n"
+                           + "fridgeAlertInterval3: " + analysisData.fridgeAlertInterval3 + "\n"
+                           + "fridgeAlertPoints: " + analysisData.fridgeAlertPoints + "\n"
+                           + "fridgeAlertLevel: " + analysisData.fridgeAlertLevel + "\n"
+                           + "medsMatrix: " + analysisData.medsMatrix + "\n"
+                           + "medsHitsByhour: " + analysisData.medsHitsByHour + "\n"
+                           + "medsAlertInterval1: " + analysisData.medsAlertInterval1 + "\n"
+                           + "medsAlertInterval2: " + analysisData.medsAlertInterval2 + "\n"
+                           + "medsAlertInterval3: " + analysisData.medsAlertInterval3 + "\n"
+                           + "medsAlertPoints: " + analysisData.medsAlertPoints + "\n"
+                           + "medsAlertLevel: " + analysisData.medsAlertLevel + "\n"
+
         $scope.groupData[z].analysisData = analysisData;
         var memberObject = $scope.groupData[z];
         //var sensorData = $scope.groupData[z].sensorData;
@@ -407,8 +426,8 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
         console.log("member after analysis", memberObject);
         GroupInfo.addAnalysisToGroup(memberObject);
         GroupInfo.retrieveAnalyzedGroup();
-
       }
+
 
       /*
        if ($scope.groupData.length < 4){
