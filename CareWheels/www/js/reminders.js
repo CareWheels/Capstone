@@ -7,7 +7,7 @@
 
 angular.module('careWheels')
 
-.controller('remindersController', ['$scope', '$controller', '$ionicPopup', '$state', function($scope, $controller, $ionicPopup, $state){
+.controller('remindersController', ['$scope', '$controller', '$ionicPopup', '$state', function($scope, $controller, $ionicPopup, $state, User){
 
   var notifViewModel = $scope.$new();   //to access Notifications functions
   var restViewModel = $scope.$new();    //to access Reminder REST controller
@@ -92,7 +92,7 @@ angular.module('careWheels')
         notifViewModel.Init_Notifs();       //reset to default
 
         //Reset Cyclos custom fields to default
-        var myUser = angular.fromJson(window.sessionStorage['user']);   //retrieve user credentials
+        var myUser = User.retrieveLocal();   //retrieve user credentials
         if(myUser!=undefined){
           var rem1 = notifViewModel.Reminder_As_String(0);
           var rem2 = notifViewModel.Reminder_As_String(1);
@@ -116,7 +116,7 @@ angular.module('careWheels')
       notifViewModel.Create_Notif(myHours, $scope.reminders[i].min, 0, $scope.reminders[i].isOn, i+1);    //this creates Tray notification and also updates Notification file
       console.log(myHours + ":" + $scope.reminders[i].min + ":" + 0 + " " + $scope.reminders[i].isOn + i);
     }
-    var myUser = angular.fromJson(window.sessionStorage['user']);   //retrieve user credentials
+    var myUser = User.retrieveLocal();   //retrieve user credentials
     if(myUser!=undefined){    //do we have user credentials?
       //update Cyclos server's reminder fields
       if($scope.reminders[0].isOn){

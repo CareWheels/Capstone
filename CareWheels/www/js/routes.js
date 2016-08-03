@@ -1,57 +1,79 @@
-var app = angular.module('careWheels');
+angular.module('careWheels')
 
-app.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider) {
 
   //$urlRouterProvider.otherwise('/');
   $stateProvider
 
-    .state('login', {
-      url: '/login',
-      templateUrl: 'views/login.html',
-      controller: 'loginController',
-      resolve: {
-        "auth": function($state, User) {
-          var credentials = angular.fromJson(window.localStorage['loginCredentials']);
-
-          if (credentials)
-            return User.login(credentials.username, credentials.password, true);
-          else
-            $state.go('login');
-        }
-      }
+    .state('app', {
+      url: '/app',
+      abstract: true,
+      templateUrl: 'views/menu.html',
+      controller: 'loginController'
     })
 
-    .state('groupStatus', {
+    // .state('app.login', {
+    //   url: '/login',
+    //   views: {
+    //     'menuContent': {
+    //       templateUrl: 'views/login.html',
+    //       controller: 'loginController'
+    //     },
+    //     resolve: {
+    //       "auth": function($state, User) {
+    //         var credentials = angular.fromJson(window.localStorage['loginCredentials']);
+
+    //         if (credentials)
+    //           return User.login(credentials.username, credentials.password, true);
+    //       }
+    //     }
+    //   }
+    // })
+
+    .state('app.groupStatus', {
       url: '/groupStatus',
-      templateUrl: 'views/groupStatus.html',
-      controller: 'groupStatusController'
+     	views: {
+         'menuContent': {
+           templateUrl: 'views/groupStatus.html',
+           controller: 'groupStatusController'
+         }
+       }
     })
 
     .state('individualStatus', {
       url: '/individualStatus',
-      templateUrl: 'views/individualStatus.html',
-      controller: 'individualStatusController'
+      views: {
+        'menuContent': {
+          templateUrl: 'views/individualStatus.html',
+          controller: 'individualStatusController'
+        }
+      }
     })
 
-    .state('reminders', {
+    .state('app.reminders', {
       url: '/reminders',
-      templateUrl: 'views/reminders.html',
-      controller: 'remindersController'
+      views: {
+        'menuContent': {
+          templateUrl: 'views/reminders.html',
+          controller: 'remindersController'
+        }
+      }
     })
-
-    /* TESTING; TODO: for testing. dev buttons */
-    .state('testButtons', {
-      url: '/test',
-      templateUrl: 'views/testButtons.html'
+    
+    .state('app.tests', {
+      url: '/tests',
+      views: {
+        'menuContent': {
+          templateUrl: 'views/tests.html'
+        }
+      }
     });
+    
+  $urlRouterProvider.otherwise('/app/groupStatus');
+})
 
-  /* default view (should be login on production) */
-  $urlRouterProvider.otherwise('/test');
-});
-
-app.controller('goBackController', function($scope, $ionicHistory){
+.controller('goBackController', function($scope, $ionicHistory){
   /* go back button */
   $scope.goBack = function () { $ionicHistory.goBack(); };
 });
-
 
