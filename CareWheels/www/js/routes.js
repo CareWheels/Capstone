@@ -64,14 +64,6 @@ angular.module('careWheels')
             templateUrl: 'views/tests.html'
           }
         }
-      })
-      .state('app.tests', {
-        url: '/tests',
-        views: {
-          'menuContent': {
-            templateUrl: 'views/tests.html'
-          }
-        }
       });
 
     $urlRouterProvider.otherwise('/app/groupStatus');
