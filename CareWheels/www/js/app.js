@@ -9,7 +9,8 @@ var app = angular.module('careWheels', [
   'ionic',
   'ui.router',
   'ngCordova',
-  'FredrikSandell.worker-pool'
+  'FredrikSandell.worker-pool',
+  'angularMoment'
 ])
 
   //contant definition for endpoint base url

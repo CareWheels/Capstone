@@ -1,4 +1,5 @@
 var app = angular.module('careWheels')
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //Using angular-workers module
 //(also added to angular.module at top of app.js)
@@ -20,6 +21,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
   /////////////////////////////////////////////////////////////////////////////////////////
 
   $scope.DownloadData = function () {
+
       /**
       // This contains the worker body.
       // The function must be self contained.
@@ -166,9 +168,12 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         var alertLength = alertUids.length;
         //use lt or gt at end of url to only return events occuring within the last 24 hours
         //1994-11-05T08:15:30-05:00 corresponds to November 5, 1994, 8:15:30 am, US Eastern Standard Time
-        var date = new Date();
+        var date = new Date();//create new data object
         date.setDate(date.getDate()-1);
-        var prevDay = date.toISOString();
+        //console.log("time after subbing 24hrs", date); //subtract 24 hours from current date
+        date.setHours(date.getHours()+9);//adding 7 hours to match up with sen.se server time
+        //console.log("time test after adding hours", date);//add 7 hours date to match with sen.se server
+        var prevDay = date.toISOString();//prevDay will now be our normalized threshold to compare with events in sen.se server
         
         ///////////////////
         //TODO
