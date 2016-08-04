@@ -94,9 +94,25 @@ angular.module('careWheels', [
         callback();
       }, function(response) {
         //present login failed
+        $ionicLoading.hide();
+        var errorMsg = "Unknown error.";
+        
+          //CHECKING TO FOR 404 ERRROR    
+          //response.status = 404;        
+          //response.data = "nothing";    
+          //console.log(response.data);   
+          //
+          
+        if(response.data === "Missing username / password" || response.data === "Invalid username / password")
+          errorMsg = "Please check your credentials!";
+        else if(response.data === "Your access is blocked by exceeding invalid login attempts")
+          errorMsg = "Account got blocked by exceeding invalid login attempts. Please contact admin";
+        else if(response.status == 404) 
+          errorMsg = "Unable to reach the server"; 
+
         var alertPopup = $ionicPopup.alert({
           title: 'Login failed!',
-          template: 'Please check your credentials!'
+          template: errorMsg
         });
       })
     };
