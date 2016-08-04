@@ -19,6 +19,21 @@
         </li>
     </ul>
 
+
+
+   <!-- Data Download / Worker Thread Test -->
+    <div ng-controller="DownloadCtrl">
+      <button id= "btn1" ng-click="DownloadData()">DownloadData»</button><br>
+      <pre>Download Progress: {{msg}}</pre>
+      <pre>Download Contents: {{update}}</pre>
+    </div>
+
+    <!-- Basic Analysis Test -->
+    <div ng-controller="AnalysisCtrl">
+      <button id= "btn2" ng-click="AnalyzeData()">Analyze Data »</button><br>
+      <pre>Result of analysis: {{analysis}}</pre>
+    </div>
+    
         <!-- sample rest function calls -->
     <div ng-controller="NotificationController">
         <button id="createnotifbtn" ng-click="Init_Notifs()">Initialize Notifications</button><br>

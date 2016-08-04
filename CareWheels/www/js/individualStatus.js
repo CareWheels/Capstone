@@ -4,7 +4,17 @@
  */
 angular.module('careWheels')
 
-.controller('individualStatusController', function($scope){
+.controller('individualStatusController', function($scope, GroupInfo){
+
+  var analysis = GroupInfo.retrieveAnalyzedGroup();
+
+  // This is simply a way to print out the analyzed object so that I can figure out how
+  // to use it. It will print on the bottom of the Individual Status Page of the app.
+  // To get rid of it, comment it out in individualStatus.html.
+  $scope.testAnalysis = function() {
+    var test = analysis;
+    return test;
+  }
 
   $scope.getPings = function(time, type) {
     switch(time) {

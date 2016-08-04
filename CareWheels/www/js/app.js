@@ -1,15 +1,21 @@
 // Ionic Starter App
 
-angular.module('careWheels', [
+
+// angular.module is a global place for creating, registering and retrieving Angular modules
+// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
+// the 2nd parameter is an array of 'requires'
+
+var app = angular.module('careWheels', [
   'ionic',
   'ui.router',
-  'ngCordova'
+  'ngCordova',
+  'FredrikSandell.worker-pool'
 ])
 
   //contant definition for endpoint base url
-  .constant('BASE_URL', 'https://carebank.carewheels.org:8443')
+  app.constant('BASE_URL', 'https://carebank.carewheels.org:8443')
 
-  .run(function($ionicPlatform, $ionicHistory, $state) {
+  app.run(function($ionicPlatform, $ionicHistory, $state) {
 
 //    window.localStorage['loginCredentials'] = null;
 
@@ -32,7 +38,7 @@ angular.module('careWheels', [
   })
 
   // API factory for making all php endpoints globally accessible.
-  .factory('API', function(BASE_URL) {
+  app.factory('API', function(BASE_URL) {
     var api = {
       userAndGroupInfo:     BASE_URL + '/userandgroupmemberinfo.php',
       userInfo:             BASE_URL + '/userinfo.php',
@@ -45,8 +51,12 @@ angular.module('careWheels', [
   })
 
   // GroupInfo factory for global GroupInfo
-  .factory('GroupInfo', function() {
+
+  app.factory('GroupInfo', function() {
     var groupInfo = {};
+    var currentGroup = [];
+    var analyzedGroup = [];
+
 
     groupInfo.saveLocal = function(data) {
 
@@ -58,11 +68,29 @@ angular.module('careWheels', [
       return angular.fromJson(window.sessionStorage['groupInfo']);
     };
 
+    groupInfo.addSensorDataToGroup = function(id) {//this will add each individual group member into the currentGroup array. Their carebank data will have been added within the DataDownload function
+      currentGroup.push(id);
+    };
+
+    groupInfo.retrieveGroupAfterDownload = function(){//currentGroup will contain all 5 groupmembers (with carebank data and sense data)
+      return currentGroup;
+    };
+
+    groupInfo.addAnalysisToGroup = function(member){
+      analyzedGroup.push(member);
+    };
+
+    groupInfo.retrieveAnalyzedGroup = function(){
+      return analyzedGroup;
+    };
+
     return groupInfo;
+
   })
 
   // User factory
-  .factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
+
+  app.factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
     var user = {};
     //window.localStorage['loginCredentials'] = null;
 
@@ -88,10 +116,13 @@ angular.module('careWheels', [
           window.localStorage['loginCredentials'] = angular.toJson({"username":uname, "password":passwd});
         //store user info
         //store groupMember info
+
         window.sessionStorage['user'] = angular.toJson({"username":uname, "password":passwd});
+
         GroupInfo.saveLocal(response.data);
         $ionicLoading.hide();   //make sure to hide loading screen
         callback();
+
       }, function(response) {
         //present login failed
         var alertPopup = $ionicPopup.alert({
@@ -100,11 +131,9 @@ angular.module('careWheels', [
         });
       })
     };
-
     user.retrieveLocal = function() {
 
       return angular.fromJson(window.sessionStorage['user']);
     };
-
     return user;
   });
