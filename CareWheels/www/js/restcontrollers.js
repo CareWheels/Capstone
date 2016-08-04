@@ -570,6 +570,6 @@ angular.module('careWheels')
       sensorDataViewPayment = 'True';
     memberSummaryPayment = 'False';
     //call creditRequest function/ send post request to credituser.php
-    creditRequest();
+    debtRequest();
   }});
 
