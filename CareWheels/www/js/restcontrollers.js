@@ -469,11 +469,13 @@ angular.module('careWheels')
 
 
 // based on CreditController
-.controller("CreditControllerByDebit", function($scope, $http, $log, $httpParamSerializerJQLike) {
+.controller("CreditControllerByDebit", function($scope, $http, $log, $httpParamSerializerJQLike, $fileLogger, fileloggerService) {
 
   //creditUser is the main function which will get called by the other components in the application
   //(individual group member sensor data or group member summary status subsystem)
   $scope.debitUser = function(username, password, usernameDebit, credits, creditType, alertLevel) {
+    fileloggerService.initLogComponent();
+    $fileLogger.log('info', '-----debitUser');
 
     //toFind is a parameter for post request to dailytransactionhistory.php
     var toFind = username;
