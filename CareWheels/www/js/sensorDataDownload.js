@@ -67,6 +67,11 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     };
     var count = 1;//this will be used in constructing the page urls
     var downloadFunc = function(thisMember, accesstoken, refreshtoken){
+    if (accesstoken == "000" || refreshtoken == "000"){
+        thisMember.sensorData = null;
+        output.notify(JSON.parse(JSON.stringify(thisMember)));
+        return console.log("error, please obtain valid sen.se keys!");
+    };
 
     var dataUrl = "https://apis.sen.se/v2/nodes/";//get page of nodes for this user
     $http({
@@ -537,8 +542,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     console.log("about to download data for: ", carewheelMembers);
     for(z=0; z < carewheelMembers.length; z++ ){
             //return angularWorker.run({name: thesemembers[z].name, refreshtoken: thesemembers[z].customValues[2], accesstoken: thesemembers[z].customValues[1]});
- 
-    downloadFunc(carewheelMembers[z], carewheelMembers[z].customValues[1].stringValue, carewheelMembers[z].customValues[2].stringValue);
+    
+      downloadFunc(carewheelMembers[z], carewheelMembers[z].customValues[1].stringValue, carewheelMembers[z].customValues[2].stringValue);
+      
     };
     //output.notify(JSON.parse(JSON.stringify(events)));
     //refreshFunc();
@@ -614,7 +620,7 @@ var userTime = prevDayParis.toISOString();
         $scope.data = update.data;
         $scope.status = update.status;
         //$scope.update = update;
-        console.log('Download Complete');
+        console.log('Download Complete', update);
         $scope.msg = "Download Complete";
 
         GroupInfo.addSensorDataToGroup(update); //COMMENTED OUT DURING TESTING, ADD LATER
