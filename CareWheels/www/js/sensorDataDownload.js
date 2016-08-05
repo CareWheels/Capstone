@@ -1,4 +1,5 @@
 var app = angular.module('careWheels')
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //Using angular-workers module
 //(also added to angular.module at top of app.js)
@@ -20,6 +21,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
   /////////////////////////////////////////////////////////////////////////////////////////
 
   $scope.DownloadData = function () {
+
       /**
       // This contains the worker body.
       // The function must be self contained.
@@ -42,6 +44,12 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //$http request to sen.se with access token to attempt to retrieve feed data
     ///////////////////////////////////////////////////////////////////////////
 
+
+
+    //we save the value passed in as time to the prevDay variable
+    //the time value will be 24 less than current user time, and adjusted for the offset of the sen.se server's timezone
+    var prevDay = input['time'];
+
     var carewheelMembers = input['carewheelMembers'];
     var presenceUids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
     var fridgeUids = [];
@@ -59,6 +67,11 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     };
     var count = 1;//this will be used in constructing the page urls
     var downloadFunc = function(thisMember, accesstoken, refreshtoken){
+    if (accesstoken == "000" || refreshtoken == "000"){
+        thisMember.sensorData = null;
+        output.notify(JSON.parse(JSON.stringify(thisMember)));
+        return console.log("error, please obtain valid sen.se keys!");
+    };
 
     var dataUrl = "https://apis.sen.se/v2/nodes/";//get page of nodes for this user
     $http({
@@ -166,10 +179,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         var alertLength = alertUids.length;
         //use lt or gt at end of url to only return events occuring within the last 24 hours
         //1994-11-05T08:15:30-05:00 corresponds to November 5, 1994, 8:15:30 am, US Eastern Standard Time
-        var date = new Date();
-        date.setDate(date.getDate()-1);
-        var prevDay = date.toISOString();
-        
+
         ///////////////////
         //TODO
         //handle additional pages of event objects by constructing url for those pages
@@ -532,8 +542,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     console.log("about to download data for: ", carewheelMembers);
     for(z=0; z < carewheelMembers.length; z++ ){
             //return angularWorker.run({name: thesemembers[z].name, refreshtoken: thesemembers[z].customValues[2], accesstoken: thesemembers[z].customValues[1]});
- 
-    downloadFunc(carewheelMembers[z], carewheelMembers[z].customValues[1].stringValue, carewheelMembers[z].customValues[2].stringValue);
+    
+      downloadFunc(carewheelMembers[z], carewheelMembers[z].customValues[1].stringValue, carewheelMembers[z].customValues[2].stringValue);
+      
     };
     //output.notify(JSON.parse(JSON.stringify(events)));
     //refreshFunc();
@@ -548,13 +559,27 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 //(this will be a javascript object containing sensor download data)
 /////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-        
     workerPromise
       .then(function success(angularWorker) {
       //The input must be serializable
       //console.log('reached');
+
+//////////////////////////////////////////
+
+//var user = moment();//current user time
+//var sense = user.clone().tz("Europe/Berlin");//same moment in time, with sense server offset
+
+//var userTime = sense;
+//userTime = JSON.parse(JSON.stringify(userTime));
+//console.log("inspect time variable", userTime);
+
+var date = new Date();//create new data object
+date.setDate(date.getDate()-1);
+var prevDayLA = moment.tz( date.toISOString(), "America/Los_Angeles");
+var prevDayParis = prevDayLA.clone().tz("Europe/Paris");
+var userTime = prevDayParis.toISOString();
+        //END TESTING        
+//////////////////////////////////////////////////////////////
 
       //make input object as arg for run()
       //we will need to include all properties which will be needed as params
@@ -568,8 +593,8 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //input to worker thread will accept "thesemembers" array variable, which contains token credentials for user's
         //group members within his/her carewheel
         //return angularWorker.run({name: thesemembers[z].name, refreshtoken: thesemembers[z].customValues[2], accesstoken: thesemembers[z].customValues[1]});
-        var thesemembers = GroupInfo.retrieveLocal();
-        return angularWorker.run({carewheelMembers: thesemembers});
+        var thesemembers = GroupInfo.groupInfo();
+        return angularWorker.run({carewheelMembers: thesemembers, time: userTime});
 
 
     }, function error(reason) {
@@ -595,7 +620,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         $scope.data = update.data;
         $scope.status = update.status;
         //$scope.update = update;
-        console.log('Download Complete');
+        console.log('Download Complete', update);
         $scope.msg = "Download Complete";
 
         GroupInfo.addSensorDataToGroup(update); //COMMENTED OUT DURING TESTING, ADD LATER
