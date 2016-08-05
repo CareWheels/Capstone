@@ -593,7 +593,7 @@ var userTime = prevDayParis.toISOString();
         //input to worker thread will accept "thesemembers" array variable, which contains token credentials for user's
         //group members within his/her carewheel
         //return angularWorker.run({name: thesemembers[z].name, refreshtoken: thesemembers[z].customValues[2], accesstoken: thesemembers[z].customValues[1]});
-        var thesemembers = GroupInfo.retrieveLocal();
+        var thesemembers = GroupInfo.groupInfo();
         return angularWorker.run({carewheelMembers: thesemembers, time: userTime});
 
 
