@@ -197,7 +197,7 @@ angular.module('careWheels')
           title: "CareWheels",
           sound: null   //same, hopefully a different sound than red alerts
         }).then(function() {
-          $log.log("Notification" + reminderNum + "has been scheduled for " + time.getUTCTime() + ", daily");
+          $log.log("Notification" + reminderNum + "has been scheduled for " + time.toTimeString() + ", daily");
         });
       } else $log.warn("Plugin disabled");
     } else if(reminderNum >=4) $log.warn("Incorrect attempt to create notification for id #" + reminderNum);
