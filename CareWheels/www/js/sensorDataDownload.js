@@ -561,34 +561,16 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 
     workerPromise
       .then(function success(angularWorker) {
-      //The input must be serializable
-      //console.log('reached');
 
-//////////////////////////////////////////
-
-//var user = moment();//current user time
-//var sense = user.clone().tz("Europe/Berlin");//same moment in time, with sense server offset
-
-//var userTime = sense;
-//userTime = JSON.parse(JSON.stringify(userTime));
-//console.log("inspect time variable", userTime);
-
-var date = new Date();//create new data object
-date.setDate(date.getDate()-1);
-var prevDayLA = moment.tz( date.toISOString(), "America/Los_Angeles");
-var prevDayParis = prevDayLA.clone().tz("Europe/Paris");
-var userTime = prevDayParis.toISOString();
-        //END TESTING        
-//////////////////////////////////////////////////////////////
+      var date = new Date();//create new data object
+      date.setDate(date.getDate()-1);
+      var prevDayLA = moment.tz( date.toISOString(), "America/Los_Angeles");
+      var prevDayParis = prevDayLA.clone().tz("Europe/Paris");
+      var userTime = prevDayParis.toISOString();
 
       //make input object as arg for run()
       //we will need to include all properties which will be needed as params
       //when making refresh/post and download/get requests to sense
-
-      //bill = access-A0RegyQMErQ7DgqS1a9f8KxcnAsjt5, refresh-PjBiwFdKyXwDsfm82FfVVK6IGWLLk0
-      //claude = access-XGDy6rcjvQgBnQbY40fS9p1w1bWqBc, refresh-UMogAOAGq6nUzTEqJovINFjjxAzyMK
-      //
-        //var thesemembers = DownloadService.getGroupInfo();
 
         //input to worker thread will accept "thesemembers" array variable, which contains token credentials for user's
         //group members within his/her carewheel
@@ -624,6 +606,7 @@ var userTime = prevDayParis.toISOString();
         $scope.msg = "Download Complete";
 
         GroupInfo.addSensorDataToGroup(update); //COMMENTED OUT DURING TESTING, ADD LATER
+        console.log("group info check after sensor download", GroupInfo.groupInfo());
 
       });
       ////end of for loop for each user
