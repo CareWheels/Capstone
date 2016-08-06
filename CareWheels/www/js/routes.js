@@ -12,24 +12,6 @@ angular.module('careWheels')
         controller: 'loginController'
       })
 
-      // .state('app.login', {
-      //   url: '/login',
-      //   views: {
-      //     'menuContent': {
-      //       templateUrl: 'views/login.html',
-      //       controller: 'loginController'
-      //     },
-      //     resolve: {
-      //       "auth": function($state, User) {
-      //         var credentials = angular.fromJson(window.localStorage['loginCredentials']);
-
-      //         if (credentials)
-      //           return User.login(credentials.username, credentials.password, true);
-      //       }
-      //     }
-      //   }
-      // })
-
       .state('app.groupStatus', {
         url: '/groupStatus',
         views: {
@@ -39,6 +21,7 @@ angular.module('careWheels')
           }
         }
       })
+
       .state('app.individualStatus', {
         url: '/individualStatus',
         views: {
@@ -66,11 +49,11 @@ angular.module('careWheels')
         }
       });
 
-    $urlRouterProvider.otherwise('/app/groupStatus');
-
+      $urlRouterProvider.otherwise('/app/groupStatus');
   })
 
-  .controller('goBackController', function ($scope, $ionicHistory) {
+  .controller('goBackController', function($scope, $ionicHistory){
+
     /* go back button */
     $scope.goBack = function () {
       $ionicHistory.goBack();

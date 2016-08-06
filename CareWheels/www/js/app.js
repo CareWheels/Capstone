@@ -5,19 +5,20 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 
-var app = angular.module('careWheels', [
+angular.module('careWheels', [
   'ionic',
   'ui.router',
   'ngCordova',
   'FredrikSandell.worker-pool',
-  'angularMoment'
+  'angularMoment',
+  'fileloggermodule'
 ])
 
 
   //contant definition for endpoint base url
-  app.constant('BASE_URL', 'https://carebank.carewheels.org:8443')
+  .constant('BASE_URL', 'https://carebank.carewheels.org:8443')
 
-  app.run(function($ionicPlatform, $ionicHistory, $state) {
+  .run(function($ionicPlatform, $ionicHistory, $state) {
 
 //    window.localStorage['loginCredentials'] = null;
 
@@ -40,7 +41,7 @@ var app = angular.module('careWheels', [
   })
 
   // API factory for making all php endpoints globally accessible.
-  app.factory('API', function(BASE_URL) {
+  .factory('API', function(BASE_URL) {
     var api = {
       userAndGroupInfo:     BASE_URL + '/userandgroupmemberinfo.php',
       userInfo:             BASE_URL + '/userinfo.php',
@@ -54,7 +55,7 @@ var app = angular.module('careWheels', [
 
   // GroupInfo factory for global GroupInfo
 
-  app.factory('GroupInfo', function() {
+  .factory('GroupInfo', function() {
     var groupInfoService = {};
     var groupInfo = [];
 
@@ -81,7 +82,7 @@ var app = angular.module('careWheels', [
 
   // User factory
 
-  app.factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
+  .factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
     var user = {};
     var userService = {};
     //window.localStorage['loginCredentials'] = null;
@@ -117,9 +118,24 @@ var app = angular.module('careWheels', [
       }, function(response) {
         //present login failed
         $ionicLoading.hide();
+        var errorMsg = "Unknown error.";
+        
+          //CHECKING TO FOR 404 ERRROR    
+          //response.status = 404;        
+          //response.data = "nothing";    
+          //console.log(response.data);   
+          //
+          
+        if(response.data === "Missing username / password" || response.data === "Invalid username / password")
+          errorMsg = "Please check your credentials!";
+        else if(response.data === "Your access is blocked by exceeding invalid login attempts")
+          errorMsg = "Account got blocked by exceeding invalid login attempts. Please contact admin";
+        else if(response.status == 404) 
+          errorMsg = "Unable to reach the server"; 
+
         var alertPopup = $ionicPopup.alert({
           title: 'Login failed!',
-          template: 'Please check your credentials!'
+          template: errorMsg
         });
       })
     };

@@ -1,4 +1,4 @@
-var app = angular.module('careWheels')
+angular.module('careWheels')
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //Using angular-workers module
@@ -9,7 +9,7 @@ var app = angular.module('careWheels')
 /////////////////////////////////////////////////////////////////////////////////////////
 //Sensor Data Download controller
 /////////////////////////////////////////////////////////////////////////////////////////
-app.controller('DownloadCtrl', function($scope, $http, WorkerService, GroupInfo, User) {
+.controller('DownloadCtrl', function($scope, $http, WorkerService, GroupInfo, User) {
 
 
 // The URL must be absolute because of the URL blob specification
@@ -586,31 +586,31 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         var thesemembers = GroupInfo.groupInfo();//returns all five group members with carebank data after login
         return angularWorker.run({carewheelMembers: thesemembers, time: userTime});
 
-    }, function error(reason) {
+      }, function error(reason) {
 
-        console.log('callback error');
-        console.log(reason);
+          console.log('callback error');
+          console.log(reason);
 
-        //for some reason the worker failed to initialize
-        //not all browsers support the HTML5 tech that is required, see below.
-      }).then(function success(result) {
+          //for some reason the worker failed to initialize
+          //not all browsers support the HTML5 tech that is required, see below.
+        }).then(function success(result) {
 
-        console.log('success');
-        console.log(result);
+          console.log('success');
+          console.log(result);
 
-      //handle result
-    }, function error(reason) {
-        //handle error
-        console.log('error');
-        console.log(reason);
+        //handle result
+      }, function error(reason) {
+          //handle error
+          console.log('error');
+          console.log(reason);
 
-      }, function notify(update) {
-        //handle update
-        $scope.data = update.data;
-        $scope.status = update.status;
-        //$scope.update = update;
-        console.log('Download Complete', update);
-        $scope.msg = "Download Complete";
+        }, function notify(update) {
+          //handle update
+          $scope.data = update.data;
+          $scope.status = update.status;
+          //$scope.update = update;
+          console.log('Download Complete', update);
+          $scope.msg = "Download Complete";
 
         GroupInfo.addDataToGroup(update, update.index); //COMMENTED OUT DURING TESTING, ADD LATER
         console.log("group info check after sensor download", GroupInfo.groupInfo());
@@ -619,3 +619,4 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       ////end of for loop for each user
   };
 });
+
