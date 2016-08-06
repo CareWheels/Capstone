@@ -12,7 +12,12 @@ angular.module('careWheels')
   // to use it. It will print on the bottom of the Individual Status Page of the app.
   // To get rid of it, comment it out in individualStatus.html.
   $scope.testAnalysis = function() {
-    var test = analysis;
+    var macguffin = analysis;
+    var test;
+    var smallerMacguffin = macguffin[3];
+    //var obj = JSON.parse(smallerMacguffin);
+    //test = obj.name;
+    test = smallerMacguffin;
     return test;
   }
 
