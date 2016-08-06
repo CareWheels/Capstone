@@ -1,4 +1,4 @@
-var app = angular.module('careWheels')
+angular.module('careWheels')
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //Using angular-workers module
@@ -10,7 +10,7 @@ var app = angular.module('careWheels')
 /////////////////////////////////////////////////////////////////////////////////////////
 //Sensor Data Download controller
 /////////////////////////////////////////////////////////////////////////////////////////
-app.controller('DownloadCtrl', function($scope, $http, WorkerService, GroupInfo, User) {
+.controller('DownloadCtrl', function($scope, $http, WorkerService, GroupInfo, User) {
 
 
 // The URL must be absolute because of the URL blob specification  
@@ -559,27 +559,28 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 //(this will be a javascript object containing sensor download data)
 /////////////////////////////////////////////////////////////////////////////////////////
 
-    workerPromise
-      .then(function success(angularWorker) {
+  workerPromise
+    
+    .then(function success(angularWorker) {
       //The input must be serializable
       //console.log('reached');
 
-//////////////////////////////////////////
+      //////////////////////////////////////////
 
-//var user = moment();//current user time
-//var sense = user.clone().tz("Europe/Berlin");//same moment in time, with sense server offset
+      //var user = moment();//current user time
+      //var sense = user.clone().tz("Europe/Berlin");//same moment in time, with sense server offset
 
-//var userTime = sense;
-//userTime = JSON.parse(JSON.stringify(userTime));
-//console.log("inspect time variable", userTime);
+      //var userTime = sense;
+      //userTime = JSON.parse(JSON.stringify(userTime));
+      //console.log("inspect time variable", userTime);
 
-var date = new Date();//create new data object
-date.setDate(date.getDate()-1);
-var prevDayLA = moment.tz( date.toISOString(), "America/Los_Angeles");
-var prevDayParis = prevDayLA.clone().tz("Europe/Paris");
-var userTime = prevDayParis.toISOString();
-        //END TESTING        
-//////////////////////////////////////////////////////////////
+      var date = new Date();//create new data object
+      date.setDate(date.getDate()-1);
+      var prevDayLA = moment.tz( date.toISOString(), "America/Los_Angeles");
+      var prevDayParis = prevDayLA.clone().tz("Europe/Paris");
+      var userTime = prevDayParis.toISOString();
+              //END TESTING        
+      //////////////////////////////////////////////////////////////
 
       //make input object as arg for run()
       //we will need to include all properties which will be needed as params
@@ -597,35 +598,35 @@ var userTime = prevDayParis.toISOString();
         return angularWorker.run({carewheelMembers: thesemembers, time: userTime});
 
 
-    }, function error(reason) {
+      }, function error(reason) {
 
-        console.log('callback error');
-        console.log(reason);
+          console.log('callback error');
+          console.log(reason);
 
-        //for some reason the worker failed to initialize
-        //not all browsers support the HTML5 tech that is required, see below.
-      }).then(function success(result) {
+          //for some reason the worker failed to initialize
+          //not all browsers support the HTML5 tech that is required, see below.
+        }).then(function success(result) {
 
-        console.log('success');
-        console.log(result);
+          console.log('success');
+          console.log(result);
 
-      //handle result
-    }, function error(reason) {
-        //handle error
-        console.log('error');
-        console.log(reason);
+        //handle result
+      }, function error(reason) {
+          //handle error
+          console.log('error');
+          console.log(reason);
 
-      }, function notify(update) {
-        //handle update
-        $scope.data = update.data;
-        $scope.status = update.status;
-        //$scope.update = update;
-        console.log('Download Complete', update);
-        $scope.msg = "Download Complete";
+        }, function notify(update) {
+          //handle update
+          $scope.data = update.data;
+          $scope.status = update.status;
+          //$scope.update = update;
+          console.log('Download Complete', update);
+          $scope.msg = "Download Complete";
 
-        GroupInfo.addSensorDataToGroup(update); //COMMENTED OUT DURING TESTING, ADD LATER
+          GroupInfo.addSensorDataToGroup(update); //COMMENTED OUT DURING TESTING, ADD LATER
 
-      });
-      ////end of for loop for each user
-  };
-});
+        });
+        ////end of for loop for each user
+    };
+  });
