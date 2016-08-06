@@ -3,7 +3,7 @@ var app = angular.module('careWheels')
 //Controller for Sensor Data Analysis
 //Will receive parsed feed data from the injected DataService factory
 /////////////////////////////////////////////////////////////////////////////////////////
-app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo) {
+app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) {
 
   $scope.AnalyzeData = function(){
     var testFunc = function(){
@@ -47,7 +47,7 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo) {
         var currentHour = now.getHours();
         var currentMin = now.getMinutes();
         var analysisData;
-        var parisDateTime;
+        var utcDateTime;
         var momentInParis;
         var momentInLA;
         var losAngelesDateTime;
@@ -96,11 +96,9 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo) {
         for(w = 0; w < presenceData.length; ++w) {
           // Need to convert dateEvent's from Paris time to Los Angeles time!
           // this needs to be made configurable once the app moves out of PST/PDT areas!!!
-          parisDateTime = new Date(presenceData[w].dateEvent);
-          momentInParis = moment.tz(parisDateTime.toISOString(), "Europe/Paris");
-          console.log(momentInParis);
-          momentInLA = momentInParis.clone().tz("America/Los_Angeles");
-          losAngelesDateTime = new Date(momentInLA.toISOString());
+          utcDateTime = new Date(presenceData[w].dateEvent);
+          momentInLA = moment.tz(utcDateTime.toISOString(), "America/Los_Angeles");
+          losAngelesDateTime = new Date(momentInLA.format('YYYY-MM-DD[T]HH:mm:ss'));
           hour = losAngelesDateTime.getHours();
           min = losAngelesDateTime.getMinutes();
 
@@ -120,11 +118,9 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo) {
         for(w =0; w < fridgeData.length; ++w) {
           // Need to convert dateEvent's from Paris time to Los Angeles time!
           // this needs to be made configurable once the app moves out of PST/PDT areas!!!
-          parisDateTime = new Date(fridgeData[w].dateEvent);
-          momentInParis = moment.tz(parisDateTime.toISOString(), "Europe/Paris");
-          console.log(momentInParis);
-          momentInLA = momentInParis.clone().tz("America/Los_Angeles");
-          losAngelesDateTime = new Date(momentInLA.toISOString());
+          utcDateTime = new Date(fridgeData[w].dateEvent);
+          momentInLA = moment.tz(utcDateTime.toISOString(), "America/Los_Angeles");
+          losAngelesDateTime = new Date(momentInLA.format('YYYY-MM-DD[T]HH:mm:ss'));
           hour = losAngelesDateTime.getHours();
           min = losAngelesDateTime.getMinutes();
 
@@ -136,13 +132,12 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo) {
         console.log("MEDS DATA: " + "\n");
 
         for(w =0; w < medsData.length; ++w) {
-          parisDateTime = new Date(medsData[w].dateEvent);
-          momentInParis = moment.tz(parisDateTime.toISOString(), "Europe/Paris");
-          console.log(momentInParis);
-          momentInLA = momentInParis.clone().tz("America/Los_Angeles");
-          losAngelesDateTime = new Date(momentInLA.toISOString());
+          utcDateTime = new Date(medsData[w].dateEvent);
+          momentInLA = moment.tz(utcDateTime.toISOString(), "America/Los_Angeles");
+          losAngelesDateTime = new Date(momentInLA.format('YYYY-MM-DD[T]HH:mm:ss'));
           hour = losAngelesDateTime.getHours();
           min = losAngelesDateTime.getMinutes();
+
           console.log(hour + ":" + min + "\n");
 
           medsMatrix[hour][min] += 1;
