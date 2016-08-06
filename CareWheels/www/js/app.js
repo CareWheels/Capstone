@@ -1,11 +1,19 @@
 // Ionic Starter App
 
+
+// angular.module is a global place for creating, registering and retrieving Angular modules
+// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
+// the 2nd parameter is an array of 'requires'
+
 angular.module('careWheels', [
   'ionic',
   'ui.router',
   'ngCordova',
+  'FredrikSandell.worker-pool',
+  'angularMoment',
   'fileloggermodule'
 ])
+
 
   //contant definition for endpoint base url
   .constant('BASE_URL', 'https://carebank.carewheels.org:8443')
@@ -46,28 +54,49 @@ angular.module('careWheels', [
   })
 
   // GroupInfo factory for global GroupInfo
+
   .factory('GroupInfo', function() {
-    var groupInfo = {};
+    var groupInfoService = {};
+    var currentGroup = [];
+    var analyzedGroup = [];
+    var groupInfo = [];
 
-    groupInfo.saveLocal = function(data) {
-
-      return window.sessionStorage['groupInfo'] = angular.toJson(data);
+    groupInfoService.initGroupInfo = function(data) {
+      groupInfo = data;
     };
 
-    groupInfo.retrieveLocal = function() {
-
-      return angular.fromJson(window.sessionStorage['groupInfo']);
+    groupInfoService.addSensorDataToGroup = function(id) {//this will add each individual group member into the currentGroup array. Their carebank data will have been added within the DataDownload function
+      currentGroup.push(id);
     };
 
-    return groupInfo;
+    groupInfoService.addAnalysisToGroup = function(member){
+      analyzedGroup.push(member);
+    };
+
+    groupInfoService.groupInfo = function() {
+      return groupInfo;
+    };
+
+    groupInfoService.retrieveGroupAfterDownload = function(){//currentGroup will contain all 5 groupmembers (with carebank data and sense data)
+      return currentGroup;
+    };
+
+    groupInfoService.retrieveAnalyzedGroup = function(){
+      return analyzedGroup;
+    };
+
+    return groupInfoService;
+
   })
 
   // User factory
+
   .factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
     var user = {};
+    var userService = {};
     //window.localStorage['loginCredentials'] = null;
 
-    user.login = function(uname, passwd, rmbr, callback) {
+    userService.login = function(uname, passwd, rmbr, callback) {
       $ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
         template: '<ion-spinner></ion-spinner>'+
                   '<p>Contacting Server...</p>'
@@ -89,8 +118,10 @@ angular.module('careWheels', [
           window.localStorage['loginCredentials'] = angular.toJson({"username":uname, "password":passwd});
         //store user info
         //store groupMember info
-        window.sessionStorage['user'] = angular.toJson({"username":uname, "password":passwd});
-        GroupInfo.saveLocal(response.data);
+
+        user = {username:uname, password:passwd};
+
+        GroupInfo.initGroupInfo(response.data);
         $ionicLoading.hide();   //make sure to hide loading screen
         callback();
       }, function(response) {
@@ -117,11 +148,10 @@ angular.module('careWheels', [
         });
       })
     };
-
-    user.retrieveLocal = function() {
-
-      return angular.fromJson(window.sessionStorage['user']);
+    
+    userService.credentials = function() {
+      return user;
     };
 
-    return user;
+    return userService;
   });
