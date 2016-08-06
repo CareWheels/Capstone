@@ -4,12 +4,14 @@
  * Each Reminder is held in live memory in $scope.reminders[], static memory via NotificationController.data[], in custom fields on the
  * Cyclos server, and in the Notifications Tray (handled by the Notifications component).
  */
+
 angular.module('careWheels')
 
   .controller('remindersController', ['$scope', '$controller', '$ionicPopup', '$state', 'User', function($scope, $controller, $ionicPopup, $state, User){
 
     var notifViewModel = $scope.$new();   //to access Notifications functions
     var restViewModel = $scope.$new();    //to access Reminder REST controller
+
     $controller('NotificationController',{$scope : notifViewModel });
     $controller('ReminderRestController',{$scope : restViewModel });
 
@@ -133,8 +135,9 @@ angular.module('careWheels')
     }
   }])
 
-//Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
+  //Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
   .controller("NotificationController", function($scope, $log, $cordovaLocalNotification){
+
     var isAndroid = window.cordova!=undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
     function Time() {this.hours=0; this.minutes=0; this.seconds=0; this.on=true;};
     //window.localStorage['Reminders'] = null;    //Turning this on simulates starting from fresh storage every time controller is called by view change
@@ -233,8 +236,8 @@ angular.module('careWheels')
     $scope.Notifs_Status = function(){
       //$scope.data = angular.fromJson(window.localStorage['Reminders']);
       alert("In memory: \nReminder 1= (" +$scope.data[0].on +") "+ $scope.data[0].hours + ":" + $scope.data[0].minutes + ":" + $scope.data[0].seconds +
-      "\nReminder 2= (" +$scope.data[0].on +") "+ $scope.data[1].hours + ":" + $scope.data[1].minutes + ":" + $scope.data[1].seconds +
-      "\nReminder 3= (" +$scope.data[0].on +") "+ $scope.data[2].hours + ":" + $scope.data[2].minutes + ":" + $scope.data[2].seconds);
+        "\nReminder 2= (" +$scope.data[0].on +") "+ $scope.data[1].hours + ":" + $scope.data[1].minutes + ":" + $scope.data[1].seconds +
+        "\nReminder 3= (" +$scope.data[0].on +") "+ $scope.data[2].hours + ":" + $scope.data[2].minutes + ":" + $scope.data[2].seconds);
       if(isAndroid){
         cordova.plugins.notification.local.get([1, 2, 3], function (notifications) {
           alert("Scheduled: " + notifications);

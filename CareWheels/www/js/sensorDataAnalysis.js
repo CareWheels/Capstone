@@ -3,12 +3,12 @@ var app = angular.module('careWheels')
 //Controller for Sensor Data Analysis
 //Will receive parsed feed data from the injected DataService factory
 /////////////////////////////////////////////////////////////////////////////////////////
-app.controller('AnalysisCtrl', function($scope, GroupInfo) {
+app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) {
 
   $scope.AnalyzeData = function(){
     var testFunc = function(){
 
-      $scope.groupData = GroupInfo.retrieveGroupAfterDownload();
+      $scope.groupData = GroupInfo.groupInfo();
       console.log('contents of $scope.groupData before analysis ', $scope.groupData);
 
       // Excluding Medication analysis for now
@@ -17,15 +17,6 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
 
       // Create loop to analyze each members data.
       for(var z = 0; z < $scope.groupData.length; ++z ) {
-
-        // Shortcuts to our data
-        //var presenceData = JSON.parse($scope.groupData[z].sensorData.Presence);
-        //var fridgeData = JSON.parse($scope.groupData[z].sensorData.Fridge);
-        //var medsData = JSON.parse($scope.groupData[z].sensorData.Meds);
-
-        var presenceData = $scope.groupData[z].sensorData.Presence;
-        var fridgeData = $scope.groupData[z].sensorData.Fridge;
-        var medsData = $scope.groupData[z].sensorData.Meds;
 
         // Setup our presence  and fridge matrices
         var w = 0;
@@ -56,6 +47,29 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
         var currentHour = now.getHours();
         var currentMin = now.getMinutes();
         var analysisData;
+        var utcDateTime;
+        var momentInParis;
+        var momentInLA;
+        var losAngelesDateTime;
+        var hour;
+        var min;
+        var memberObject;
+
+        if($scope.groupData[z].sensorData == null) {
+
+          $scope.groupData[z].analysisData = null;
+          memberObject = $scope.groupData[z];
+          console.log("member after analysis", memberObject);
+          GroupInfo.addDataToGroup(memberObject, z);
+          continue;
+        }
+
+
+        var presenceData = $scope.groupData[z].sensorData.Presence;
+        var fridgeData = $scope.groupData[z].sensorData.Fridge;
+        var medsData = $scope.groupData[z].sensorData.Meds;
+
+        console.log("DATA FOR: " + $scope.groupData[z].username + "\n");
 
         // Initialize our matrices
         for(w = 0; w < 24; ++w) {
@@ -75,10 +89,19 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
 
         }
 
+        console.log("PRESENCE DATA: " + "\n");
+
         // Populate our matrices
         for(w = 0; w < presenceData.length; ++w) {
-          var hour = new Date(presenceData[w].dateEvent).getHours();
-          var min = new Date(presenceData[w].dateEvent).getMinutes();
+          // Need to convert dateEvent's from Paris time to Los Angeles time!
+          // this needs to be made configurable once the app moves out of PST/PDT areas!!!
+          utcDateTime = new Date(presenceData[w].dateEvent);
+          momentInLA = moment.tz(utcDateTime.toISOString(), "America/Los_Angeles");
+          losAngelesDateTime = new Date(momentInLA.format('YYYY-MM-DD[T]HH:mm:ss'));
+          hour = losAngelesDateTime.getHours();
+          min = losAngelesDateTime.getMinutes();
+
+          console.log(hour + ":" + min + "\n");
 
           if(presenceData[w].data.code = 200) {
             presenceMatrix[hour][min] = true;
@@ -89,16 +112,32 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
           }
         }
 
-        for(w =0; w < fridgeData; ++w) {
-          var hour = new Date(fridgeData[w].dateEvent).getHours();
-          var min = new Date(fridgeData[w].dateEvent).getMinutes();
+        console.log("FRIDGE DATA: " + "\n");
+
+        for(w =0; w < fridgeData.length; ++w) {
+          // Need to convert dateEvent's from Paris time to Los Angeles time!
+          // this needs to be made configurable once the app moves out of PST/PDT areas!!!
+          utcDateTime = new Date(fridgeData[w].dateEvent);
+          momentInLA = moment.tz(utcDateTime.toISOString(), "America/Los_Angeles");
+          losAngelesDateTime = new Date(momentInLA.format('YYYY-MM-DD[T]HH:mm:ss'));
+          hour = losAngelesDateTime.getHours();
+          min = losAngelesDateTime.getMinutes();
+
+          console.log(hour + ":" + min + "\n");
 
           fridgeMatrix[hour][min] += 1;
         }
 
-        for(w =0; w < medsData; ++w) {
-          var hour = new Date(medsData[w].dateEvent).getHours();
-          var min = new Date(medsData[w].dateEvent).getMinutes();
+        console.log("MEDS DATA: " + "\n");
+
+        for(w =0; w < medsData.length; ++w) {
+          utcDateTime = new Date(medsData[w].dateEvent);
+          momentInLA = moment.tz(utcDateTime.toISOString(), "America/Los_Angeles");
+          losAngelesDateTime = new Date(momentInLA.format('YYYY-MM-DD[T]HH:mm:ss'));
+          hour = losAngelesDateTime.getHours();
+          min = losAngelesDateTime.getMinutes();
+
+          console.log(hour + ":" + min + "\n");
 
           medsMatrix[hour][min] += 1;
         }
@@ -106,7 +145,7 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
         //Presence of user pre-current hour: at end of hour, Displayed analysis as prescribed by
         // Claude should look at the status of the user "at the end of the hour"
         // Due to sensor timing this will need to be a bit fuzzy.
-        for(w = 0; w < currentHour; ++w) {
+        for(w = 0; w < currentHour - 1; ++w) {
 
           if(presenceMatrix[w][57] || presenceMatrix[w][58] || presenceMatrix[w][59] ) {
             presenceByHour[w] = true;
@@ -115,31 +154,29 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
 
         // Display of presence for current hour, should be the "True" presence of the user.
         // Still need to go fuzzy, as we can't rely on a sensor ping to be in the current minute.
-        for(w = 0; w < currentMin; ++w) {
+       // Edge case of any hour between 0 to 3 min into that hour.
+       if(currentMin < 3 && currentHour != 0) {
+         if(presenceMatrix[currentHour - 1][57] || presenceMatrix[currentHour - 1][58] || presenceMatrix[currentHour - 1][59] ) {
+           presenceByHour[currentHour] = true;
+         }
+       }
+       // Very edge case of 12:00am to 12:03am
+       if(currentMin < 3 && currentHour == 0) {
+         presenceByHour[currentHour] = true;
+       }
 
-          // Edge case of any hour between 0 to 3 min into that hour.
-          if(currentMin < 3 && currentHour != 0) {
-            if(presenceMatrix[currentHour - 1][57] || presenceMatrix[currentHour - 1][58] || presenceMatrix[currentHour - 1][59] ) {
-              presenceByHour[currentHour] = true;
-            }
-          }
-          // Very edge case of 12:00am to 12:03am
-          if(currentMin < 3 && currentHour == 0) {
-            presenceByHour[currentHour] = true;
-          }
+       // Normal case, do a fuzzy check for presence.
+       if(presenceMatrix[currentHour][currentMin - 2] || presenceMatrix[currentHour][currentMin - 1] ||
+         presenceMatrix[currentHour][currentMin] ) {
+         presenceByHour[currentHour] = true;
+       }
 
-          // Normal case, do a fuzzy check for presence.
-          if(presenceMatrix[currentHour][currentMin - 2] || presenceMatrix[currentHour][currentMin - 1] ||
-            presenceMatrix[currentHour][currentMin] ) {
-            presenceByHour[currentHour] = true;
-          }
-        }
 
         //Analyze the fridge for hits by hour
         for(w = 0; w < currentHour; ++w) {
 
           for(var y = 0; y < 60; ++y) {
-            fridgeHitsByHour += fridgeMatrix[w][y];
+            fridgeHitsByHour[w] += fridgeMatrix[w][y];
           }
         }
 
@@ -147,7 +184,7 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
         for(w = 0; w < currentHour; ++w) {
 
           for(var y = 0; y < 60; ++y) {
-            medsHitsByHour += medsMatrix[w][y];
+            medsHitsByHour[w] += medsMatrix[w][y];
           }
         }
 
@@ -277,6 +314,9 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
           // **************************
           // Call local notifications here to send a red alert out for this person.
           // **************************
+          var notifViewModel = $scope.$new();   //to access Notifications functions
+          $controller('NotificationController',{$scope : notifViewModel });
+          notifViewModel.Create_Notif(0, 0, 0, false, 0);
         }
 
         // We have finished processing all exceptions to meds interval alerts
@@ -301,6 +341,9 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
           // **************************
           // Call local notifications here to send a red alert out for this person.
           // **************************
+          var notifViewModel = $scope.$new();   //to access Notifications functions
+          $controller('NotificationController',{$scope : notifViewModel });
+          notifViewModel.Create_Notif(0, 0, 0, false, 0);
         }
 
 
@@ -394,8 +437,46 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
           "medsAlertLevel": medsAlertLevel
         }
 
+        console.log("GROUP MEMBER ANALYSIS FOR: " + z + " " + "\n"
+        + "Member name: " + $scope.groupData[z].username + "\n"
+        + "presenceMatrix: " + analysisData.presenceMatrix + "\n"
+        + "presenceByHour: " + analysisData.presenceByHour + "\n"
+        + "fridgeMatrix: " + analysisData.fridgeMatrix + "\n"
+        + "fridgeHitsByhour: " + analysisData.fridgeHitsByHour + "\n"
+        + "fridgeAlertInterval1: " + analysisData.fridgeAlertInterval1 + "\n"
+        + "fridgeAlertInterval2: " + analysisData.fridgeAlertInterval2 + "\n"
+        + "fridgeAlertInterval3: " + analysisData.fridgeAlertInterval3 + "\n"
+        + "fridgeAlertPoints: " + analysisData.fridgeAlertPoints + "\n"
+        + "fridgeAlertLevel: " + analysisData.fridgeAlertLevel + "\n"
+        + "medsMatrix: " + analysisData.medsMatrix + "\n"
+        + "medsHitsByhour: " + analysisData.medsHitsByHour + "\n"
+        + "medsAlertInterval1: " + analysisData.medsAlertInterval1 + "\n"
+        + "medsAlertInterval2: " + analysisData.medsAlertInterval2 + "\n"
+        + "medsAlertInterval3: " + analysisData.medsAlertInterval3 + "\n"
+        + "medsAlertPoints: " + analysisData.medsAlertPoints + "\n"
+        + "medsAlertLevel: " + analysisData.medsAlertLevel + "\n");
+
+        $scope.analysis += "GROUP MEMBER: " + z + " " + "\n"
+                           + "Member name: " + $scope.groupData[z].username + "\n"
+                           + "presenceMatrix: " + analysisData.presenceMatrix + "\n"
+                           + "presenceByHour: " + analysisData.presenceByHour + "\n"
+                           + "fridgeMatrix: " + analysisData.fridgeMatrix + "\n"
+                           + "fridgeHitsByhour: " + analysisData.fridgeHitsByHour + "\n"
+                           + "fridgeAlertInterval1: " + analysisData.fridgeAlertInterval1 + "\n"
+                           + "fridgeAlertInterval2: " + analysisData.fridgeAlertInterval2 + "\n"
+                           + "fridgeAlertInterval3: " + analysisData.fridgeAlertInterval3 + "\n"
+                           + "fridgeAlertPoints: " + analysisData.fridgeAlertPoints + "\n"
+                           + "fridgeAlertLevel: " + analysisData.fridgeAlertLevel + "\n"
+                           + "medsMatrix: " + analysisData.medsMatrix + "\n"
+                           + "medsHitsByhour: " + analysisData.medsHitsByHour + "\n"
+                           + "medsAlertInterval1: " + analysisData.medsAlertInterval1 + "\n"
+                           + "medsAlertInterval2: " + analysisData.medsAlertInterval2 + "\n"
+                           + "medsAlertInterval3: " + analysisData.medsAlertInterval3 + "\n"
+                           + "medsAlertPoints: " + analysisData.medsAlertPoints + "\n"
+                           + "medsAlertLevel: " + analysisData.medsAlertLevel + "\n"
+
         $scope.groupData[z].analysisData = analysisData;
-        var memberObject = $scope.groupData[z];
+        memberObject = $scope.groupData[z];
         //var sensorData = $scope.groupData[z].sensorData;
         // This is just a modification of what Zach has done.
         //var memberObject = {
@@ -405,10 +486,10 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
         //};
         //DataService.addToGroup(memberObject);
         console.log("member after analysis", memberObject);
-        GroupInfo.addAnalysisToGroup(memberObject);
-        GroupInfo.retrieveAnalyzedGroup();
-
+        GroupInfo.addDataToGroup(memberObject, z);
+        console.log("group after analysis", GroupInfo.groupInfo());
       }
+
 
       /*
        if ($scope.groupData.length < 4){

@@ -56,50 +56,24 @@ var app = angular.module('careWheels', [
 
   app.factory('GroupInfo', function() {
     var groupInfoService = {};
-    //var currentGroup = [];
-    //var analyzedGroup = [];
     var groupInfo = [];
 
     groupInfoService.initGroupInfo = function(data) {
       groupInfo = data;
     };
 
-    //this function is used at the end of sensorDataDownload
-    //and adds each group member object to the currentGroup array after sensorData is added to it
-
-    //TRY
-    //have 'update' return only the sensorData, then have this function attach that sensorData
-    //to the corresponding group member object
-
-    groupInfoService.addSensorDataToGroup = function(id) {
-      groupInfo.push(id);
+    //this function is used at the end of Data Download and Data Analysis
+    //it will replace each group members position in the groupInfo array with a newly updated member containing 
+    //a sensorData object (after Data Download), or a sensorAnalysis object (after Data Analysis)
+    groupInfoService.addDataToGroup = function(member, index) {
+      groupInfo[index] = member;
     };
 
-    //this function is used at the end of sensorDataAnalysis
-    //and adds each group member object to the analyzedGroup array after analysisData is added to it
-    groupInfoService.addAnalysisToGroup = function(member){
-      groupInfo.push(member);
-    };
-
+    //this function will return the current contents of groupinfo.
+    //will be called at the beginning of Data Download, Data Analysis, and group / ind. member summary
     groupInfoService.groupInfo = function() {
       return groupInfo;
     };
-
-    //called at the beginning of sensorDataAnalysis
-    //will return the currentGroup array
-    //after sensor data download is completed, currentGroup will contain all 5 group members, each with
-    //sensorData objects attached to them
-    //groupInfoService.retrieveGroupAfterDownload = function(){
-    //  return currentGroup;
-    //};
-
-    //called by group member summary (and maybe ind. summary)
-    //will return the analyzedGroup array
-    //after sensor data analysis is completed, analyzedGroup will contain all 5 group members, each with
-    //sensorAnalysis objects attached to them
-    //groupInfoService.retrieveAnalyzedGroup = function(){
-    //  return analyzedGroup;
-    //};
 
     return groupInfoService;
 
