@@ -315,9 +315,9 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
           // **************************
           // Call local notifications here to send a red alert out for this person.
           // **************************
-          var notifViewModel = $scope.$new();   //to access Notifications functions
-          $controller('NotificationController',{$scope : notifViewModel });
-          notifViewModel.Create_Notif(0, 0, 0, false, 0);
+          // var notifViewModel = $scope.$new();   //to access Notifications functions
+          // $controller('NotificationController',{$scope : notifViewModel });
+          // notifViewModel.Create_Notif(0, 0, 0, false, 0);
         }
 
         // We have finished processing all exceptions to meds interval alerts
@@ -342,9 +342,9 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
           // **************************
           // Call local notifications here to send a red alert out for this person.
           // **************************
-          var notifViewModel = $scope.$new();   //to access Notifications functions
-          $controller('NotificationController',{$scope : notifViewModel });
-          notifViewModel.Create_Notif(0, 0, 0, false, 0);
+          // var notifViewModel = $scope.$new();   //to access Notifications functions
+          // $controller('NotificationController',{$scope : notifViewModel });
+          // notifViewModel.Create_Notif(0, 0, 0, false, 0);
         }
 
 
@@ -438,6 +438,7 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
           "medsAlertLevel": medsAlertLevel
         }
 
+
         console.log("GROUP MEMBER ANALYSIS FOR: " + z + " " + "\n"
         + "Member name: " + $scope.groupData[z].username + "\n"
         + "presenceMatrix: " + analysisData.presenceMatrix + "\n"
@@ -456,6 +457,9 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
         + "medsAlertInterval3: " + analysisData.medsAlertInterval3 + "\n"
         + "medsAlertPoints: " + analysisData.medsAlertPoints + "\n"
         + "medsAlertLevel: " + analysisData.medsAlertLevel + "\n");
+
+        
+        console.log("analysisData.presenceByHour[5]: " + analysisData.presenceByHour[5]);
 
         $scope.analysis += "GROUP MEMBER: " + z + " " + "\n"
                            + "Member name: " + $scope.groupData[z].username + "\n"
