@@ -4,6 +4,7 @@
  * Each Reminder is held in live memory in $scope.reminders[], static memory via NotificationController.data[], in custom fields on the
  * Cyclos server, and in the Notifications Tray (handled by the Notifications component).
  */
+
 angular.module('careWheels')
 
   .controller('remindersController', ['$scope', '$controller', '$ionicPopup', '$state', 'User', function($scope, $controller, $ionicPopup, $state, User){
@@ -129,12 +130,13 @@ angular.module('careWheels')
 
         console.log("rem1="+rem1+" rem2="+rem2+" rem3="+rem3);
         restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);
-      } else console.warn("Cannot contact server because user credentials are undefined.");
+      } else console.warn("Cannot contact server because user credentials are undefined.");    
     }
   }])
 
 //Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
   .controller("NotificationController", function($scope, $log, $cordovaLocalNotification){
+
     var isAndroid = window.cordova!=undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
     function Time() {this.hours=0; this.minutes=0; this.seconds=0; this.on=true;};
     //window.localStorage['Reminders'] = null;    //Turning this on simulates starting from fresh storage every time controller is called by view change
@@ -194,7 +196,7 @@ angular.module('careWheels')
             title: "CareWheels",
             sound: null   //same, hopefully a different sound than red alerts
           }).then(function() {
-            $log.log("Notification" + reminderNum + "has been scheduled for " + time.getUTCTime() + ", daily");
+            $log.log("Notification" + reminderNum + "has been scheduled for " + time.toTimeString() + ", daily");
           });
         } else $log.warn("Plugin disabled");
       } else if(reminderNum >=4) $log.warn("Incorrect attempt to create notification for id #" + reminderNum);
@@ -202,7 +204,7 @@ angular.module('careWheels')
 
     //Unschedules all local reminders; clears its index if it is a user reminder (id 1-3).
     $scope.Delete_Reminders = function(){   //NOTE: id corresponds to $scope.data array indices so it is off by one
-                                            //$scope.data = angular.fromJson(window.localStorage['Reminders']);
+      //$scope.data = angular.fromJson(window.localStorage['Reminders']);
       if(isAndroid){
         for(i=1; i<4; ++i){
           $cordovaLocalNotification.clear(i, function() {
@@ -233,8 +235,8 @@ angular.module('careWheels')
     $scope.Notifs_Status = function(){
       //$scope.data = angular.fromJson(window.localStorage['Reminders']);
       alert("In memory: \nReminder 1= (" +$scope.data[0].on +") "+ $scope.data[0].hours + ":" + $scope.data[0].minutes + ":" + $scope.data[0].seconds +
-      "\nReminder 2= (" +$scope.data[0].on +") "+ $scope.data[1].hours + ":" + $scope.data[1].minutes + ":" + $scope.data[1].seconds +
-      "\nReminder 3= (" +$scope.data[0].on +") "+ $scope.data[2].hours + ":" + $scope.data[2].minutes + ":" + $scope.data[2].seconds);
+        "\nReminder 2= (" +$scope.data[0].on +") "+ $scope.data[1].hours + ":" + $scope.data[1].minutes + ":" + $scope.data[1].seconds +
+        "\nReminder 3= (" +$scope.data[0].on +") "+ $scope.data[2].hours + ":" + $scope.data[2].minutes + ":" + $scope.data[2].seconds);
       if(isAndroid){
         cordova.plugins.notification.local.get([1, 2, 3], function (notifications) {
           alert("Scheduled: " + notifications);

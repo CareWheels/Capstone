@@ -34,12 +34,16 @@ embed{
 .col {
   border: solid 1px grey;
   text-align: center;
+  color: white;
+}
+.blackFont{
+  color: black;
 }
 
 .col.no_border {
   border: none;
 }
-
+/*
 .col.blue {
   border: solid 1px grey;
   background-color: blue;
@@ -59,7 +63,7 @@ embed{
 .col.red {
   border: solid 1px grey;
   background-color: red;
-}
+}*/
 
 .overflowHide {
   overflow-x: hidden;
