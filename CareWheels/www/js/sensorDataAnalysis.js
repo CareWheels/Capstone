@@ -23,6 +23,17 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo) {
         //var fridgeData = JSON.parse($scope.groupData[z].sensorData.Fridge);
         //var medsData = JSON.parse($scope.groupData[z].sensorData.Meds);
 
+        if($scope.groupData[z].sensorData == null) {
+
+          $scope.groupData[z].analysisData = null;
+          var memberObject = $scope.groupData[z];
+          console.log("member after analysis", memberObject);
+          GroupInfo.addAnalysisToGroup(memberObject);
+          GroupInfo.retrieveAnalyzedGroup();
+          continue;
+        }
+
+
         var presenceData = $scope.groupData[z].sensorData.Presence;
         var fridgeData = $scope.groupData[z].sensorData.Fridge;
         var medsData = $scope.groupData[z].sensorData.Meds;
