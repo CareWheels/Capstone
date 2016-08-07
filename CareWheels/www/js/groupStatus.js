@@ -7,65 +7,81 @@ angular.module('careWheels').controller('groupStatusController',
 
 
     /******************** TESTING *****************************/
-      //var usergroup = $scope.data = angular.fromJson(window.localStorage['UserGroup']);
-    var user = window.localStorage['loginCredentials'];
-    console.log('logged in as', user);
+    //var usergroup = $scope.data = angular.fromJson(window.localStorage['UserGroup']);
 
     /* TODO find a better solution */
     // the groupInfo object is not available immediately, spin until available
-    var trigger = setInterval(function(){
+    var triggerGroupInfo = setInterval(function(){
       var groupArray = GroupInfo.groupInfo();
       if ( groupArray[0] != null ){
-        clearInterval(trigger);
+        clearInterval(triggerGroupInfo);
         console.log(groupArray);
-        $scope.group.image = groupArray[0].photoUrl;
-        $scope.group.topLeft.image = groupArray[1].photoUrl;
-        $scope.group.topRight.image = groupArray[2].photoUrl;
-        $scope.group.bottomLeft.image = groupArray[3].photoUrl;
-        $scope.group.bottomRight.image = groupArray[4].photoUrl;
+        for (var i = 0; i < groupArray.length; i++){
+          $scope.group[i].image = groupArray[i].photoUrl;
+          $scope.group[i].username = groupArray[i].username;
+        }
       }
     }, 500);
+
+    setInterval(function(){
+
+      var groupArray = GroupInfo.groupInfo();
+      for (var i = 0; i < groupArray.length; i ++){
+        try{
+          $scope.group[i].status = getAlertColor(groupArray[i].analysisData.fridgeAlertLevel, groupArray[i].analysisData.medsAlertLevel);
+        }
+        catch(Exception) {
+          $scope.group[i].status = 'blue';
+        }
+      }
+    }, 2000);
+
+
+    function getAlertColor(fridge, meds){
+      fridge = parseInt(fridge);
+      meds = parseInt(meds);
+      if (fridge == 3 || meds == 3)
+        return 'red';
+      else if (fridge == 2 || meds == 2)
+        return 'yellow';
+      else
+        console.log('blue alert');
+        return 'blue';
+    }
 
 
 
     /************** END TEST BLOCK ***************************/
 
     /* TODO: this is currently mocked data */
-    $scope.group = {
-      /* self */
-      username: 'test01',
-      profilePic: 'url',
-      credits: "0.0",
-      debits: "0.0",
-      image: '',
-
-      /* User Group */
-
-      topLeft: {
-        username: 'yoda',
-        profilePic: 'url',
-        status: 'deepskyblue',
+    $scope.group = [
+      { // center, self
+        username: '',
+        credits: "0.0",
+        debits: "0.0",
         image: ''
       },
-      topRight: {
-        username: 'mace windu',
-        profilePic: 'url',
-        status: 'deepskyblue',
+      { // top left
+        username: '',
+        status: '',
         image: ''
       },
-      bottomLeft: {
-        username: 'obi-wan',
-        profilePic: 'url',
-        status: 'yellow',
+      { // top right
+        username: '',
+        status: '',
         image: ''
       },
-      bottomRight: {
-        username: 'emperor',
-        profilePic: 'url',
-        status: 'red',
+      { // bottom left
+        username: '',
+        status: '',
+        image: ''
+      },
+      { // bottom right
+        username: '',
+        status: '',
         image: ''
       }
-    };
+    ];
 
     /* click/press events */
     $scope.clickTopLeft = function () {
