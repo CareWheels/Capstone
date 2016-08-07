@@ -6,20 +6,20 @@ angular.module('careWheels')
 
 .controller('individualStatusController', function($scope, GroupInfo){
 
-  var analysis = GroupInfo.retrieveAnalyzedGroup();
+  //var analysis = GroupInfo.retrieveAnalyzedGroup();
 
   // This is simply a way to print out the analyzed object so that I can figure out how
   // to use it. It will print on the bottom of the Individual Status Page of the app.
   // To get rid of it, comment it out in individualStatus.html.
-  $scope.testAnalysis = function() {
-    var macguffin = analysis;
-    var test;
-    var smallerMacguffin = macguffin[3];
+  //$scope.testAnalysis = function() {
+  //  var macguffin = analysis;
+  //  var test;
+  //  var smallerMacguffin = macguffin[3];
     //var obj = JSON.parse(smallerMacguffin);
     //test = obj.name;
-    test = smallerMacguffin;
-    return test;
-  }
+  //  test = smallerMacguffin;
+  //  return test;
+  //}
 
   $scope.getPings = function(time, type) {
     switch(time) {
