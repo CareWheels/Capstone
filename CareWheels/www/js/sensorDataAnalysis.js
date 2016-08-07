@@ -3,12 +3,12 @@ var app = angular.module('careWheels')
 //Controller for Sensor Data Analysis
 //Will receive parsed feed data from the injected DataService factory
 /////////////////////////////////////////////////////////////////////////////////////////
-app.controller('AnalysisCtrl', function($scope, GroupInfo) {
+app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) {
 
   $scope.AnalyzeData = function(){
     var testFunc = function(){
 
-      $scope.groupData = GroupInfo.retrieveGroupAfterDownload();
+      $scope.groupData = GroupInfo.groupInfo();
       console.log('contents of $scope.groupData before analysis ', $scope.groupData);
 
       // Excluding Medication analysis for now
@@ -17,17 +17,6 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
 
       // Create loop to analyze each members data.
       for(var z = 0; z < $scope.groupData.length; ++z ) {
-
-        // Shortcuts to our data
-        //var presenceData = JSON.parse($scope.groupData[z].sensorData.Presence);
-        //var fridgeData = JSON.parse($scope.groupData[z].sensorData.Fridge);
-        //var medsData = JSON.parse($scope.groupData[z].sensorData.Meds);
-
-        var presenceData = $scope.groupData[z].sensorData.Presence;
-        var fridgeData = $scope.groupData[z].sensorData.Fridge;
-        var medsData = $scope.groupData[z].sensorData.Meds;
-
-        console.log("DATA FOR: " + $scope.groupData[z].username + "\n");
 
         // Setup our presence  and fridge matrices
         var w = 0;
@@ -58,6 +47,30 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
         var currentHour = now.getHours();
         var currentMin = now.getMinutes();
         var analysisData;
+        var utcDateTime;
+        var momentInParis;
+        var momentInLA;
+        var losAngelesDateTime;
+        var hour;
+        var min;
+        var memberObject;
+
+        if($scope.groupData[z].sensorData == null) {
+
+          $scope.groupData[z].analysisData = null;
+          memberObject = $scope.groupData[z];
+          console.log("member after analysis", memberObject);
+          GroupInfo.addDataToGroup(memberObject, z);
+          GroupInfo.groupInfo();
+          continue;
+        }
+
+
+        var presenceData = $scope.groupData[z].sensorData.Presence;
+        var fridgeData = $scope.groupData[z].sensorData.Fridge;
+        var medsData = $scope.groupData[z].sensorData.Meds;
+
+        console.log("DATA FOR: " + $scope.groupData[z].username + "\n");
 
         // Initialize our matrices
         for(w = 0; w < 24; ++w) {
@@ -81,8 +94,13 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
 
         // Populate our matrices
         for(w = 0; w < presenceData.length; ++w) {
-          var hour = new Date(presenceData[w].dateEvent).getHours();
-          var min = new Date(presenceData[w].dateEvent).getMinutes();
+          // Need to convert dateEvent's from Paris time to Los Angeles time!
+          // this needs to be made configurable once the app moves out of PST/PDT areas!!!
+          utcDateTime = new Date(presenceData[w].dateEvent);
+          momentInLA = moment.tz(utcDateTime.toISOString(), "America/Los_Angeles");
+          losAngelesDateTime = new Date(momentInLA.format('YYYY-MM-DD[T]HH:mm:ss'));
+          hour = losAngelesDateTime.getHours();
+          min = losAngelesDateTime.getMinutes();
 
           console.log(hour + ":" + min + "\n");
 
@@ -98,8 +116,13 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
         console.log("FRIDGE DATA: " + "\n");
 
         for(w =0; w < fridgeData.length; ++w) {
-          var hour = new Date(fridgeData[w].dateEvent).getHours();
-          var min = new Date(fridgeData[w].dateEvent).getMinutes();
+          // Need to convert dateEvent's from Paris time to Los Angeles time!
+          // this needs to be made configurable once the app moves out of PST/PDT areas!!!
+          utcDateTime = new Date(fridgeData[w].dateEvent);
+          momentInLA = moment.tz(utcDateTime.toISOString(), "America/Los_Angeles");
+          losAngelesDateTime = new Date(momentInLA.format('YYYY-MM-DD[T]HH:mm:ss'));
+          hour = losAngelesDateTime.getHours();
+          min = losAngelesDateTime.getMinutes();
 
           console.log(hour + ":" + min + "\n");
 
@@ -109,8 +132,11 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
         console.log("MEDS DATA: " + "\n");
 
         for(w =0; w < medsData.length; ++w) {
-          var hour = new Date(medsData[w].dateEvent).getHours();
-          var min = new Date(medsData[w].dateEvent).getMinutes();
+          utcDateTime = new Date(medsData[w].dateEvent);
+          momentInLA = moment.tz(utcDateTime.toISOString(), "America/Los_Angeles");
+          losAngelesDateTime = new Date(momentInLA.format('YYYY-MM-DD[T]HH:mm:ss'));
+          hour = losAngelesDateTime.getHours();
+          min = losAngelesDateTime.getMinutes();
 
           console.log(hour + ":" + min + "\n");
 
@@ -289,6 +315,9 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
           // **************************
           // Call local notifications here to send a red alert out for this person.
           // **************************
+          // var notifViewModel = $scope.$new();   //to access Notifications functions
+          // $controller('NotificationController',{$scope : notifViewModel });
+          // notifViewModel.Create_Notif(0, 0, 0, false, 0);
         }
 
         // We have finished processing all exceptions to meds interval alerts
@@ -313,6 +342,9 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
           // **************************
           // Call local notifications here to send a red alert out for this person.
           // **************************
+          // var notifViewModel = $scope.$new();   //to access Notifications functions
+          // $controller('NotificationController',{$scope : notifViewModel });
+          // notifViewModel.Create_Notif(0, 0, 0, false, 0);
         }
 
 
@@ -406,6 +438,7 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
           "medsAlertLevel": medsAlertLevel
         }
 
+
         console.log("GROUP MEMBER ANALYSIS FOR: " + z + " " + "\n"
         + "Member name: " + $scope.groupData[z].username + "\n"
         + "presenceMatrix: " + analysisData.presenceMatrix + "\n"
@@ -424,6 +457,9 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
         + "medsAlertInterval3: " + analysisData.medsAlertInterval3 + "\n"
         + "medsAlertPoints: " + analysisData.medsAlertPoints + "\n"
         + "medsAlertLevel: " + analysisData.medsAlertLevel + "\n");
+
+        
+        console.log("analysisData.presenceByHour[5]: " + analysisData.presenceByHour[5]);
 
         $scope.analysis += "GROUP MEMBER: " + z + " " + "\n"
                            + "Member name: " + $scope.groupData[z].username + "\n"
@@ -445,7 +481,7 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
                            + "medsAlertLevel: " + analysisData.medsAlertLevel + "\n"
 
         $scope.groupData[z].analysisData = analysisData;
-        var memberObject = $scope.groupData[z];
+        memberObject = $scope.groupData[z];
         //var sensorData = $scope.groupData[z].sensorData;
         // This is just a modification of what Zach has done.
         //var memberObject = {
@@ -455,8 +491,9 @@ app.controller('AnalysisCtrl', function($scope, GroupInfo) {
         //};
         //DataService.addToGroup(memberObject);
         console.log("member after analysis", memberObject);
-        GroupInfo.addAnalysisToGroup(memberObject);
-        GroupInfo.retrieveAnalyzedGroup();
+        GroupInfo.addDataToGroup(memberObject, z);
+        GroupInfo.groupInfo();
+        console.log("group after analysis", GroupInfo.groupInfo());
       }
 
 

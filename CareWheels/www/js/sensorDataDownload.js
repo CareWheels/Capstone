@@ -1,18 +1,18 @@
-var app = angular.module('careWheels')
+angular.module('careWheels')
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //Using angular-workers module
 //(also added to angular.module at top of app.js)
 //and added the angular-workers related js files in index.html
 /////////////////////////////////////////////////////////////////////////////////////////
 
-
 /////////////////////////////////////////////////////////////////////////////////////////
 //Sensor Data Download controller
 /////////////////////////////////////////////////////////////////////////////////////////
-app.controller('DownloadCtrl', function($scope, $http, WorkerService, GroupInfo, User) {
+.controller('DownloadCtrl', function($scope, $http, WorkerService, GroupInfo, User) {
 
 
-// The URL must be absolute because of the URL blob specification  
+// The URL must be absolute because of the URL blob specification
 WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js");
 
   /////////////////////////////////////////////////////////////////////////////////////////
@@ -20,6 +20,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
   /////////////////////////////////////////////////////////////////////////////////////////
 
   $scope.DownloadData = function () {
+
       /**
       // This contains the worker body.
       // The function must be self contained.
@@ -42,6 +43,12 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //$http request to sen.se with access token to attempt to retrieve feed data
     ///////////////////////////////////////////////////////////////////////////
 
+
+
+    //we save the value passed in as time to the prevDay variable
+    //the time value will be 24 less than current user time, and adjusted for the offset of the sen.se server's timezone
+    var prevDay = input['time'];
+
     var carewheelMembers = input['carewheelMembers'];
     var presenceUids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
     var fridgeUids = [];
@@ -62,18 +69,18 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 
     var dataUrl = "https://apis.sen.se/v2/nodes/";//get page of nodes for this user
     $http({
-      url:dataUrl, 
-      method:'GET',    
+      url:dataUrl,
+      method:'GET',
       headers: {
         'Authorization': 'Bearer '+accesstoken
       }
-    }).then(function(response) {   
+    }).then(function(response) {
 
         //This function explores the response received from /nodes/
         //and finds the appropriate uid's within the publishes array
         //of the node object with the desired label (presence, med, fridge)
         var getUids = function(arg){
-        
+
         var feeds = arg.data;
         var objects = feeds.objects;
         var objectsLength = objects.length;
@@ -87,7 +94,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               if (presFeeds[j].label == "Presence"){
               presenceUids.push(presFeeds[j].uid);//add uid with the specified label "Presence" to array
               }
-            }; 
+            };
           }
           if (objects[i].label == "fridgeCareBank"){
             console.log("added fridge uid");
@@ -97,7 +104,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               if (fridgeFeeds[j].label == "Motion"){
               fridgeUids.push(fridgeFeeds[j].uid);
               }
-            }; 
+            };
           }
           if (objects[i].label == "medsCareBank"){
             console.log("added med uid");
@@ -107,7 +114,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               if (medFeeds[j].label == "Motion"){
               medUids.push(medFeeds[j].uid);
               }
-            }; 
+            };
           }
           if (objects[i].label == "testtesttest"){//added this in case we need to find an alert uid
             console.log("added alert uid");
@@ -117,7 +124,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               if (alertFeeds[j].label == "Alert"){
               alertUids.push(alertFeeds[j].uid);
               }
-            }; 
+            };
           }
           else{
             continue;
@@ -151,12 +158,12 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                 //FINISH//////
                 //try to download from sense, but limit after n attempts
                 //to prevent infinite re-attempts
-                }       
-            
+                }
+
               console.log("failed while attempting to retrieve next page of feed objects", response);
               }
             )
-            } 
+            }
           };
   */
 
@@ -166,17 +173,14 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         var alertLength = alertUids.length;
         //use lt or gt at end of url to only return events occuring within the last 24 hours
         //1994-11-05T08:15:30-05:00 corresponds to November 5, 1994, 8:15:30 am, US Eastern Standard Time
-        var date = new Date();
-        date.setDate(date.getDate()-1);
-        var prevDay = date.toISOString();
-        
+
         ///////////////////
         //TODO
         //handle additional pages of event objects by constructing url for those pages
         //e.g. add &page=15 to get event objects on page 15 if available
         ///////////////////
 
-/////////////////LOOP TO COLLECT PRESENCE OBJECTS AND PUSH TO APPROPRIATE       
+/////////////////LOOP TO COLLECT PRESENCE OBJECTS AND PUSH TO APPROPRIATE
         for (var i = 0; i < presenceLength; i++){//for each uid in uids array
             $http({
               url:"https://apis.sen.se/v2/feeds/"+presenceUids[i]+"/events/"+"?gt="+prevDay,
@@ -228,21 +232,21 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                         refreshFunc();
                         //try to download from sense, but limit after n attempts
                         //to prevent infinite re-attempts
-                        }       
+                        }
                       console.log("get event fail within inner for loop", response);
                       }
                       )
                   };
                 };
-     
+
             }, function(response) {
 
                 if (response.status === 403){
                 refreshFunc();
                 //try to download from sense, but limit after n attempts
                 //to prevent infinite re-attempts
-                }       
-            
+                }
+
               console.log("get event fail - Original http call", response);
               }
             )
@@ -300,21 +304,21 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                         refreshFunc();
                         //try to download from sense, but limit after n attempts
                         //to prevent infinite re-attempts
-                        }       
+                        }
                       console.log("get event fail within inner for loop", response);
                       }
                       )
                   };
                 };
-     
+
             }, function(response) {
 
                 if (response.status === 403){
                 refreshFunc();
                 //try to download from sense, but limit after n attempts
                 //to prevent infinite re-attempts
-                }       
-            
+                }
+
               console.log("get event fail - Original http call", response);
               }
             )
@@ -372,21 +376,21 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                         refreshFunc();
                         //try to download from sense, but limit after n attempts
                         //to prevent infinite re-attempts
-                        }       
+                        }
                       console.log("get event fail within inner for loop", response);
                       }
                       )
                   };
                 };
-     
+
             }, function(response) {
 
                 if (response.status === 403){
                 refreshFunc();
                 //try to download from sense, but limit after n attempts
                 //to prevent infinite re-attempts
-                }       
-            
+                }
+
               console.log("get event fail - Original http call", response);
               }
             )
@@ -444,21 +448,21 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                         refreshFunc();
                         //try to download from sense, but limit after n attempts
                         //to prevent infinite re-attempts
-                        }       
+                        }
                       console.log("get event fail within inner for loop", response);
                       }
                       )
                   };
                 };
-     
+
             }, function(response) {
 
                 if (response.status === 403){
                 refreshFunc();
                 //try to download from sense, but limit after n attempts
                 //to prevent infinite re-attempts
-                }       
-            
+                }
+
               console.log("get event fail - Original http call", response);
               }
             )
@@ -467,7 +471,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //This is the end of the ".then" promise from the intital http GET call to /feeds/ endpoint
         //output.notify(JSON.parse(JSON.stringify(events)));//this will be the successful response of events being sent to main thread
         //console.log("these are the event objects -being sent to main thread.  Victory!", events);
-        
+
       }, function(response) {//This is the beginning of the "error" promise from the intital http GET call to /feeds/ endpoint
         //if we fail the request to a 403 expired token error
         //call refresh function
@@ -475,13 +479,13 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
           refreshFunc();
           //try to download from sense, but limit after n attempts
           //to prevent infinite re-attempts
-        }       
+        }
         //output.notify(JSON.parse(JSON.stringify(response)));//for testing, DELETE AFTER TESTING
         console.log("download func failed", response);
         //EXIT PROMISE
         })
         //END OF ORIGINAL HTTP PROMISE
-   
+
         setTimeout(function(){ //This is a bad solution.  Need to develop a promise to return sensorData once all events have been acquired
         //var mem = {
         //  "sensorData": sensorData
@@ -490,7 +494,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         console.log("RETURNING SENSORDATA OBJECT after timeout");
         output.notify(JSON.parse(JSON.stringify(thisMember)));
         }, 5000);
-        
+
       //output event notify
     };
 
@@ -505,11 +509,11 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //var refreshUrl = "http://jsonplaceholder.typicode.com/posts/1";
     var refreshUrl = "https://apis.sen.se/v2/oauth2/refresh/";
     $http({
-      url:refreshUrl, 
-      method:'POST',    
+      url:refreshUrl,
+      method:'POST',
       data: $httpParamSerializerJQLike({
         //refreshtoken:input['refreshtoken']
-      }), 
+      }),
       headers: {
         //'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer '+refreshtoken
@@ -530,10 +534,25 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     };
 
     console.log("about to download data for: ", carewheelMembers);
+    //check to see if each group member has valid sense keys.  if not, set sensorData property to null,
+    //output the groupmember back to main thread so it can be added to groupInfoWithData array
+    //display error in console
+
+    //if user has valid keys, call download function with appropriate keys
     for(z=0; z < carewheelMembers.length; z++ ){
             //return angularWorker.run({name: thesemembers[z].name, refreshtoken: thesemembers[z].customValues[2], accesstoken: thesemembers[z].customValues[1]});
- 
-    downloadFunc(carewheelMembers[z], carewheelMembers[z].customValues[1].stringValue, carewheelMembers[z].customValues[2].stringValue);
+        carewheelMembers[z].index = z;
+    if (carewheelMembers[z].customValues[1].stringValue == "000" || carewheelMembers[z].customValues[1].stringValue == "" || 
+        carewheelMembers[z].customValues[2].stringValue == "000" || carewheelMembers[z].customValues[2].stringValue == "")
+        {
+        carewheelMembers[z].sensorData = null;
+        output.notify(JSON.parse(JSON.stringify(carewheelMembers[z])));
+        console.log("error, please obtain valid sen.se keys!");
+    }
+    else{
+      downloadFunc(carewheelMembers[z], carewheelMembers[z].customValues[1].stringValue, carewheelMembers[z].customValues[2].stringValue);
+    };
+
     };
     //output.notify(JSON.parse(JSON.stringify(events)));
     //refreshFunc();
@@ -548,59 +567,56 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 //(this will be a javascript object containing sensor download data)
 /////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-        
     workerPromise
       .then(function success(angularWorker) {
-      //The input must be serializable
-      //console.log('reached');
 
-      //make input object as arg for run()
-      //we will need to include all properties which will be needed as params
-      //when making refresh/post and download/get requests to sense
+        var date = new Date();//create new data object
+        date.setDate(date.getDate()-1);
+        var prevDayLA = moment.tz( date.toISOString(), "America/Los_Angeles");
+        var prevDayParis = prevDayLA.clone().tz("Europe/Paris");
+        var userTime = prevDayParis.toISOString();
 
-      //bill = access-A0RegyQMErQ7DgqS1a9f8KxcnAsjt5, refresh-PjBiwFdKyXwDsfm82FfVVK6IGWLLk0
-      //claude = access-XGDy6rcjvQgBnQbY40fS9p1w1bWqBc, refresh-UMogAOAGq6nUzTEqJovINFjjxAzyMK
-      //
-        //var thesemembers = DownloadService.getGroupInfo();
+        //make input object as arg for run()
+        //we will need to include all properties which will be needed as params
+        //when making refresh/post and download/get requests to sense
 
         //input to worker thread will accept "thesemembers" array variable, which contains token credentials for user's
         //group members within his/her carewheel
-        //return angularWorker.run({name: thesemembers[z].name, refreshtoken: thesemembers[z].customValues[2], accesstoken: thesemembers[z].customValues[1]});
-        var thesemembers = GroupInfo.retrieveLocal();
-        return angularWorker.run({carewheelMembers: thesemembers});
+        
+        var thesemembers = GroupInfo.groupInfo();//returns all five group members with carebank data after login
+        return angularWorker.run({carewheelMembers: thesemembers, time: userTime});
 
+      }, function error(reason) {
 
-    }, function error(reason) {
+          console.log('callback error');
+          console.log(reason);
 
-        console.log('callback error');
-        console.log(reason);
+          //for some reason the worker failed to initialize
+          //not all browsers support the HTML5 tech that is required, see below.
+        }).then(function success(result) {
 
-        //for some reason the worker failed to initialize
-        //not all browsers support the HTML5 tech that is required, see below.
-      }).then(function success(result) {
+          console.log('success');
+          console.log(result);
 
-        console.log('success');
-        console.log(result);
+        //handle result
+      }, function error(reason) {
+          //handle error
+          console.log('error');
+          console.log(reason);
 
-      //handle result
-    }, function error(reason) {
-        //handle error
-        console.log('error');
-        console.log(reason);
+        }, function notify(update) {
+          //handle update
+          $scope.data = update.data;
+          $scope.status = update.status;
+          //$scope.update = update;
+          console.log('Download Complete', update);
+          $scope.msg = "Download Complete";
 
-      }, function notify(update) {
-        //handle update
-        $scope.data = update.data;
-        $scope.status = update.status;
-        //$scope.update = update;
-        console.log('Download Complete');
-        $scope.msg = "Download Complete";
-
-        GroupInfo.addSensorDataToGroup(update); //COMMENTED OUT DURING TESTING, ADD LATER
+        GroupInfo.addDataToGroup(update, update.index); //COMMENTED OUT DURING TESTING, ADD LATER
+        console.log("group info check after sensor download", GroupInfo.groupInfo());
 
       });
       ////end of for loop for each user
   };
 });
+

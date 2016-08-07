@@ -7,7 +7,7 @@
 
 angular.module('careWheels')
 
-  .controller('remindersController', ['$scope', '$controller', '$ionicPopup', '$state', function($scope, $controller, $ionicPopup, $state, User){
+  .controller('remindersController', ['$scope', '$controller', '$ionicPopup', '$state', 'User', function($scope, $controller, $ionicPopup, $state, User){
 
     var notifViewModel = $scope.$new();   //to access Notifications functions
     var restViewModel = $scope.$new();    //to access Reminder REST controller
@@ -92,7 +92,7 @@ angular.module('careWheels')
           notifViewModel.Init_Notifs();       //reset to default
 
           //Reset Cyclos custom fields to default
-          var myUser = User.retrieveLocal();   //retrieve user credentials
+          var myUser = User.credentials();   //retrieve user credentials
           if(myUser!=undefined){
             var rem1 = notifViewModel.Reminder_As_String(0);
             var rem2 = notifViewModel.Reminder_As_String(1);
@@ -116,7 +116,7 @@ angular.module('careWheels')
         notifViewModel.Create_Notif(myHours, $scope.reminders[i].min, 0, $scope.reminders[i].isOn, i+1);    //this creates Tray notification and also updates Notification file
         console.log(myHours + ":" + $scope.reminders[i].min + ":" + 0 + " " + $scope.reminders[i].isOn + i);
       }
-      var myUser = User.retrieveLocal();   //retrieve user credentials
+      var myUser = User.credentials();   //retrieve user credentials
       if(myUser!=undefined){    //do we have user credentials?
         //update Cyclos server's reminder fields
         if($scope.reminders[0].isOn){
@@ -131,7 +131,7 @@ angular.module('careWheels')
 
         console.log("rem1="+rem1+" rem2="+rem2+" rem3="+rem3);
         restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);
-      } else console.warn("Cannot contact server because user credentials are undefined.");
+      } else console.warn("Cannot contact server because user credentials are undefined.");    
     }
   }])
 
@@ -197,7 +197,7 @@ angular.module('careWheels')
             title: "CareWheels",
             sound: null   //same, hopefully a different sound than red alerts
           }).then(function() {
-            $log.log("Notification" + reminderNum + "has been scheduled for " + time.getUTCTime() + ", daily");
+            $log.log("Notification" + reminderNum + "has been scheduled for " + time.toTimeString() + ", daily");
           });
         } else $log.warn("Plugin disabled");
       } else if(reminderNum >=4) $log.warn("Incorrect attempt to create notification for id #" + reminderNum);
@@ -205,7 +205,7 @@ angular.module('careWheels')
 
     //Unschedules all local reminders; clears its index if it is a user reminder (id 1-3).
     $scope.Delete_Reminders = function(){   //NOTE: id corresponds to $scope.data array indices so it is off by one
-                                            //$scope.data = angular.fromJson(window.localStorage['Reminders']);
+      //$scope.data = angular.fromJson(window.localStorage['Reminders']);
       if(isAndroid){
         for(i=1; i<4; ++i){
           $cordovaLocalNotification.clear(i, function() {

@@ -5,17 +5,20 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 
-var app = angular.module('careWheels', [
+angular.module('careWheels', [
   'ionic',
   'ui.router',
   'ngCordova',
-  'FredrikSandell.worker-pool'
+  'FredrikSandell.worker-pool',
+  'angularMoment',
+  'fileloggermodule'
 ])
 
-  //contant definition for endpoint base url
-  app.constant('BASE_URL', 'https://carebank.carewheels.org:8443')
 
-  app.run(function($ionicPlatform, $ionicHistory, $state) {
+  //contant definition for endpoint base url
+  .constant('BASE_URL', 'https://carebank.carewheels.org:8443')
+
+  .run(function($ionicPlatform, $ionicHistory, $state) {
 
 //    window.localStorage['loginCredentials'] = null;
 
@@ -38,7 +41,7 @@ var app = angular.module('careWheels', [
   })
 
   // API factory for making all php endpoints globally accessible.
-  app.factory('API', function(BASE_URL) {
+  .factory('API', function(BASE_URL) {
     var api = {
       userAndGroupInfo:     BASE_URL + '/userandgroupmemberinfo.php',
       userInfo:             BASE_URL + '/userinfo.php',
@@ -52,49 +55,39 @@ var app = angular.module('careWheels', [
 
   // GroupInfo factory for global GroupInfo
 
-  app.factory('GroupInfo', function() {
-    var groupInfo = {};
-    var currentGroup = [];
-    var analyzedGroup = [];
+  .factory('GroupInfo', function() {
+    var groupInfoService = {};
+    var groupInfo = [];
 
-
-    groupInfo.saveLocal = function(data) {
-
-      return window.sessionStorage['groupInfo'] = angular.toJson(data);
+    groupInfoService.initGroupInfo = function(data) {
+      groupInfo = data;
     };
 
-    groupInfo.retrieveLocal = function() {
-
-      return angular.fromJson(window.sessionStorage['groupInfo']);
+    //this function is used at the end of Data Download and Data Analysis
+    //it will replace each group members position in the groupInfo array with a newly updated member containing 
+    //a sensorData object (after Data Download), or a sensorAnalysis object (after Data Analysis)
+    groupInfoService.addDataToGroup = function(member, index) {
+      groupInfo[index] = member;
     };
 
-    groupInfo.addSensorDataToGroup = function(id) {//this will add each individual group member into the currentGroup array. Their carebank data will have been added within the DataDownload function
-      currentGroup.push(id);
+    //this function will return the current contents of groupinfo.
+    //will be called at the beginning of Data Download, Data Analysis, and group / ind. member summary
+    groupInfoService.groupInfo = function() {
+      return groupInfo;
     };
 
-    groupInfo.retrieveGroupAfterDownload = function(){//currentGroup will contain all 5 groupmembers (with carebank data and sense data)
-      return currentGroup;
-    };
-
-    groupInfo.addAnalysisToGroup = function(member){
-      analyzedGroup.push(member);
-    };
-
-    groupInfo.retrieveAnalyzedGroup = function(){
-      return analyzedGroup;
-    };
-
-    return groupInfo;
+    return groupInfoService;
 
   })
 
   // User factory
 
-  app.factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
+  .factory('User', function(GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
     var user = {};
+    var userService = {};
     //window.localStorage['loginCredentials'] = null;
 
-    user.login = function(uname, passwd, rmbr, callback) {
+    userService.login = function(uname, passwd, rmbr, callback) {
       $ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
         template: '<ion-spinner></ion-spinner>'+
                   '<p>Contacting Server...</p>'
@@ -117,23 +110,39 @@ var app = angular.module('careWheels', [
         //store user info
         //store groupMember info
 
-        window.sessionStorage['user'] = angular.toJson({"username":uname, "password":passwd});
+        user = {username:uname, password:passwd};
 
-        GroupInfo.saveLocal(response.data);
+        GroupInfo.initGroupInfo(response.data);
         $ionicLoading.hide();   //make sure to hide loading screen
         callback();
-
       }, function(response) {
         //present login failed
+        $ionicLoading.hide();
+        var errorMsg = "Unknown error.";
+        
+          //CHECKING TO FOR 404 ERRROR    
+          //response.status = 404;        
+          //response.data = "nothing";    
+          //console.log(response.data);   
+          //
+          
+        if(response.data === "Missing username / password" || response.data === "Invalid username / password")
+          errorMsg = "Please check your credentials!";
+        else if(response.data === "Your access is blocked by exceeding invalid login attempts")
+          errorMsg = "Account got blocked by exceeding invalid login attempts. Please contact admin";
+        else if(response.status == 404) 
+          errorMsg = "Unable to reach the server"; 
+
         var alertPopup = $ionicPopup.alert({
           title: 'Login failed!',
-          template: 'Please check your credentials!'
+          template: errorMsg
         });
       })
     };
-    user.retrieveLocal = function() {
-
-      return angular.fromJson(window.sessionStorage['user']);
+    
+    userService.credentials = function() {
+      return user;
     };
-    return user;
+
+    return userService;
   });
