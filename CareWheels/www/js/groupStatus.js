@@ -10,8 +10,22 @@ angular.module('careWheels').controller('groupStatusController',
       //var usergroup = $scope.data = angular.fromJson(window.localStorage['UserGroup']);
     var user = window.localStorage['loginCredentials'];
     console.log('logged in as', user);
-    var groupArray = GroupInfo.groupInfo();
-    console.log('GroupInfo:', groupArray);
+
+    /* TODO find a better solution */
+    // the groupInfo object is not available immediately, spin until available
+    var trigger = setInterval(function(){
+      var groupArray = GroupInfo.groupInfo();
+      if ( groupArray[0] != null ){
+        clearInterval(trigger);
+        console.log(groupArray);
+        $scope.group.image = groupArray[0].photoUrl;
+        $scope.group.topLeft.image = groupArray[1].photoUrl;
+        $scope.group.topRight.image = groupArray[2].photoUrl;
+        $scope.group.bottomLeft.image = groupArray[3].photoUrl;
+        $scope.group.bottomRight.image = groupArray[4].photoUrl;
+      }
+    }, 500);
+
 
 
     /************** END TEST BLOCK ***************************/
@@ -58,6 +72,8 @@ angular.module('careWheels').controller('groupStatusController',
       //todo: goto individualStatus.html for this user
       console.log('clicked top left');
       $state.go('app.individualStatus');
+      var groupArray = GroupInfo.groupInfo();
+      console.log('GroupInfo:', groupArray);
     };
     $scope.clickTopRight = function () {
       console.log('clicked top right');
