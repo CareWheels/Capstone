@@ -458,7 +458,7 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
         + "medsAlertPoints: " + analysisData.medsAlertPoints + "\n"
         + "medsAlertLevel: " + analysisData.medsAlertLevel + "\n");
 
-        
+
         console.log("analysisData.presenceByHour[5]: " + analysisData.presenceByHour[5]);
 
         $scope.analysis += "GROUP MEMBER: " + z + " " + "\n"
