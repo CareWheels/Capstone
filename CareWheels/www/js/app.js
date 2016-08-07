@@ -76,6 +76,28 @@ angular.module('careWheels', [
       return groupInfo;
     };
 
+    groupInfoService.getMember = function(Username){       // Returns the groupInfo member array index object that contains the same username as the username parameter.
+      for(i=0; i<5; ++i){
+        if(groupInfo[i].username==Username){
+          console.log("Found " + Username + "==" + groupInfo[i].username);
+          return groupInfo[i];
+        };
+      };
+      console.error("In getMember(): Could not find username " + Username);
+    };
+
+    groupInfoService.setMember = function(Username, groupInfoMember){     // Sets the groupInfo array index that contains the same username as the username parameter to the value of the groupInfoMember paramemter.
+      for(i=0; i<5; ++i){
+        if(groupInfo[i].username==Username){
+          console.log("Found " + Username + "==" + groupInfo[i].username);
+          groupInfo[i] = groupInfoMember;
+          return true;
+        };
+      };
+      console.error("In setMember(): Could not find username " + Username);
+      return false;
+    };
+    
     return groupInfoService;
 
   })
