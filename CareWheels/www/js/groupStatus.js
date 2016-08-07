@@ -7,7 +7,7 @@ angular.module('careWheels').controller('groupStatusController',
 
 
     /******************** TESTING *****************************/
-    //var usergroup = $scope.data = angular.fromJson(window.localStorage['UserGroup']);
+
 
     /* TODO find a better solution */
     // the groupInfo object is not available immediately, spin until available
@@ -21,20 +21,21 @@ angular.module('careWheels').controller('groupStatusController',
           $scope.group[i].username = groupArray[i].username;
         }
       }
-    }, 500);
+    }, 50);
 
     setInterval(function(){
-
       var groupArray = GroupInfo.groupInfo();
       for (var i = 0; i < groupArray.length; i ++){
         try{
-          $scope.group[i].status = getAlertColor(groupArray[i].analysisData.fridgeAlertLevel, groupArray[i].analysisData.medsAlertLevel);
+          var fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
+          var medsAlert = groupArray[i].analysisData.medsAlertLevel;
+          $scope.group[i].status = getAlertColor(fridgeAlert, medsAlert);
         }
         catch(Exception) {
           $scope.group[i].status = 'blue';
         }
       }
-    }, 2000);
+    }, 50);
 
 
     function getAlertColor(fridge, meds){
