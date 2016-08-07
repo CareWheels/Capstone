@@ -57,32 +57,23 @@ angular.module('careWheels', [
 
   .factory('GroupInfo', function() {
     var groupInfoService = {};
-    var currentGroup = [];
-    var analyzedGroup = [];
     var groupInfo = [];
 
     groupInfoService.initGroupInfo = function(data) {
       groupInfo = data;
     };
 
-    groupInfoService.addSensorDataToGroup = function(id) {//this will add each individual group member into the currentGroup array. Their carebank data will have been added within the DataDownload function
-      currentGroup.push(id);
+    //this function is used at the end of Data Download and Data Analysis
+    //it will replace each group members position in the groupInfo array with a newly updated member containing 
+    //a sensorData object (after Data Download), or a sensorAnalysis object (after Data Analysis)
+    groupInfoService.addDataToGroup = function(member, index) {
+      groupInfo[index] = member;
     };
 
-    groupInfoService.addAnalysisToGroup = function(member){
-      analyzedGroup.push(member);
-    };
-
+    //this function will return the current contents of groupinfo.
+    //will be called at the beginning of Data Download, Data Analysis, and group / ind. member summary
     groupInfoService.groupInfo = function() {
       return groupInfo;
-    };
-
-    groupInfoService.retrieveGroupAfterDownload = function(){//currentGroup will contain all 5 groupmembers (with carebank data and sense data)
-      return currentGroup;
-    };
-
-    groupInfoService.retrieveAnalyzedGroup = function(){
-      return analyzedGroup;
     };
 
     return groupInfoService;
