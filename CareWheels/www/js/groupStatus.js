@@ -2,52 +2,17 @@
  * CareWheels - Group Status Controller
  *
  */
-
-angular.module('careWheels')
-  .controller('groupStatusController',
-
-  function ($scope, $interval, $state, $http, $log, $httpParamSerializerJQLike) {
+angular.module('careWheels').controller('groupStatusController',
+  function ($scope, $interval, $state, GroupInfo) {
 
 
     /******************** TESTING *****************************/
       //var usergroup = $scope.data = angular.fromJson(window.localStorage['UserGroup']);
-      //console.log(usergroup);
-    $scope.url = 'https://carebank.carewheels.org:8443/userandgroupmemberinfo.php';
-    $scope.fetch = function(userIn, passIn, tofindIn) {
-      $scope.code = null;
-      $scope.response = null;
-      $http({
-        url:$scope.url,
-        method:'POST',    //all our custom REST endpoints have been designed to use POST
-        data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
-          username:userIn,
-          password:passIn,
-          usernametofind:tofindIn
-        }),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
-        }
-      }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
-        $scope.status = response.status;
-        $scope.data = response.data;
-      }, function(response) {
-        $scope.data = response.data || "Request failed";
-        $scope.status = response.status;
-        if(response.status!=200){
-          $log.warn($scope.data);
-        }
-      });
-    };
+    var user = window.localStorage['loginCredentials'];
+    console.log('logged in as', user);
+    var groupArray = GroupInfo.groupInfo();
+    console.log('GroupInfo:', groupArray);
 
-    var groupObject = $scope.fetch('chris', 'locked', 'bill');
-    console.log($scope.data);
-    setTimeout(function(){
-      console.log($scope.data[0].photoUrl); //bill
-      console.log($scope.data[1].photoUrl); //spoke 1
-      console.log($scope.data[2].photoUrl); //spok2
-      console.log($scope.data[3].photoUrl);
-      console.log($scope.data[4].photoUrl);
-    },8 * 1000); //10 seconds
 
     /************** END TEST BLOCK ***************************/
 
@@ -58,7 +23,7 @@ angular.module('careWheels')
       profilePic: 'url',
       credits: "0.0",
       debits: "0.0",
-      image: 'https://carebank.carewheels.org/content/images/user/Ihbek3YWQT9emA9WrSYtEMk52CT67DhJXGatPyz7FUwpnKa11202OP2yzHN1nINg_960x504.jpeg',
+      image: '',
 
       /* User Group */
 
@@ -66,25 +31,25 @@ angular.module('careWheels')
         username: 'yoda',
         profilePic: 'url',
         status: 'deepskyblue',
-        image: 'https://carebank.carewheels.org/content/images/user/KDRtBlv3CU08ChlLj2GRcUKL6bQUIaZmK4g2pMXHaUCiMPzM82Q9nRNxrhhtTt7r_755x960.jpeg'
+        image: ''
       },
       topRight: {
         username: 'mace windu',
         profilePic: 'url',
         status: 'deepskyblue',
-        image: 'https://carebank.carewheels.org/content/images/user/fzlb11HIhMn3OliPz0JIMHyhfq1GJGCZOB2kOXRldLzVxmDvf3ZlpAdmFlFlkNj7_626x352.png'
+        image: ''
       },
       bottomLeft: {
         username: 'obi-wan',
         profilePic: 'url',
         status: 'yellow',
-        image: 'https://carebank.carewheels.org/content/images/user/Ikaudj0wmpc4Nqu4ttbnfvTqULE6qpSg6iV8eF9YEcgq1d72Idf2w9kWFO9V29Uk_280x280.png'
+        image: ''
       },
       bottomRight: {
         username: 'emperor',
         profilePic: 'url',
         status: 'red',
-        image: 'https://carebank.carewheels.org/content/images/user/ZLZubMNFK3b9RGbGetCLgrlOksvsaLEe1OVIK68FJDOv0EXjDGSyo7lZWS9x0T59_960x480.jpeg'
+        image: ''
       }
     };
 
