@@ -18,9 +18,18 @@ angular.module('careWheels', [
   //contant definition for endpoint base url
   .constant('BASE_URL', 'https://carebank.carewheels.org:8443')
 
-  .run(function($ionicPlatform, $ionicHistory, $state) {
+  .run(function($rootScope, $ionicPlatform, $ionicHistory, $state, User) {
 
 //    window.localStorage['loginCredentials'] = null;
+
+    $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
+      if (User.credentials() === null) {
+        if (next.name !== 'login') {
+          event.preventDefault();
+          $state.go('login');
+        }
+      }
+    })
 
 
     $ionicPlatform.registerBackButtonAction(function(event) {
@@ -96,7 +105,7 @@ angular.module('careWheels', [
     var userService = {};
     //window.localStorage['loginCredentials'] = null;
 
-    userService.login = function(uname, passwd, rmbr, callback) {
+    userService.login = function(uname, passwd, rmbr) {
       $ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
         template: '<ion-spinner></ion-spinner>'+
                   '<p>Contacting Server...</p>'
@@ -123,7 +132,7 @@ angular.module('careWheels', [
 
         GroupInfo.initGroupInfo(response.data);
         $ionicLoading.hide();   //make sure to hide loading screen
-        callback();
+        $state.go('app.groupStatus');
       }, function(response) {
         //present login failed
         $ionicLoading.hide();
@@ -150,6 +159,8 @@ angular.module('careWheels', [
     };
     
     userService.credentials = function() {
+      if (!user.username)
+        return null;
       return user;
     };
 

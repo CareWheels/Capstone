@@ -5,11 +5,16 @@ angular.module('careWheels')
     //$urlRouterProvider.otherwise('/');
     $stateProvider
 
+      .state('login', {
+        url: '/login',
+        templateUrl: 'views/login.html',
+        controller: 'loginController'
+      })
+
       .state('app', {
         url: '/app',
         abstract: true,
-        templateUrl: 'views/menu.html',
-        controller: 'loginController'
+        templateUrl: 'views/menu.html'
       })
 
       .state('app.groupStatus', {
@@ -51,7 +56,10 @@ angular.module('careWheels')
         }
       });
 
-      $urlRouterProvider.otherwise('/app/groupStatus');
+      $urlRouterProvider.otherwise(function ($injector, $location) {
+        var $state = $injector.get("$state");
+        $state.go("app.groupStatus");
+      });
   })
 
 
