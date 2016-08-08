@@ -16,23 +16,50 @@ angular.module('careWheels')
    *  of whomever was clicked
    */
   var analysis = GroupInfo.getMember_new();
-  console.log(analysis); ////////////testing
+  //console.log(analysis); ////////////testing
 
+  /**
+   * The following several functions are used to display text on the 
+   * individualStatus page. This is so that you can check if the page
+   * is populating as expected based on the data that was analyzed.
+   * To use them paste the following in indiviualStatus.html within
+   * the ion-content tag:
+   *  <p>{{showMacguffin()}}</p>
+   *  <p>{{showName()}}</p>
+   *  <p>{{showPresence ()}}</p>
+   *  <p>{{showFridgeHits()}}</p>
+   *  <p>{{showMedsHits()}}</p>
+   */
+  $scope.showMacguffin = function() {
+    return analysis;
+  };
 
+  $scope.showName = function() {
+    var test = analysis.name;
+    return test;
+  };
 
-  // This is simply a way to print out the analyzed object so that I can figure out how
-  // to use it. It will print on the bottom of the Individual Status Page of the app.
-  // To get rid of it, comment it out in individualStatus.html.
-  //$scope.testAnalysis = function() {
-  //  var macguffin = analysis;
-  //  var test;
-  //  var smallerMacguffin = macguffin[3];
-    //var obj = JSON.parse(smallerMacguffin);
-    //test = obj.name;
-  //  test = smallerMacguffin;
-  //  return test;
-  //}
+  $scope.showPresence = function() {
+    var test = analysis.analysisData.presenceByHour;
+    return test;
+  };
+  
+  $scope.showFridgeHits = function() {
+    var test = analysis.analysisData.fridgeHitsByHour;
+    return test;
+  };
 
+  $scope.showMedsHits = function() {
+    var test = analysis.analysisData.medsHitsByHour;
+    return test;
+  };
+  
+  /**
+   * This function will display the number of times a sensor pinged
+   * during a partucular hour.
+   * It is currently not linked to anything because the current
+   * analysis is not set up for this.
+   */
   $scope.getPings = function(time, type) {
     switch(time) {
     case 'midnight':
@@ -42,7 +69,7 @@ angular.module('careWheels')
         }
         else if (type === 'meds'){
           //This is where you put the function call to get the pings for this time.
-          return "* * * * * *";
+          return "";
         }
     case 'one':
         if (type === 'meals'){
@@ -65,7 +92,7 @@ angular.module('careWheels')
     case 'three':
         if (type === 'meals'){
           //This is where you put the function call to get the pings for this time.
-          return "* *";
+          return "";
         }
         else if (type === 'meds'){
           //This is where you put the function call to get the pings for this time.
@@ -74,7 +101,7 @@ angular.module('careWheels')
     case 'four':
         if (type === 'meals'){
           //This is where you put the function call to get the pings for this time.
-          return "* * *";
+          return "";
         }
         else if (type === 'meds'){
           //This is where you put the function call to get the pings for this time.
@@ -101,11 +128,11 @@ angular.module('careWheels')
     case 'seven':
         if (type === 'meals'){
           //This is where you put the function call to get the pings for this time.
-          return "*";
+          return "";
         }
         else if (type === 'meds'){
           //This is where you put the function call to get the pings for this time.
-          return "*";
+          return "";
         }
     case 'eight':
         if (type === 'meals'){
@@ -255,352 +282,210 @@ angular.module('careWheels')
         return 'error';
     }
   };
+  
+  /**
+   * This function returns the color to be returned to populate the presence 
+   * column.
+   */
+  $scope.returnPresenceColor = function(data) {
+    if (data === true) {
+      return  "blue";
+    } else {
+      return "grey";
+    }
+  };
+  
+  /**
+   * This function returns the color to be returned to populate the meals/meds 
+   * columns.
+   */
+  $scope.returnStatusColor = function(data) {
+    if (data === 0) {
+      return  "blue";
+    } else if (data === 1){
+      return "yellow";
+    } else {
+      return "red";
+    }
+  };
+  
+  /**
+   * This function uses the analysis object to populate the meals column for the 
+   * given times.
+   */
+  $scope.getMealsStatus = function(time) {
+    switch(time) {
+    case 'midnight':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[0]);
+    case 'one':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[1]);
+    case 'two':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[2]);
+    case 'three':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[3]);
+    case 'four':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[4]);
+    case 'five':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[5]);
+    case 'six':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[6]);;
+    case 'seven':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[7]);
+    case 'eight':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[8]);
+    case 'nine':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[9]);
+    case 'ten':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[10]);
+    case 'eleven':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[11]);
+    case 'twelve':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[12]);
+    case 'thirteen':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[13]);
+    case 'fourteen':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[14]);
+    case 'fifteen':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[15]);
+    case 'sixteen':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[16]);
+    case 'seventeen':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[17]);
+    case 'eighteen':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[18]);
+    case 'nineteen':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[19]);
+    case 'twenty':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[20]);
+    case 'twentyone':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[21]);
+    case 'twentytwo':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[22]);
+    case 'twentythree':
+        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[23]);
+    default:
+        return 'error';
+    }
+  };
 
+  /**
+   * This function uses the analysis object to populate the meds column for the 
+   * given times.
+   */
+  $scope.getMedsStatus = function(time) {
+    switch(time) {
+    case 'midnight':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[0]);
+    case 'one':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[1]);
+    case 'two':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[2]);
+    case 'three':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[3]);
+    case 'four':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[4]);
+    case 'five':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[5]);
+    case 'six':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[6]);;
+    case 'seven':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[7]);
+    case 'eight':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[8]);
+    case 'nine':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[9]);
+    case 'ten':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[10]);
+    case 'eleven':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[11]);
+    case 'twelve':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[12]);
+    case 'thirteen':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[13]);
+    case 'fourteen':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[14]);
+    case 'fifteen':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[15]);
+    case 'sixteen':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[16]);
+    case 'seventeen':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[17]);
+    case 'eighteen':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[18]);
+    case 'nineteen':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[19]);
+    case 'twenty':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[20]);
+    case 'twentyone':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[21]);
+    case 'twentytwo':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[22]);
+    case 'twentythree':
+        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[23]);
+    default:
+        return 'error';
+    }
+  };
+
+  /**
+   * This function uses the analysis object to populate the presence column for the 
+   * given times.
+   */
   $scope.getPresence = function(time) {
     switch(time) {
     case 'midnight':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[0]);
     case 'one':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[1]);
     case 'two':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[2]);
     case 'three':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[3]);
     case 'four':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[4]);
     case 'five':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[5]);
     case 'six':
-        //This is where you put the function call to get the presence for this time.
-        return "grey";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[6]);;
     case 'seven':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[7]);
     case 'eight':
-        //This is where you put the function call to get the presence for this time.
-        return "grey";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[8]);
     case 'nine':
-        //This is where you put the function call to get the presence for this time.
-        return "grey";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[9]);
     case 'ten':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[10]);
     case 'eleven':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[11]);
     case 'twelve':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[12]);
     case 'thirteen':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[13]);
     case 'fourteen':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[14]);
     case 'fifteen':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[15]);
     case 'sixteen':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[16]);
     case 'seventeen':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[17]);
     case 'eighteen':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[18]);
     case 'nineteen':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[19]);
     case 'twenty':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[20]);
     case 'twentyone':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[21]);
     case 'twentytwo':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[22]);
     case 'twentythree':
-        //This is where you put the function call to get the presence for this time.
-        return "blue";
+        return $scope.returnPresenceColor(analysis.analysisData.presenceByHour[23]);
     default:
         return 'error';
     }
   };
 
 
-  $scope.trevor = {
-    name: analysis.name,
-    midnight: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'yellow'
-      },
-      meds: {
-      	status: 'blue'
-      }
-    },
-    one: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'yellow'
-      },
-      meds: {
-      	status: 'blue'
-      }
-    },
-    two: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'yellow'
-      },
-      meds: {
-      	status: 'blue'
-      }
-    },
-    three: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-      	status: 'blue'
-      }
-    },
-    four: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-      	status: 'blue'
-      }
-    },
-    five: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-      	status: 'red'
-      }
-    },
-    six: {
-      presence: {
-        status: 'grey'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-      	status: 'red'
-      }
-    },
-    seven: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-      	status: 'blue'
-      }
-    },
-    eight: {
-      presence: {
-        status: 'grey'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-      	status: 'blue'
-      }
-    },
-    nine: {
-      presence: {
-        status: 'grey'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-      	status: 'blue'
-      }
-    },
-    ten: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-      	status: 'blue'
-      }
-    },
-    eleven: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-      	status: 'blue'
-      }
-    },
-    twelve: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-      	status: 'blue'
-      }
-    },
-    thirteen: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-        status: 'blue'
-      }
-    },
-    fourteen: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-        status: 'blue'
-      }
-    },
-    fifteen: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-        status: 'blue'
-      }
-    },
-    sixteen: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-        status: 'blue'
-      }
-    },
-    seventeen: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-        status: 'blue'
-      }
-    },
-    eighteen: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-        status: 'blue'
-      }
-    },
-    nineteen: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-        status: 'blue'
-      }
-    },
-    twenty: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-        status: 'blue'
-      }
-    },
-    twentyone: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-        status: 'blue'
-      }
-    },
-    twentytwo: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-        status: 'blue'
-      }
-    },
-    twentythree: {
-      presence: {
-        status: 'blue'
-      },
-      meals: {
-        status: 'blue'
-      },
-      meds: {
-        status: 'blue'
-      }
-    }
-  };
+  $scope.name = analysis.name;
 });
