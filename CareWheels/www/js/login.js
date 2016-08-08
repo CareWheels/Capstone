@@ -6,7 +6,7 @@ angular.module('careWheels')
 
   .controller('loginController', function($scope, $controller, User, $state, $ionicLoading, GroupInfo){
 
-    var DOWNLOAD_INTERVAL = 1000 * 60 * 5; // constant interval for downl
+    var DOWNLOAD_INTERVAL = 1000 * 60 * 5; // constant interval for download
 
     var dataDownload = $scope.$new();
     var dataAnalysis = $scope.$new();
@@ -65,7 +65,7 @@ angular.module('careWheels')
 
         setTimeout(function(){
           dataAnalysis.AnalyzeData();
-        }, 1000 * 30);
+        }, 1000 * 60 * 2); // give the download two mins before analyze
 
       }, DOWNLOAD_INTERVAL ); // 5 min interval
 
