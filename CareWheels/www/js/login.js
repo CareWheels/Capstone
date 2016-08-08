@@ -4,7 +4,12 @@
  */
 angular.module('careWheels')
 
-  .controller('loginController', function($rootScope, $scope, User, $state, $ionicLoading){
+  .controller('loginController', function($scope, $controller, User, $state, $ionicLoading){
+
+    var dataDownload = $scope.$new();
+    var dataAnalysis = $scope.$new();
+    $controller('DownloadCtrl', {$scope : dataDownload});
+    $controller('AnalysisCtrl', {$scope : dataAnalysis});
 
     $scope.rememberMe = false;
     $scope.logoImage = 'img/CareWheelsLogo.png';
