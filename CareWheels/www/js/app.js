@@ -23,6 +23,7 @@ angular.module('careWheels', [
 //    window.localStorage['loginCredentials'] = null;
 
     $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
+      console.log('state change');
       if (User.credentials() === null) {
         if (next.name !== 'login') {
           event.preventDefault();
@@ -70,7 +71,7 @@ angular.module('careWheels', [
     var memberSelected;
 
     groupInfoService.initGroupInfo = function(data) {
-      groupInfo = data;
+      return groupInfo = data;
     };
 
     //this function is used at the end of Data Download and Data Analysis
@@ -159,7 +160,6 @@ angular.module('careWheels', [
 
         GroupInfo.initGroupInfo(response.data);
         $ionicLoading.hide();   //make sure to hide loading screen
-        $state.go('app.groupStatus');
       }, function(response) {
         //present login failed
         $ionicLoading.hide();
