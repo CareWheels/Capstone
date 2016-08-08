@@ -14,7 +14,8 @@ angular.module('careWheels')
       .state('app', {
         url: '/app',
         abstract: true,
-        templateUrl: 'views/menu.html'
+        templateUrl: 'views/menu.html',
+        controller: 'menu'
       })
 
       .state('app.groupStatus', {
