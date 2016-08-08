@@ -6,7 +6,19 @@ angular.module('careWheels')
 
 .controller('individualStatusController', function($scope, GroupInfo){
 
-  //var analysis = GroupInfo.retrieveAnalyzedGroup();
+  /**
+   * grabs the analysis of the member selected on the previous view
+   *
+   * note:
+   *  this object is exactly the same as you were previously using.
+   *  also i tested that this is working, by using the analysis object
+   *  to change the name(line 338), so now the header will display the name
+   *  of whomever was clicked
+   */
+  var analysis = GroupInfo.getMember_new();
+  console.log(analysis); ////////////testing
+
+
 
   // This is simply a way to print out the analyzed object so that I can figure out how
   // to use it. It will print on the bottom of the Individual Status Page of the app.
@@ -325,7 +337,7 @@ angular.module('careWheels')
 
 
   $scope.trevor = {
-    name: 'Kylo',
+    name: analysis.name,
     midnight: {
       presence: {
         status: 'blue'

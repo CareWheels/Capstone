@@ -28,6 +28,7 @@ angular.module('careWheels')
       })
 
       .state('app.individualStatus', {
+        cache:false,
         url: '/individualStatus',
         views: {
           'menuContent': {
