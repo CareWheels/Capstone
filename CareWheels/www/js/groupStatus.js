@@ -6,8 +6,7 @@
 angular.module('careWheels')
   .controller('groupStatusController',
 
-  function ($scope, $interval, $state, $http, $log, $httpParamSerializerJQLike) {
-
+  function ($scope, $interval, $state, $http, $log, $httpParamSerializerJQLike, GroupInfo) {
 
     /******************** TESTING *****************************/
       //var usergroup = $scope.data = angular.fromJson(window.localStorage['UserGroup']);

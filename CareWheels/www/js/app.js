@@ -23,6 +23,7 @@ angular.module('careWheels', [
 //    window.localStorage['loginCredentials'] = null;
 
     $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
+      console.log('state change');
       if (User.credentials() === null) {
         if (next.name !== 'login') {
           event.preventDefault();
@@ -71,7 +72,7 @@ angular.module('careWheels', [
     var groupInfo = [];
 
     groupInfoService.initGroupInfo = function(data) {
-      groupInfo = data;
+      return groupInfo = data;
     };
 
     groupInfoService.addSensorDataToGroup = function(id) {//this will add each individual group member into the currentGroup array. Their carebank data will have been added within the DataDownload function
@@ -132,7 +133,6 @@ angular.module('careWheels', [
 
         GroupInfo.initGroupInfo(response.data);
         $ionicLoading.hide();   //make sure to hide loading screen
-        $state.go('app.groupStatus');
       }, function(response) {
         //present login failed
         $ionicLoading.hide();
