@@ -542,7 +542,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     for(z=0; z < carewheelMembers.length; z++ ){
             //return angularWorker.run({name: thesemembers[z].name, refreshtoken: thesemembers[z].customValues[2], accesstoken: thesemembers[z].customValues[1]});
         carewheelMembers[z].index = z;
-    if (carewheelMembers[z].customValues[1].stringValue == "000" || carewheelMembers[z].customValues[1].stringValue == "" || 
+    if (carewheelMembers[z].customValues[1].stringValue == "000" || carewheelMembers[z].customValues[1].stringValue == "" ||
         carewheelMembers[z].customValues[2].stringValue == "000" || carewheelMembers[z].customValues[2].stringValue == "")
         {
         carewheelMembers[z].sensorData = null;
@@ -572,9 +572,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 
         var date = new Date();//create new data object
         date.setDate(date.getDate()-1);
-        var prevDayLA = moment.tz( date.toISOString(), "America/Los_Angeles");
-        var prevDayParis = prevDayLA.clone().tz("Europe/Paris");
-        var userTime = prevDayParis.toISOString();
+        var userTime = date.toISOString();
 
         //make input object as arg for run()
         //we will need to include all properties which will be needed as params
@@ -582,7 +580,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 
         //input to worker thread will accept "thesemembers" array variable, which contains token credentials for user's
         //group members within his/her carewheel
-        
+
         var thesemembers = GroupInfo.groupInfo();//returns all five group members with carebank data after login
         return angularWorker.run({carewheelMembers: thesemembers, time: userTime});
 
