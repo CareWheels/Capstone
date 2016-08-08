@@ -1,5 +1,5 @@
-<ion-view view-title="app.individualStatus" class="overflow-scroll">
-  <ion-nav-title>Status: {{trevor.name}}</ion-nav-title>
+<ion-view class="overflow-scroll">
+  <ion-nav-title>Status: {{name}}</ion-nav-title>
 
   <!-- individual status content -->
   <ion-content class="moveDown" ng-controller="individualStatusController">
@@ -12,150 +12,149 @@
 
     <div class="row">
       <div class="col blackFont">12am</div>
-      <div class="col" ng-style="{'background': getPresence('midnight')}"></div>
-      <div class="col" ng-style="{'background':trevor.midnight.meals.status}">{{getPings('midnight', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.midnight.meds.status}">{{getPings('midnight', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('midnight')"></div>
+      <div class="col" ng-class="getMealsStatus('midnight')">{{getPings('midnight', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('midnight')">{{getPings('midnight', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">1</div>
-      <div class="col" ng-style="{'background': getPresence('one')}"></div>
-      <div class="col" ng-style="{'background':trevor.one.meals.status}">{{getPings('one', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.one.meds.status}">{{getPings('one', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('one')"></div>
+      <div class="col" ng-class="getMealsStatus('one')">{{getPings('one', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('one')">{{getPings('one', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">2</div>
-      <div class="col" ng-style="{'background': getPresence('two')}"></div>
-      <div class="col" ng-style="{'background':trevor.two.meals.status}">{{getPings('two', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.two.meds.status}">{{getPings('two', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('two')"></div>
+      <div class="col" ng-class="getMealsStatus('two')">{{getPings('two', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('two')">{{getPings('two', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">3</div>
-      <div class="col" ng-style="{'background': getPresence('three')}"></div>
-      <div class="col" ng-style="{'background':trevor.three.meals.status}">{{getPings('three', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.three.meds.status}">{{getPings('three', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('three')"></div>
+      <div class="col" ng-class="getMealsStatus('three')">{{getPings('three', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('three')">{{getPings('three', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">4</div>
-      <div class="col" ng-style="{'background': getPresence('four')}"></div>
-      <div class="col" ng-style="{'background':trevor.four.meals.status}">{{getPings('four', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.four.meds.status}">{{getPings('four', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('four')"></div>
+      <div class="col" ng-class="getMealsStatus('four')">{{getPings('four', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('four')">{{getPings('four', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">5</div>
-      <div class="col" ng-style="{'background': getPresence('five')}"></div>
-      <div class="col" ng-style="{'background':trevor.five.meals.status}">{{getPings('five', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.five.meds.status}">{{getPings('five', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('five')"></div>
+      <div class="col" ng-class="getMealsStatus('five')">{{getPings('five', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('five')">{{getPings('five', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">6</div>
-      <div class="col" ng-style="{'background': getPresence('six')}"></div>
-      <div class="col" ng-style="{'background':trevor.six.meals.status}">{{getPings('six', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.six.meds.status}">{{getPings('six', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('six')"></div>
+      <div class="col" ng-class="getMealsStatus('six')">{{getPings('six', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('six')">{{getPings('six', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">7</div>
-      <div class="col" ng-style="{'background': getPresence('seven')}"></div>
-      <div class="col" ng-style="{'background':trevor.seven.meals.status}">{{getPings('seven', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.seven.meds.status}">{{getPings('seven', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('seven')"></div>
+      <div class="col" ng-class="getMealsStatus('seven')">{{getPings('seven', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('seven')">{{getPings('seven', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">8</div>
-      <div class="col" ng-style="{'background': getPresence('eight')}"></div>
-      <div class="col" ng-style="{'background':trevor.eight.meals.status}">{{getPings('eight', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.eight.meds.status}">{{getPings('eight', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('eight')"></div>
+      <div class="col" ng-class="getMealsStatus('eight')">{{getPings('eight', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('eight')">{{getPings('eight', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">9</div>
-      <div class="col" ng-style="{'background': getPresence('nine')}"></div>
-      <div class="col" ng-style="{'background':trevor.nine.meals.status}">{{getPings('nine', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.nine.meds.status}">{{getPings('nine', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('nine')"></div>
+      <div class="col" ng-class="getMealsStatus('nine')">{{getPings('nine', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('nine')">{{getPings('nine', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">10</div>
-      <div class="col" ng-style="{'background': getPresence('ten')}"></div>
-      <div class="col" ng-style="{'background':trevor.ten.meals.status}">{{getPings('ten', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.ten.meds.status}">{{getPings('ten', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('ten')"></div>
+      <div class="col" ng-class="getMealsStatus('ten')">{{getPings('ten', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('ten')">{{getPings('ten', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">11</div>
-      <div class="col" ng-style="{'background': getPresence('eleven')}"></div>
-      <div class="col" ng-style="{'background':trevor.eleven.meals.status}">{{getPings('eleven', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.eleven.meds.status}">{{getPings('eleven', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('eleven')"></div>
+      <div class="col" ng-class="getMealsStatus('eleven')">{{getPings('eleven', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('eleven')">{{getPings('eleven', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">12pm</div>
-      <div class="col" ng-style="{'background': getPresence('twelve')}"></div>
-      <div class="col" ng-style="{'background':trevor.twelve.meals.status}">{{getPings('twelve', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.twelve.meds.status}">{{getPings('twelve', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('twelve')"></div>
+      <div class="col" ng-class="getMealsStatus('twelve')">{{getPings('twelve', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('twelve')">{{getPings('twelve', 'meds')}}</div>
     </div>
 
     <div class="row">
       <div class="col blackFont">1</div>
-      <div class="col" ng-style="{'background': getPresence('thirteen')}"></div>
-      <div class="col" ng-style="{'background':trevor.thirteen.meals.status}">{{getPings('thirteen', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.thirteen.meds.status}">{{getPings('thirteen', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('thirteen')"></div>
+      <div class="col" ng-class="getMealsStatus('thirteen')">{{getPings('thirteen', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('thirteen')">{{getPings('thirteen', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">2</div>
-      <div class="col" ng-style="{'background': getPresence('fourteen')}"></div>
-      <div class="col" ng-style="{'background':trevor.fourteen.meals.status}">{{getPings('fourteen', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.fourteen.meds.status}">{{getPings('fourteen', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('fourteen')"></div>
+      <div class="col" ng-class="getMealsStatus('fourteen')">{{getPings('fourteen', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('fourteen')">{{getPings('fourteen', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">3</div>
-      <div class="col" ng-style="{'background': getPresence('fifteen')}"></div>
-      <div class="col" ng-style="{'background':trevor.fifteen.meals.status}">{{getPings('fifteen', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.fifteen.meds.status}">{{getPings('fifteen', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('fifteen')"></div>
+      <div class="col" ng-class="getMealsStatus('fifteen')">{{getPings('fifteen', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('fifteen')">{{getPings('fifteen', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">4</div>
-      <div class="col" ng-style="{'background': getPresence('sixteen')}"></div>
-      <div class="col" ng-style="{'background':trevor.sixteen.meals.status}">{{getPings('sixteen', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.sixteen.meds.status}">{{getPings('sixteen', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('sixteen')"></div>
+      <div class="col" ng-class="getMealsStatus('sixteen')">{{getPings('sixteen', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('sixteen')">{{getPings('sixteen', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">5</div>
-      <div class="col" ng-style="{'background': getPresence('seventeen')}"></div>
-      <div class="col" ng-style="{'background':trevor.seventeen.meals.status}">{{getPings('seventeen', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.seventeen.meds.status}">{{getPings('seventeen', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('seventeen')"></div>
+      <div class="col" ng-class="getMealsStatus('seventeen')">{{getPings('seventeen', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('seventeen')">{{getPings('seventeen', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">6</div>
-      <div class="col" ng-style="{'background': getPresence('eighteen')}"></div>
-      <div class="col" ng-style="{'background':trevor.eighteen.meals.status}">{{getPings('eighteen', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.eighteen.meds.status}">{{getPings('eighteen', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('eighteen')"></div>
+      <div class="col" ng-class="getMealsStatus('eighteen')">{{getPings('eighteen', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('eighteen')">{{getPings('eighteen', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">7</div>
-      <div class="col" ng-style="{'background': getPresence('nineteen')}"></div>
-      <div class="col" ng-style="{'background':trevor.nineteen.meals.status}">{{getPings('nineteen', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.nineteen.meds.status}">{{getPings('nineteen', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('nineteen')"></div>
+      <div class="col" ng-class="getMealsStatus('nineteen')">{{getPings('nineteen', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('nineteen')">{{getPings('nineteen', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">8</div>
-      <div class="col" ng-style="{'background': getPresence('twenty')}"></div>
-      <div class="col" ng-style="{'background':trevor.twenty.meals.status}">{{getPings('twenty', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.twenty.meds.status}">{{getPings('twenty', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('twenty')"></div>
+      <div class="col" ng-class="getMealsStatus('twenty')">{{getPings('twenty', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('twenty')">{{getPings('twenty', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">9</div>
-      <div class="col" ng-style="{'background': getPresence('twentyone')}"></div>
-      <div class="col" ng-style="{'background':trevor.twentyone.meals.status}">{{getPings('twentyone', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.twentyone.meds.status}">{{getPings('twentyone', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('twentyone')"></div>
+      <div class="col" ng-class="getMealsStatus('twentyone')">{{getPings('twentyone', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('twentyone')">{{getPings('twentyone', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">10</div>
-      <div class="col" ng-style="{'background': getPresence('twentytwo')}"></div>
-      <div class="col" ng-style="{'background':trevor.twentytwo.meals.status}">{{getPings('twentytwo', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.twentytwo.meds.status}">{{getPings('twentytwo', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('twentytwo')"></div>
+      <div class="col" ng-class="getMealsStatus('twentytwo')">{{getPings('twentytwo', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('twentytwo')">{{getPings('twentytwo', 'meds')}}</div>
     </div>
     <div class="row">
       <div class="col blackFont">11</div>
-      <div class="col" ng-style="{'background': getPresence('twentythree')}"></div>
-      <div class="col" ng-style="{'background':trevor.twentythree.meals.status}">{{getPings('twentythree', 'meals')}}</div>
-      <div class="col" ng-style="{'background':trevor.twentythree.meds.status}">{{getPings('twentythree', 'meds')}}</div>
+      <div class="col" ng-class="getPresence('twentythree')"></div>
+      <div class="col" ng-class="getMealsStatus('twentythree')">{{getPings('twentythree', 'meals')}}</div>
+      <div class="col" ng-class="getMedsStatus('twentythree')">{{getPings('twentythree', 'meds')}}</div>
     </div>
-
 
   </ion-content>
 </ion-view>
@@ -164,13 +163,13 @@
 
 <ul class="row" ng-repeat="data in userStats">
   <li class="col">{{data.time}}</li>
-  <li class="col" ng-style="{'background':data.presence.status}">
+  <li class="col" ng-class="data.presence.status">
     {{data.presence.pings}}
   </li>
-  <li class="col" ng-style="{'background':data.meals.status}">
+  <li class="col" ng-class="data.meals.status">
     {{data.meals.pings}}
   </li>
-  <li class="col" ng-style="{'background':data.meds.status}">
+  <li class="col" ng-class="data.meds.status">
     {{data.meds.pings}}
   </li>
 </ul>

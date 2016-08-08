@@ -116,6 +116,9 @@ ul {
 .blue{
   background-color: blue;
 }
+.grey{
+  background-color: dimgrey;
+}
 
 .miniCardHeader {
   padding: 3px;
