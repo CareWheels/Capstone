@@ -4,7 +4,7 @@
  */
 angular.module('careWheels').controller('groupStatusController',
   function ($scope, $interval, $state, GroupInfo) {
-
+    var setUserName = '';
 
     /******************** TESTING *****************************/
 
@@ -60,7 +60,8 @@ angular.module('careWheels').controller('groupStatusController',
         username: '',
         credits: "0.0",
         debits: "0.0",
-        image: ''
+        image: '',
+        userSelected: ''
       },
       { // top left
         username: '',
@@ -94,7 +95,11 @@ angular.module('careWheels').controller('groupStatusController',
     };
     $scope.clickTopRight = function () {
       console.log('clicked top right');
+      $group.userSelected = $scope.group[1].username;
+      GroupInfo.setMember_new($scope.group[1].username);
+
       $state.go('app.individualStatus');
+
 
     };
     $scope.clickBottomLeft = function () {
