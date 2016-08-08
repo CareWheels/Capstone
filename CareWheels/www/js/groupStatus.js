@@ -2,110 +2,100 @@
  * CareWheels - Group Status Controller
  *
  */
+angular.module('careWheels').controller('groupStatusController',
+  function ($scope, $interval, $state, $http, $log, $httpParamSerializerJQLike, GroupInfo) {
 
-angular.module('careWheels')
-  .controller('groupStatusController',
-
-  function ($scope, $interval, $state, $http, $log, $httpParamSerializerJQLike) {
-
-
-    /******************** TESTING *****************************/
-      //var usergroup = $scope.data = angular.fromJson(window.localStorage['UserGroup']);
-      //console.log(usergroup);
-    $scope.url = 'https://carebank.carewheels.org:8443/userandgroupmemberinfo.php';
-    $scope.fetch = function(userIn, passIn, tofindIn) {
-      $scope.code = null;
-      $scope.response = null;
-      $http({
-        url:$scope.url,
-        method:'POST',    //all our custom REST endpoints have been designed to use POST
-        data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
-          username:userIn,
-          password:passIn,
-          usernametofind:tofindIn
-        }),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+    /* TODO find a better solution */
+    // the groupInfo object is not available immediately, spin until available
+    var initGroupInfo = setInterval(function(){
+      var groupArray = GroupInfo.groupInfo();
+      if ( groupArray[0] != null ){
+        clearInterval(initGroupInfo);
+        console.log(groupArray);
+        for (var i = 0; i < groupArray.length; i++){
+          $scope.group[i].image = groupArray[i].photoUrl;
+          $scope.group[i].username = groupArray[i].username;
         }
-      }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
-        $scope.status = response.status;
-        $scope.data = response.data;
-      }, function(response) {
-        $scope.data = response.data || "Request failed";
-        $scope.status = response.status;
-        if(response.status!=200){
-          $log.warn($scope.data);
-        }
-      });
-    };
-
-    var groupObject = $scope.fetch('chris', 'locked', 'bill');
-    console.log($scope.data);
-    setTimeout(function(){
-      console.log($scope.data[0].photoUrl); //bill
-      console.log($scope.data[1].photoUrl); //spoke 1
-      console.log($scope.data[2].photoUrl); //spok2
-      console.log($scope.data[3].photoUrl);
-      console.log($scope.data[4].photoUrl);
-    },8 * 1000); //10 seconds
-
-    /************** END TEST BLOCK ***************************/
-
-    /* TODO: this is currently mocked data */
-    $scope.group = {
-      /* self */
-      username: 'test01',
-      profilePic: 'url',
-      credits: "0.0",
-      debits: "0.0",
-      image: 'https://carebank.carewheels.org/content/images/user/Ihbek3YWQT9emA9WrSYtEMk52CT67DhJXGatPyz7FUwpnKa11202OP2yzHN1nINg_960x504.jpeg',
-
-      /* User Group */
-
-      topLeft: {
-        username: 'yoda',
-        profilePic: 'url',
-        status: 'deepskyblue',
-        image: 'https://carebank.carewheels.org/content/images/user/KDRtBlv3CU08ChlLj2GRcUKL6bQUIaZmK4g2pMXHaUCiMPzM82Q9nRNxrhhtTt7r_755x960.jpeg'
-      },
-      topRight: {
-        username: 'mace windu',
-        profilePic: 'url',
-        status: 'deepskyblue',
-        image: 'https://carebank.carewheels.org/content/images/user/fzlb11HIhMn3OliPz0JIMHyhfq1GJGCZOB2kOXRldLzVxmDvf3ZlpAdmFlFlkNj7_626x352.png'
-      },
-      bottomLeft: {
-        username: 'obi-wan',
-        profilePic: 'url',
-        status: 'yellow',
-        image: 'https://carebank.carewheels.org/content/images/user/Ikaudj0wmpc4Nqu4ttbnfvTqULE6qpSg6iV8eF9YEcgq1d72Idf2w9kWFO9V29Uk_280x280.png'
-      },
-      bottomRight: {
-        username: 'emperor',
-        profilePic: 'url',
-        status: 'red',
-        image: 'https://carebank.carewheels.org/content/images/user/ZLZubMNFK3b9RGbGetCLgrlOksvsaLEe1OVIK68FJDOv0EXjDGSyo7lZWS9x0T59_960x480.jpeg'
       }
-    };
+    }, 50);
+
+    setInterval(function(){
+      var groupArray = GroupInfo.groupInfo();
+      for (var i = 0; i < groupArray.length; i ++){
+        try{
+          var fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
+          var medsAlert = groupArray[i].analysisData.medsAlertLevel;
+          $scope.group[i].status = getAlertColor(fridgeAlert, medsAlert);
+        }
+        catch(Exception) {
+          $scope.group[i].status = 'blue';
+        }
+      }
+    }, 50);
+
+
+    function getAlertColor(fridge, meds){
+      fridge = parseInt(fridge);
+      meds = parseInt(meds);
+      if (fridge == 3 || meds == 3)
+        return 'red';
+      else if (fridge == 2 || meds == 2)
+        return 'yellow';
+      else
+        console.log('blue alert');
+        return 'blue';
+    }
+
+    $scope.group = [
+      { // center, self
+        username: '',
+        credits: "0.0",
+        debits: "0.0",
+        image: '',
+        userSelected: ''
+      },
+      { // top left
+        username: '',
+        status: '',
+        image: ''
+      },
+      { // top right
+        username: '',
+        status: '',
+        image: ''
+      },
+      { // bottom left
+        username: '',
+        status: '',
+        image: ''
+      },
+      { // bottom right
+        username: '',
+        status: '',
+        image: ''
+      }
+    ];
 
     /* click/press events */
     $scope.clickTopLeft = function () {
-      //todo: goto individualStatus.html for this user
       console.log('clicked top left');
+      GroupInfo.setMember_new($scope.group[1].username);
       $state.go('app.individualStatus');
     };
     $scope.clickTopRight = function () {
       console.log('clicked top right');
+      GroupInfo.setMember_new($scope.group[2].username);
       $state.go('app.individualStatus');
-
     };
     $scope.clickBottomLeft = function () {
       console.log('clicked bottom left');
+      GroupInfo.setMember_new($scope.group[3].username);
       $state.go('app.individualStatus');
 
     };
     $scope.clickBottomRight = function () {
       console.log('clicked bottom right');
+      GroupInfo.setMember_new($scope.group[4].username);
       $state.go('app.individualStatus');
 
     };

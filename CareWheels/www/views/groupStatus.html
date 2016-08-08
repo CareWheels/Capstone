@@ -8,25 +8,25 @@
         <ul id="userGroup">
           <li class="userSquare topLeft" ng-click="clickTopLeft()">
             <div id="topLeftAlert" class="alertOverlay"
-                 ng-style="{'background-color': '{{group.topLeft.status}}'}"></div>
-            <img class=" userImage topLeft" ng-src="{{group.topLeft.image}}">
+                 ng-class="group[1].status"></div>
+            <img class=" userImage topLeft" ng-src="{{group[1].image}}">
           </li>
           <li class="userSquare topRight" ng-click="clickTopRight()">
             <div id="topRightAlert" class="alertOverlay"
-                 ng-style="{'background-color': '{{group.topRight.status}}'}"></div>
-            <img class="userImage topRight" ng-src="{{group.topRight.image}}">
+                 ng-class="group[2].status"></div>
+            <img class="userImage topRight" ng-src="{{group[2].image}}">
           </li>
           <li class="userSquare bottomLeft" ng-click="clickBottomLeft()">
             <div id="bottomLeftAlert" class="alertOverlay"
-                 ng-style="{'background-color': '{{group.bottomLeft.status}}'}"></div>
-            <img class="userImage bottomLeft" ng-src="{{group.bottomLeft.image}}">
+                 ng-class="group[3].status"></div>
+            <img class="userImage bottomLeft" ng-src="{{group[3].image}}">
           </li>
           <li class="userSquare bottomRight" ng-click="clickBottomRight()">
             <div id="bottomRightAlert" class="alertOverlay"
-                 ng-style="{'background-color': '{{group.bottomRight.status}}'}"></div>
-            <img class="userImage bottomRight" ng-src="{{group.bottomRight.image}}">
+                 ng-class="group[4].status"></div>
+            <img class="userImage bottomRight" ng-src="{{group[4].image}}">
           </li>
-          <img class="userImage centerUser" ng-src="{{group.image}}">
+          <img class="userImage centerUser" ng-src="{{group[0].image}}">
         </ul>
       </ion-item>
       <ion-item>
