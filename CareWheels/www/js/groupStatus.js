@@ -7,10 +7,10 @@ angular.module('careWheels').controller('groupStatusController',
 
     /* TODO find a better solution */
     // the groupInfo object is not available immediately, spin until available
-    var triggerGroupInfo = setInterval(function(){
+    var initGroupInfo = setInterval(function(){
       var groupArray = GroupInfo.groupInfo();
       if ( groupArray[0] != null ){
-        clearInterval(triggerGroupInfo);
+        clearInterval(initGroupInfo);
         console.log(groupArray);
         for (var i = 0; i < groupArray.length; i++){
           $scope.group[i].image = groupArray[i].photoUrl;
@@ -46,11 +46,6 @@ angular.module('careWheels').controller('groupStatusController',
         return 'blue';
     }
 
-
-
-    /************** END TEST BLOCK ***************************/
-
-    /* TODO: this is currently mocked data */
     $scope.group = [
       { // center, self
         username: '',
@@ -83,28 +78,24 @@ angular.module('careWheels').controller('groupStatusController',
 
     /* click/press events */
     $scope.clickTopLeft = function () {
-      //todo: goto individualStatus.html for this user
       console.log('clicked top left');
+      GroupInfo.setMember_new($scope.group[1].username);
       $state.go('app.individualStatus');
-      var groupArray = GroupInfo.groupInfo();
-      console.log('GroupInfo:', groupArray);
     };
     $scope.clickTopRight = function () {
       console.log('clicked top right');
-      $group.userSelected = $scope.group[1].username;
-      GroupInfo.setMember_new($scope.group[1].username);
-
+      GroupInfo.setMember_new($scope.group[2].username);
       $state.go('app.individualStatus');
-
-
     };
     $scope.clickBottomLeft = function () {
       console.log('clicked bottom left');
+      GroupInfo.setMember_new($scope.group[3].username);
       $state.go('app.individualStatus');
 
     };
     $scope.clickBottomRight = function () {
       console.log('clicked bottom right');
+      GroupInfo.setMember_new($scope.group[4].username);
       $state.go('app.individualStatus');
 
     };
