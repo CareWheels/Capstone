@@ -3,7 +3,7 @@
  *
  */
 angular.module('careWheels').controller('groupStatusController',
-  function ($scope, $interval, $state, $http, $log, $httpParamSerializerJQLike, GroupInfo) {
+  function ($scope, $interval, $state, GroupInfo) {
 
     /* TODO find a better solution */
     // the groupInfo object is not available immediately, spin until available

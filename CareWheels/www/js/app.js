@@ -35,6 +35,7 @@ angular.module('careWheels', [
 
     $ionicPlatform.registerBackButtonAction(function(event) {
       console.log("in registerbackbutton");
+      console.log($ionicHistory.backTitle());
       $state.go($ionicHistory.backTitle());
     }, 100);
 
@@ -192,4 +193,20 @@ angular.module('careWheels', [
     };
 
     return userService;
-  });
+  })
+
+  .controller('menu', function($scope, $state){
+
+    $scope.clickGroup = function() {
+      $state.go('app.groupStatus');
+    }
+
+    $scope.clickReminders = function() {
+      $state.go('app.reminders');
+    }
+
+    $scope.clickTests = function() {
+      $state.go('app.tests');
+    }
+  })
+  ;
