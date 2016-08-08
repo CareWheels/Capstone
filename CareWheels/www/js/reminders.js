@@ -11,6 +11,7 @@ angular.module('careWheels')
 
     var notifViewModel = $scope.$new();   //to access Notifications functions
     var restViewModel = $scope.$new();    //to access Reminder REST controller
+
     $controller('NotificationController',{$scope : notifViewModel });
     $controller('ReminderRestController',{$scope : restViewModel });
 
@@ -134,7 +135,7 @@ angular.module('careWheels')
     }
   }])
 
-//Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
+  //Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
   .controller("NotificationController", function($scope, $log, $cordovaLocalNotification){
 
     var isAndroid = window.cordova!=undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
