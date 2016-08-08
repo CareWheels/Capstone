@@ -18,9 +18,18 @@ angular.module('careWheels', [
   //contant definition for endpoint base url
   .constant('BASE_URL', 'https://carebank.carewheels.org:8443')
 
-  .run(function($ionicPlatform, $ionicHistory, $state) {
+  .run(function($rootScope, $ionicPlatform, $ionicHistory, $state, User) {
 
 //    window.localStorage['loginCredentials'] = null;
+
+    $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
+      if (User.credentials() === null) {
+        if (next.name !== 'login') {
+          event.preventDefault();
+          $state.go('login');
+        }
+      }
+    })
 
 
     $ionicPlatform.registerBackButtonAction(function(event) {
@@ -58,13 +67,14 @@ angular.module('careWheels', [
   .factory('GroupInfo', function() {
     var groupInfoService = {};
     var groupInfo = [];
+    var memberSelected;
 
     groupInfoService.initGroupInfo = function(data) {
       groupInfo = data;
     };
 
     //this function is used at the end of Data Download and Data Analysis
-    //it will replace each group members position in the groupInfo array with a newly updated member containing 
+    //it will replace each group members position in the groupInfo array with a newly updated member containing
     //a sensorData object (after Data Download), or a sensorAnalysis object (after Data Analysis)
     groupInfoService.addDataToGroup = function(member, index) {
       groupInfo[index] = member;
@@ -75,6 +85,19 @@ angular.module('careWheels', [
     groupInfoService.groupInfo = function() {
       return groupInfo;
     };
+
+    groupInfoService.getMember_new = function(){
+      return groupInfo[memberSelected];
+    };
+
+    groupInfoService.setMember_new = function(Username){
+      for (var i = 0; i < groupInfo.length; i++) {
+        if (groupInfo[i].username == Username)
+          memberSelected = i;
+      }
+      return true;
+    };
+
 
     groupInfoService.getMember = function(Username){       // Returns the groupInfo member array index object that contains the same username as the username parameter.
       for(i=0; i<5; ++i){
@@ -97,7 +120,7 @@ angular.module('careWheels', [
       console.error("In setMember(): Could not find username " + Username);
       return false;
     };
-    
+
     return groupInfoService;
 
   })
@@ -109,7 +132,7 @@ angular.module('careWheels', [
     var userService = {};
     //window.localStorage['loginCredentials'] = null;
 
-    userService.login = function(uname, passwd, rmbr, callback) {
+    userService.login = function(uname, passwd, rmbr) {
       $ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
         template: '<ion-spinner></ion-spinner>'+
                   '<p>Contacting Server...</p>'
@@ -136,24 +159,24 @@ angular.module('careWheels', [
 
         GroupInfo.initGroupInfo(response.data);
         $ionicLoading.hide();   //make sure to hide loading screen
-        callback();
+        $state.go('app.groupStatus');
       }, function(response) {
         //present login failed
         $ionicLoading.hide();
         var errorMsg = "Unknown error.";
-        
-          //CHECKING TO FOR 404 ERRROR    
-          //response.status = 404;        
-          //response.data = "nothing";    
-          //console.log(response.data);   
+
+          //CHECKING TO FOR 404 ERRROR
+          //response.status = 404;
+          //response.data = "nothing";
+          //console.log(response.data);
           //
-          
+
         if(response.data === "Missing username / password" || response.data === "Invalid username / password")
           errorMsg = "Please check your credentials!";
         else if(response.data === "Your access is blocked by exceeding invalid login attempts")
           errorMsg = "Account got blocked by exceeding invalid login attempts. Please contact admin";
-        else if(response.status == 404) 
-          errorMsg = "Unable to reach the server"; 
+        else if(response.status == 404)
+          errorMsg = "Unable to reach the server";
 
         var alertPopup = $ionicPopup.alert({
           title: 'Login failed!',
@@ -161,8 +184,10 @@ angular.module('careWheels', [
         });
       })
     };
-    
+
     userService.credentials = function() {
+      if (!user.username)
+        return null;
       return user;
     };
 

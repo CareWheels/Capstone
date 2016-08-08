@@ -108,12 +108,13 @@ ul {
   text-align: center;
 }
 .red{
-  display: none;
   background-color:red;
 }
 .yellow{
-  display: none;
   background-color:yellow;
+}
+.blue{
+  background-color: blue;
 }
 
 .miniCardHeader {
