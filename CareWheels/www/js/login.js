@@ -38,7 +38,7 @@ angular.module('careWheels')
             }
 
             // sweet we got data, lets break out of this interval
-            if (info[4].analysisData != null){
+            if (info[4].analysisData !== null){
               clearInterval(trigger);
               $state.go('app.groupStatus');
               $ionicLoading.hide();   //make sure to hide loading screen
