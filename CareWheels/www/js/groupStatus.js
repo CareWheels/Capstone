@@ -139,26 +139,16 @@ angular.module('careWheels').controller('groupStatusController',
 
     /* click/press events */
     $scope.clickTopLeft = function () {
-      console.log('clicked top left');
-      GroupInfo.setMember_new($scope.group[1].username);
-      $state.go('app.individualStatus');
+      clickUser(1);
     };
     $scope.clickTopRight = function () {
-      console.log('clicked top right');
-      GroupInfo.setMember_new($scope.group[2].username);
-      $state.go('app.individualStatus');
+      clickUser(2);
     };
     $scope.clickBottomLeft = function () {
-      console.log('clicked bottom left');
-      GroupInfo.setMember_new($scope.group[3].username);
-      $state.go('app.individualStatus');
-
+      clickUser(3);
     };
     $scope.clickBottomRight = function () {
-      console.log('clicked bottom right');
-      GroupInfo.setMember_new($scope.group[4].username);
-      $state.go('app.individualStatus');
-
+      clickUser(4);
     };
     $scope.clickCenter = function () {
       console.log('clicked center');
@@ -186,6 +176,13 @@ angular.module('careWheels').controller('groupStatusController',
         }
       }
     }, 2000);
+
+    function clickUser(index){
+      if(!$scope.group[index].error){
+        GroupInfo.setMember_new($scope.group[index].username);
+        $state.go('app.individualStatus');
+      }
+    }
 
     // An error popup dialog
     function displayError(errorString) {
