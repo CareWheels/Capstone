@@ -17,14 +17,16 @@ ul {
   display: inline-block;
   position: inherit;
   text-align: center;
-  width: 40%;
-  margin: 5%;
+  width: 80%;
+  margin-left: 10%;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 
 }
-.careBankCredits{
+.careBankBalance{
 }
-.careBankDebits{
-}
+
 
 .smallBorder{
   border-radius: 2px 2px 2px 2px;
@@ -122,6 +124,7 @@ ul {
 
 .miniCardHeader {
   padding: 3px;
+  font-size: 20px;
 }
 
 .stretch {

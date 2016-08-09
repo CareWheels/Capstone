@@ -59,7 +59,6 @@ angular.module('careWheels').controller('groupStatusController',
     }
 
     function checkGroupHealth(){
-      console.log("hit grouphealth check");
       //create a template string
       var errorList = [];
       var errorCount = 0;
@@ -84,7 +83,6 @@ angular.module('careWheels').controller('groupStatusController',
               errorString += ' and ';
             else if (j == errorList.length - 1){
               // were done, display error message now
-              console.log(errorString);
               if(!$scope.group[0].displayedError){
                 $scope.group[0].displayedError = true;
                 displayError(errorString);
@@ -100,8 +98,7 @@ angular.module('careWheels').controller('groupStatusController',
       { // center, self
         name: '',
         username: '',
-        credits: "0.0",
-        debits: "0.0",
+        balance: '0.0',
         image: '',
         userSelected: '',
         displayedError: false
@@ -138,24 +135,12 @@ angular.module('careWheels').controller('groupStatusController',
     ];
 
     /* click/press events */
-    $scope.clickTopLeft = function () {
-      clickUser(1);
-    };
-    $scope.clickTopRight = function () {
-      clickUser(2);
-    };
-    $scope.clickBottomLeft = function () {
-      clickUser(3);
-    };
-    $scope.clickBottomRight = function () {
-      clickUser(4);
-    };
-    $scope.clickCenter = function () {
-      console.log('clicked center');
-    };
-    $scope.clickCareBank = function () {
-      console.log('clicked carebank');
-    };
+    $scope.clickTopLeft     = function () { clickUser(1); };
+    $scope.clickTopRight    = function () { clickUser(2); };
+    $scope.clickBottomLeft  = function () { clickUser(3); };
+    $scope.clickBottomRight = function () { clickUser(4); };
+    $scope.clickCenter      = function () {};
+    $scope.clickCareBank    = function () {};
 
 
     /** automatically go through each user square, and
@@ -190,9 +175,8 @@ angular.module('careWheels').controller('groupStatusController',
         title: '<h4>Unable to load sensor data for:<h4>',
         template: '<h4>' + errorString + '</h4>'
       });
-
       alertPopup.then(function(res) {
-        console.log('Thank you for not eating my delicious ice cream cone');
+
       });
     }
 
