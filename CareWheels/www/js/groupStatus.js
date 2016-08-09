@@ -172,8 +172,12 @@ angular.module('careWheels').controller('groupStatusController',
     // An error popup dialog
     function displayError(errorString) {
       var alertPopup = $ionicPopup.alert({
-        title: '<h4>Unable to load sensor data for:<h4>',
-        template: '<h4>' + errorString + '</h4>'
+        title: '<div class="errorTitle">Unable to load sensor data for:</div>',
+        template: '<div class="errorTemplate">' + errorString + '</div>',
+        buttons: [{ // Array[Object] (optional). Buttons to place in the popup footer.
+          text: 'Okay',
+          type: 'button-calm'
+        }]
       });
       alertPopup.then(function(res) {
 

@@ -132,3 +132,11 @@ ul {
   height: 100%;
 
 }
+.errorTitle{
+  text-align: center;
+  font-size: 20px;
+}
+.errorTemplate {
+  text-align: center;
+  font-size: 18px;
+}
