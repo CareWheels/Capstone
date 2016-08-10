@@ -11,6 +11,8 @@ angular.module('careWheels')
     var dataAnalysis = $scope.$new();
     var loginTimeout = false;
     var loginIntervalSteps = 0;
+    var popupTemplate = '<ion-spinner></ion-spinner>' + '<p>Contacting Server...</p>';
+    var info = '';
 
     var credentials = angular.fromJson(window.localStorage['loginCredentials']);
 
@@ -20,38 +22,59 @@ angular.module('careWheels')
     $scope.rememberMe = false;
     $scope.logoImage = 'img/CareWheelsLogo.png';
 
+
+    /**
+     * Login function is called from app.js. This method
+     * goes through the following steps
+     *
+     *      1. login into the carebank
+     *      2. download data from sen.se
+     *      3. analyze the data
+     *      4. if success - redirect to group view, otherwise
+     *         reload the login controller, and try again.
+     *         (user will have to manually input credentials at this point)
+     * */
     $scope.login = function(uname, passwd, rmbr) {
       User.login(uname, passwd, rmbr).then(function(response) {
 
         if (User.credentials()) {
-          $ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
-            template: '<ion-spinner></ion-spinner>' + '<p>Contacting Server...</p>'
-          });
-          // do data download here
+          //pull up loading overlay so user knows App hasn't frozen
+          $ionicLoading.show({ template: popupTemplate });
+
+          // do the data download
           dataDownload.DownloadData();
 
           // store the interval promise in this variable
           var intervalPromise = $interval( function(){
 
-            if (loginIntervalSteps > 120) // 120 * 500 = 1min timeout
+            // its taking to long, timeout of the interval
+            if (loginIntervalSteps > 120) // 120 * 500 = 1.5 min timeout
               loginTimeout = true;
-
             // keep track of how many times we step through the interval
             loginIntervalSteps++;
 
-            var info = GroupInfo.groupInfo();
+            // alright, lets try to analyze the data
             try {
+              info = GroupInfo.groupInfo();
               dataAnalysis.AnalyzeData();
             }
-            catch (Exception){
-              console.log('waiting for download to finish')
+            catch (Exception){ console.log('caught! during analyze data'); } // oh no...
+
+            // were taking way to long, ABORT
+            if (loginTimeout){
+              loginTimeout = false;               // reset timeout flag
+              loginIntervalSteps = 0;             // reset step count
+              $interval.cancel(intervalPromise);  // break out of interval
+              $ionicLoading.hide();               // kill the loading screen
+              $state.reload();                    // reload the view (try again)
             }
+
             // sweet we got data, lets break out of this interval
-            if (info[4].analysisData !== null || loginTimeout){
-              $interval.cancel(intervalPromise);
-              $ionicLoading.hide();   //make sure to hide loading screen
-              scheduleDownload();
-              $state.go('app.groupStatus');
+            if (info[4].analysisData !== null){
+              $interval.cancel(intervalPromise);  // break out of interval
+              $ionicLoading.hide();               // hide loading screen
+              scheduleDownload();                 // spin up a download/analyze scheduler
+              $state.go('app.groupStatus');       // go to group view
             }
           }, 500 );
         }
@@ -59,9 +82,7 @@ angular.module('careWheels')
     };
 
     /**
-     * This logic probably does not belong here, but by doing it this way
-     * it only starts this interval once the initial download and analyze
-     * finish. async issues here.. so i took the easy way out.
+     * Schedule a download every on an interval:
      *      1. download data
      *      2. wait
      *      3. analyze data
