@@ -64,9 +64,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       "Meds": [],
       "Alert": []
     };
-    var count = 1;//this will be used in constructing the page urls
-    var downloadFunc = function(thisMember, accesstoken, refreshtoken){
+    var count = 1;//this will be used in constructing the page 
 
+    var downloadFunc = function(thisMember, accesstoken, refreshtoken){
     var dataUrl = "https://apis.sen.se/v2/nodes/";//get page of nodes for this user
     $http({
       url:dataUrl,
@@ -136,10 +136,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                         //only for the first page (10 node objects) of response
 
 /////////HANDLE > 1 pages from /nodes/ endpoint
-
-          if (response.data.links.next != null){
+          if (response.data.links.next != null){ //if there is more than one page of node objects in response
             var feedPages = Math.ceil(feeds.totalObjects / 10);
-            for (var p = 2; p < feedPages + 1; p++){ //this is to handle multiple pages of feed objects returned from sense api
+            for (var p = 2; p < feedPages + 1; p++){ //this is to handle multiple pages of node objects returned from sense api
 
             $http({
               url: "https://apis.sen.se/v2/feeds/?page="+p, //get url of next page
@@ -175,11 +174,11 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //use lt or gt at end of url to only return events occuring within the last 24 hours
         //1994-11-05T08:15:30-05:00 corresponds to November 5, 1994, 8:15:30 am, US Eastern Standard Time
 
-        ///////////////////
+        ///////////////////////////////////////////////////////////////////
         //TODO
         //handle additional pages of event objects by constructing url for those pages
         //e.g. add &page=15 to get event objects on page 15 if available
-        ///////////////////
+        ///////////////////////////////////////////////////////////////////
 
 /////////////////LOOP TO COLLECT PRESENCE OBJECTS AND PUSH TO APPROPRIATE
         for (var i = 0; i < presenceLength; i++){//for each uid in uids array
