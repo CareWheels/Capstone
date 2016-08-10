@@ -136,8 +136,8 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                         //only for the first page (10 node objects) of response
 
 /////////HANDLE > 1 pages from /nodes/ endpoint
-/*
-          if (feeds.links.next != null){
+
+          if (response.data.links.next != null){
             var feedPages = Math.ceil(feeds.totalObjects / 10);
             for (var p = 2; p < feedPages + 1; p++){ //this is to handle multiple pages of feed objects returned from sense api
 
@@ -148,6 +148,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                 'Authorization': 'Bearer '+input['accesstoken']
               }
             }).then(function(response) {
+              console.log("getting page "+p+" of /feeds/ response");
                 getUids(response);
 
             }, function(response) {
@@ -165,7 +166,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
             )
             }
           };
-  */
+  
 
         var presenceLength = presenceUids.length;
         var fridgeLength = fridgeUids.length;
@@ -571,7 +572,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       .then(function success(angularWorker) {
 
         var date = new Date();//create new data object
-        date.setDate(date.getDate()-1);
+        date.setDate(date.getDate()-2); //roll back date 48 hours (-2 days)
         var userTime = date.toISOString();
 
         //make input object as arg for run()
