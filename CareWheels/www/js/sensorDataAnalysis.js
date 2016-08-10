@@ -115,7 +115,7 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
 
         console.log("FRIDGE DATA: " + "\n");
 
-        for(w =0; w < fridgeData.length; ++w) {
+        for(w = 0; w < fridgeData.length; ++w) {
           // Need to convert dateEvent's from Paris time to Los Angeles time!
           // this needs to be made configurable once the app moves out of PST/PDT areas!!!
           utcDateTime = new Date(fridgeData[w].dateEvent);
@@ -411,11 +411,52 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
         // the same as medsAlertPoints, may change in the future as algroithm becomes more complex.
 
 
+        var fridgeRollingAlertLevel = [];
+        var medsRollingAlertLevel = [];
+
+        for(w = 0; w < 24; w++) {
+
+          if(w <= 9) {
+            medsRollingAlertLevel[w] = 0;
+          }
+
+          if(w > 9 && w <= 12) {
+            medsRollingAlertLevel[w] = 2;
+          }
+
+          if(w > 12 && w < 24) {
+            medsRollingAlertLevel[w] = 0;
+          }
+
+        }
+
+        for(w = 0; w < 24; w++) {
+
+          if(w <= 9) {
+            fridgeRollingAlertLevel[w] = 0;
+          }
+
+          if(w > 9 && w <= 13) {
+            fridgeRollingAlertLevel[w] = 1;
+          }
+
+          if(w > 13 && w <= 21) {
+            fridgeRollingAlertLevel[w] = 0;
+          }
+
+          if(w > 21 && w < 24) {
+            fridgeRollingAlertLevel[w] = 1;
+          }
+
+        }
+
+
         analysisData = {
 
           "presenceMatrix": presenceMatrix,
           "constantPresence": constantPresence,
           "presenceByHour": presenceByHour,
+          "fridgeRollingAlertLevel": fridgeRollingAlertLevel,
           "fridgeMatrix": fridgeMatrix,
           "fridgeHitsByHour": fridgeHitsByHour,
           "fridgeInterval1StartHour": fridgeInterval1StartHour,
@@ -426,6 +467,7 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
           "fridgeAlertInterval3": fridgeAlertInterval3,
           "fridgeAlertPoints": fridgeAlertPoints,
           "fridgeAlertLevel": fridgeAlertLevel,
+          "medsRollingAlertLevel": medsRollingAlertLevel,
           "medsMatrix": medsMatrix,
           "medsHitsByHour": medsHitsByHour,
           "medsInterval1StartHour": medsInterval1StartHour,
@@ -443,6 +485,7 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
         + "Member name: " + $scope.groupData[z].username + "\n"
         + "presenceMatrix: " + analysisData.presenceMatrix + "\n"
         + "presenceByHour: " + analysisData.presenceByHour + "\n"
+        + "fridgeRollingAlertLevel:" + analysisData.fridgeRollingAlertLevel + "\n"
         + "fridgeMatrix: " + analysisData.fridgeMatrix + "\n"
         + "fridgeHitsByhour: " + analysisData.fridgeHitsByHour + "\n"
         + "fridgeAlertInterval1: " + analysisData.fridgeAlertInterval1 + "\n"
@@ -450,6 +493,7 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
         + "fridgeAlertInterval3: " + analysisData.fridgeAlertInterval3 + "\n"
         + "fridgeAlertPoints: " + analysisData.fridgeAlertPoints + "\n"
         + "fridgeAlertLevel: " + analysisData.fridgeAlertLevel + "\n"
+        + "medsRollingAlertLevel: " + analysisData.medsRollingAlertLevel + "\n"
         + "medsMatrix: " + analysisData.medsMatrix + "\n"
         + "medsHitsByhour: " + analysisData.medsHitsByHour + "\n"
         + "medsAlertInterval1: " + analysisData.medsAlertInterval1 + "\n"
@@ -465,6 +509,7 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
                            + "Member name: " + $scope.groupData[z].username + "\n"
                            + "presenceMatrix: " + analysisData.presenceMatrix + "\n"
                            + "presenceByHour: " + analysisData.presenceByHour + "\n"
+                           + "fridgeRollingAlertLevel:" + analysisData.fridgeRollingAlertLevel + "\n"
                            + "fridgeMatrix: " + analysisData.fridgeMatrix + "\n"
                            + "fridgeHitsByhour: " + analysisData.fridgeHitsByHour + "\n"
                            + "fridgeAlertInterval1: " + analysisData.fridgeAlertInterval1 + "\n"
@@ -472,6 +517,7 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
                            + "fridgeAlertInterval3: " + analysisData.fridgeAlertInterval3 + "\n"
                            + "fridgeAlertPoints: " + analysisData.fridgeAlertPoints + "\n"
                            + "fridgeAlertLevel: " + analysisData.fridgeAlertLevel + "\n"
+                           + "medsRollingAlertLevel: " + analysisData.medsRollingAlertLevel + "\n"
                            + "medsMatrix: " + analysisData.medsMatrix + "\n"
                            + "medsHitsByhour: " + analysisData.medsHitsByHour + "\n"
                            + "medsAlertInterval1: " + analysisData.medsAlertInterval1 + "\n"
