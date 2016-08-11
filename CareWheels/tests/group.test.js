@@ -1,32 +1,49 @@
 /**
  * Created by asakawa on 8/11/16.
  */
-describe('groupStatusController', function() {
-  var groupScope, createController;
+describe('Controller: Group Status -', function () {
 
-  beforeEach(inject(function ($rootScope, $scope, $controller, $state) {
-    groupScope = $rootScope.$new();
+  beforeEach(angular.mock.module('careWheels'));
 
-    createController = function() {
-      return $controller('groupStatusController', {
-        '$scope': groupScope,
-        '$state': 'app.groupStatus'
-      });
-    };
+  var $controller;
+
+  beforeEach(angular.mock.inject(function(_$controller_){
+    $controller = _$controller_;
   }));
 
-  it('check alert colors', function() {
-    var controller = createController();
-    //$state.go('app.groupStatus');
+
+  /**
+   * checks that the color alerts are being set properly
+   * */
+  describe('getAlertColor():', function () {
+    it('check red', function () {
+      var $scope = {};
+      $controller('groupStatusController', { $scope: $scope });
+
+      // calls a function that sets the alert color
+      $scope.group[1].status = $scope.getAlertColor(2, 0);
+      // assert that the status color is set to red
+      expect($scope.group[1].status).toBe('red');
+      // todo: check other combinations for different colors
+    });
+
   });
 
-/*  it('check alert colors', function() {
-    var groupController = createController();
+  // todo: complete unit tests for all the functions
+  describe('checkGroupHealth():', function () {
+    it('group status success', function () {
+      //assert success
+    });
+    it('group status fail', function () {
+      //assert fail
+    });
 
-    expect(groupController.getAlertColor(2, 1)).toBe('red');
-    //scope.path('/groupStatus');
-    //expect(scope.path()).toBe('/groupStatus');
-/!*    expect(scope.isActive('/about')).toBe(true);
-    expect(scope.isActive('/contact')).toBe(false);*!/
-  });*/
-});
+  });
+  describe('displayError():', function () {
+  });
+
+  //todo add button press function test blocks here
+
+
+
+  });
