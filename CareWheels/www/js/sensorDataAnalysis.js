@@ -102,7 +102,7 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
           hour = losAngelesDateTime.getHours();
           min = losAngelesDateTime.getMinutes();
 
-          console.log(hour + ":" + min + "\n");
+          //console.log(hour + ":" + min + "\n");
 
           if(presenceData[w].data.code = 200) {
             presenceMatrix[hour][min] = true;
@@ -113,7 +113,7 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
           }
         }
 
-        console.log("FRIDGE DATA: " + "\n");
+        //console.log("FRIDGE DATA: " + "\n");
 
         for(w =0; w < fridgeData.length; ++w) {
           // Need to convert dateEvent's from Paris time to Los Angeles time!
@@ -124,12 +124,12 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
           hour = losAngelesDateTime.getHours();
           min = losAngelesDateTime.getMinutes();
 
-          console.log(hour + ":" + min + "\n");
+          //console.log(hour + ":" + min + "\n");
 
           fridgeMatrix[hour][min] += 1;
         }
 
-        console.log("MEDS DATA: " + "\n");
+        //console.log("MEDS DATA: " + "\n");
 
         for(w =0; w < medsData.length; ++w) {
           utcDateTime = new Date(medsData[w].dateEvent);

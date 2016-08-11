@@ -38,61 +38,26 @@ angular.module('careWheels').controller('groupStatusController',
       }
     }, 100);
 
-    /**
-     * returns a string of of the color code depending on the
-     * alert level. This string is used with ng-class, to
-     * append the color class onto the div
+    /** automatically go through each user square, and
+     *  find each 'red' alert, and fade that element in
+     *  and out. (flashing effect)
      * */
-    function getAlertColor(fridge, meds){
-      fridge = parseInt(fridge);
-      meds = parseInt(meds);
-
-      if (fridge == 2 || meds == 2)
-        return 'red';
-      else if (fridge == 1 || meds == 1)
-        return 'yellow';
-      else if (fridge == 0 || meds == 0)
-        return 'blue';
-      else
-        // error
-        return '';
-    }
-
-    function checkGroupHealth(){
-      //create a template string
-      var errorList = [];
-      var errorCount = 0;
-      for (var i = 1; i < $scope.group.length; i ++){
-        if ($scope.group[i].error){
-          errorCount++;
-          errorList.push(String($scope.group[i].name));
-        }
-        // on the last element now
-        if (i == $scope.group.length - 1){
-          // no errors? then return
-          if (errorCount == 0)
-            return true;
-
-          //lets craft up a string to be displayed
-          var errorString = '';
-          for (var j= 0; j < errorList.length; j++){
-            errorString += errorList[j];
-            if (j < errorList.length - 2)
-              errorString += ', ';
-            else if (j == errorList.length - 2)
-              errorString += ' and ';
-            else if (j == errorList.length - 1){
-              // were done, display error message now
-              if(!$scope.group[0].displayedError){
-                $scope.group[0].displayedError = true;
-                displayError(errorString);
-              }
-
-            }
-          }
+    $interval(function (){
+      /* jQuery element to fade in and out */
+      var alertArray = [
+        $('#topLeftAlert'),
+        $('#topRightAlert'),
+        $('#bottomLeftAlert'),
+        $('#bottomRightAlert')
+      ];
+      for(var i =0; i < alertArray.length; i++){
+        if(alertArray[i].css('background-color') === 'rgb(255, 0, 0)'){
+          alertArray[i].fadeOut("slow");
+          alertArray[i].fadeIn("slow");
         }
       }
-    }
+    }, 2000);
+
 
     $scope.group = [
       { // center, self
@@ -143,24 +108,7 @@ angular.module('careWheels').controller('groupStatusController',
     $scope.clickCareBank    = function () {};
 
 
-    /** automatically go through each user square, and
-     *  find each 'red' alert, and fade that element in
-     *  and out. (flashing effect)
-     * */
-    $interval(function (){
-      var alertArray = [
-        $('#topLeftAlert'),
-        $('#topRightAlert'),
-        $('#bottomLeftAlert'),
-        $('#bottomRightAlert')
-      ];
-      for(var i =0; i < alertArray.length; i++){
-        if(alertArray[i].css('background-color') === 'rgb(255, 0, 0)'){
-          alertArray[i].fadeOut("slow");
-          alertArray[i].fadeIn("slow");
-        }
-      }
-    }, 2000);
+
 
     function clickUser(index){
       if(!$scope.group[index].error){
@@ -182,6 +130,63 @@ angular.module('careWheels').controller('groupStatusController',
       alertPopup.then(function(res) {
 
       });
+    }
+
+
+    /**
+     * returns a string of of the color code depending on the
+     * alert level. This string is used with ng-class, to
+     * append the color class onto the div
+     * */
+    function getAlertColor(fridge, meds){
+      fridge = parseInt(fridge);
+      meds = parseInt(meds);
+
+      if (fridge == 2 || meds == 2)
+        return 'red';
+      else if (fridge == 1 || meds == 1)
+        return 'yellow';
+      else if (fridge == 0 || meds == 0)
+        return 'blue';
+      else
+      // error
+        return '';
+    }
+
+    function checkGroupHealth(){
+      //create a template string
+      var errorList = [];
+      var errorCount = 0;
+      for (var i = 1; i < $scope.group.length; i ++){
+        if ($scope.group[i].error){
+          errorCount++;
+          errorList.push(String($scope.group[i].name));
+        }
+        // on the last element now
+        if (i == $scope.group.length - 1){
+          // no errors? then return
+          if (errorCount == 0)
+            return true;
+
+          //lets craft up a string to be displayed
+          var errorString = '';
+          for (var j= 0; j < errorList.length; j++){
+            errorString += errorList[j];
+            if (j < errorList.length - 2)
+              errorString += ', ';
+            else if (j == errorList.length - 2)
+              errorString += ' and ';
+            else if (j == errorList.length - 1){
+              // were done, display error message now
+              if(!$scope.group[0].displayedError){
+                $scope.group[0].displayedError = true;
+                displayError(errorString);
+              }
+
+            }
+          }
+        }
+      }
     }
 
   });
