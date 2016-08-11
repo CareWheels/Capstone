@@ -25,7 +25,7 @@ angular.module('careWheels').controller('groupStatusController',
         try{
           var fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
           var medsAlert = groupArray[i].analysisData.medsAlertLevel;
-          $scope.group[i].status = getAlertColor(fridgeAlert, medsAlert);
+          $scope.group[i].status = $scope.getAlertColor(fridgeAlert, medsAlert);
         }
         catch(Exception) {
           $scope.group[i].status = 'grey';
@@ -138,7 +138,7 @@ angular.module('careWheels').controller('groupStatusController',
      * alert level. This string is used with ng-class, to
      * append the color class onto the div
      * */
-    function getAlertColor(fridge, meds){
+    $scope.getAlertColor = function(fridge, meds){
       fridge = parseInt(fridge);
       meds = parseInt(meds);
 
