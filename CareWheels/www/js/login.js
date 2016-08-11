@@ -46,17 +46,21 @@ angular.module('careWheels')
 
           // store the interval promise in this variable
           var intervalPromise = $interval( function(){
+            // keep track of how many times we step through the interval
+            loginIntervalSteps++;
+            info = GroupInfo.groupInfo();
 
             // its taking to long, timeout of the interval
             if (loginIntervalSteps > 120) // 120 * 500 = 1.5 min timeout
               loginTimeout = true;
-            // keep track of how many times we step through the interval
-            loginIntervalSteps++;
 
             // alright, lets try to analyze the data
             try {
-              info = GroupInfo.groupInfo();
-              dataAnalysis.AnalyzeData();
+              // only run analyze if sensor data is present
+              if (info[4].sensorData != null){
+                dataAnalysis.AnalyzeData();
+              }
+
             }
             catch (Exception){ console.log('caught! during analyze data'); } // oh no...
 
@@ -70,7 +74,7 @@ angular.module('careWheels')
             }
 
             // sweet we got data, lets break out of this interval
-            if (info[4].analysisData !== null){
+            if (info[4].analysisData != null){
               $interval.cancel(intervalPromise);  // break out of interval
               $ionicLoading.hide();               // hide loading screen
               scheduleDownload();                 // spin up a download/analyze scheduler
