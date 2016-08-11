@@ -7,6 +7,18 @@ module.exports = function(config) {
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
 
+    // you can define custom flags
+    customLaunchers: {
+      Chrome_without_security: {
+        base: 'Chrome',
+        flags: ['--disable-web-security']
+      }
+    },
+
+    plugins : [
+      'karma-chrome-launcher',
+      'karma-jasmine'
+    ],
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -63,8 +75,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['ChromeCanary'],
-
+    browsers: ['Chrome', 'Chrome_without_security'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
