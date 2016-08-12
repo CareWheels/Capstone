@@ -16,7 +16,7 @@ angular.module('careWheels', [
 
 
   //contant definition for endpoint base url
-  .constant('BASE_URL', 'https://carebank.carewheels.org:8443')
+  .constant('BASE_URL', 'https://carewheels.cecs.pdx.edu:8443')
 
   .run(function($rootScope, $ionicPlatform, $ionicHistory, $state, User) {
 
