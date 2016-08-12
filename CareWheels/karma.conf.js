@@ -9,16 +9,19 @@ module.exports = function(config) {
 
     // you can define custom flags
     customLaunchers: {
-      Chrome_without_security: {
-        base: 'Chrome',
-        flags: ['--disable-web-security']
+      'PhantomJS_custom': {
+        base: 'PhantomJS',
+        options: {
+          windowName: 'my-window',
+          settings: {
+            webSecurityEnabled: false
+          },
+        },
+        flags: ['--load-images=true'],
+        debug: true
       }
     },
 
-    plugins : [
-      'karma-chrome-launcher',
-      'karma-jasmine'
-    ],
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -75,7 +78,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome'],
+    browsers: ['PhantomJS', 'PhantomJS_custom'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
@@ -85,4 +88,4 @@ module.exports = function(config) {
     // how many browser should be started simultaneous
     concurrency: Infinity
   })
-}
+};
