@@ -27,7 +27,7 @@ describe('Controller: Group Status -', function () {
       $scope.group[2].status = $scope.getAlertColor(2, 1);
       $scope.group[3].status = $scope.getAlertColor(1, 2);
       $scope.group[4].status = $scope.getAlertColor(2, 0);
-      expect($scope.group[1].status).toBe('red');
+      expect($scope.group[1].status).toBe('blue');
       expect($scope.group[2].status).toBe('red');
       expect($scope.group[3].status).toBe('red');
       expect($scope.group[4].status).toBe('red');
