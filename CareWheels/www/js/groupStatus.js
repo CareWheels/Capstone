@@ -33,10 +33,10 @@ angular.module('careWheels').controller('groupStatusController',
         }
         // on the last element of the loop, now check health
         if (i == groupArray.length - 1){
-          checkGroupHealth();
+          $scope.checkGroupHealth();
         }
       }
-    }, 100);
+    }, 1000);
 
     /** automatically go through each user square, and
      *  find each 'red' alert, and fade that element in
@@ -69,28 +69,28 @@ angular.module('careWheels').controller('groupStatusController',
         displayedError: false
 
       },
-      { // top left
+      { // top left @ index 1
         name: '',
         username: '',
         status: '',
         image: '',
         error: false
       },
-      { // top right
+      { // top right @ index 2
         name: '',
         username: '',
         status: '',
         image: '',
         error: false
       },
-      { // bottom left
+      { // bottom left @ index 3
         name: '',
         username: '',
         status: '',
         image: '',
         error: false
       },
-      { // bottom right
+      { // bottom right @ index 4
         name: '',
         username: '',
         status: '',
@@ -112,6 +112,7 @@ angular.module('careWheels').controller('groupStatusController',
 
     function clickUser(index){
       if(!$scope.group[index].error){
+        $scope.group[0].userSelected = $scope.group[index].name;
         GroupInfo.setMember_new($scope.group[index].username);
         $state.go('app.individualStatus');
       }
@@ -138,22 +139,31 @@ angular.module('careWheels').controller('groupStatusController',
      * alert level. This string is used with ng-class, to
      * append the color class onto the div
      * */
-    $scope.getAlertColor = function(fridge, meds){
-      fridge = parseInt(fridge);
-      meds = parseInt(meds);
+    $scope.getAlertColor = function(fridgeAlert, medsAlert){
 
-      if (fridge == 2 || meds == 2)
-        return 'red';
-      else if (fridge == 1 || meds == 1)
-        return 'yellow';
-      else if (fridge == 0 || meds == 0)
-        return 'blue';
-      else
-      // error
+      // check for null params
+      if (fridgeAlert == null || medsAlert == null)
         return '';
-    }
 
-    function checkGroupHealth(){
+      var fridge = parseInt(fridgeAlert);
+      var meds = parseInt(medsAlert);
+      var alertString = '';
+
+      // check for acceptable bounds
+      if (meds < 0 || meds > 2 || fridge < 0 || fridge > 2)
+        alertString = ''; // error state
+      // check for null
+      else if (fridge == 2 || meds == 2)
+        alertString = 'red';
+      else if (fridge == 1 || meds == 1)
+        alertString = 'yellow';
+      else if (fridge == 0 || meds == 0)
+        alertString = 'blue';
+
+      return alertString;
+    };
+
+    $scope.checkGroupHealth = function(){
       //create a template string
       var errorList = [];
       var errorCount = 0;
@@ -187,6 +197,6 @@ angular.module('careWheels').controller('groupStatusController',
           }
         }
       }
-    }
+    };
 
   });
