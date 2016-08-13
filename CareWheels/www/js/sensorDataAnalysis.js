@@ -11,49 +11,9 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
       $scope.groupData = GroupInfo.groupInfo();
       console.log('contents of $scope.groupData before analysis ', $scope.groupData);
 
-      // Excluding Medication analysis for now
-      // since we don't know how we are going to handle it.
-
 
       // Create loop to analyze each members data.
       for(var z = 0; z < $scope.groupData.length; ++z ) {
-
-        // Setup our presence  and fridge matrices
-        var w = 0;
-        var presenceMatrix = [];
-        var constantPresence = [];
-        var presenceByHour = [];
-        var fridgeMatrix = [];
-        var fridgeHitsByHour = [];
-        var fridgeInterval1StartHour = 6;
-        var fridgeInterval2StartHour = 11;
-        var fridgeInterval3StartHour = 16;
-        var fridgeAlertInterval1 = true;
-        var fridgeAlertInterval2 = true;
-        var fridgeAlertInterval3 = true;
-        var fridgeAlertPoints = 0;
-        var fridgeAlertLevel = 0;
-        var medsMatrix = [];
-        var medsHitsByHour = [];
-        var medsInterval1StartHour = 6;
-        var medsInterval2StartHour = 11;
-        var medsInterval3StartHour = 16;
-        var medsAlertInterval1 = true;
-        var medsAlertInterval2 = true;
-        var medsAlertInterval3 = true;
-        var medsAlertPoints = 0;
-        var medsAlertLevel = 0;
-        var now = new Date();
-        var currentHour = now.getHours();
-        var currentMin = now.getMinutes();
-        var analysisData;
-        var utcDateTime;
-        var momentInParis;
-        var momentInLA;
-        var losAngelesDateTime;
-        var hour;
-        var min;
-        var memberObject;
 
         if($scope.groupData[z].sensorData == null) {
 
@@ -65,420 +25,206 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
           continue;
         }
 
-
         var presenceData = $scope.groupData[z].sensorData.Presence;
         var fridgeData = $scope.groupData[z].sensorData.Fridge;
         var medsData = $scope.groupData[z].sensorData.Meds;
 
-        console.log("DATA FOR: " + $scope.groupData[z].username + "\n");
+        // console.log("DATA FOR: " + $scope.groupData[z].username + "\n");
+
+        // ********************************************************************************
+
+        // Setup our presence  and fridge matrices
+        var w = 0;
+        var previousDayPresenceMatrix = [];
+        var currentDayPresenceMatrix = [];
+        var previousDayPresenceByHour = [];
+        var currentDayPresenceByHour = [];
+        var constantPresence = [];
+        var previousDayFridgeMatrix = [];
+        var currentDayFridgeMatrix = [];
+        var fridgeHitsByHour = [];
+        var currentDayMedsMatrix = [];
+        var previousDayMedsMatrix = [];
+        var currentDayMedsHitsByHour = [];
+        var previousDayMedsHitsByHour = [];
+
+        var now = new Date();
+        var currentHour = now.getHours();
+        var currentMin = now.getMinutes();
+
+        var memberObject;
 
         // Initialize our matrices
-        for(w = 0; w < 24; ++w) {
-          presenceMatrix[w] = [];
-          fridgeMatrix[w] = [];
+        for (w = 0; w < 24; ++w) {
+          previousDayPresenceMatrix[w] = [];
+          currentDayPresenceMatrix[w] = [];
+          previousDayFridgeMatrix[w] = [];
+          currentDayFridgeMatrix[w] = [];
           fridgeHitsByHour[w] = 0;
-          medsMatrix[w] = [];
-          medsHitsByHour[w] = 0;
+          previousDayMedsMatrix[w] = [];
+          currentDayMedsMatrix[w] = [];
+          previousDayMedsHitsByHour[w] = 0;
+          currentDayMedsHitsByHour[w] = 0;
           constantPresence[w] = true;
-          presenceByHour[w] = false;
+          previousDayPresenceByHour[w] = false;
+          currentDayPresenceByHour[w] = false;
 
-          for(var y = 0; y < 60; ++y) {
-            presenceMatrix[w][y] = false;
-            fridgeMatrix[w][y] = 0;
-            medsMatrix[w][y] = 0;
+          for (var y = 0; y < 60; ++y) {
+            previousDayPresenceMatrix[w][y] = false;
+            currentDayPresenceMatrix[w][y] = false;
+            previousDayFridgeMatrix[w][y] = 0;
+            currentDayFridgeMatrix[w][y] = 0;
+            previousDayMedsMatrix[w][y] = 0;
+            currentDayMedsMatrix[w][y] = 0;
           }
 
         }
-
-        console.log("PRESENCE DATA: " + "\n");
 
         // Populate our matrices
-        for(w = 0; w < presenceData.length; ++w) {
-          // Need to convert dateEvent's from Paris time to Los Angeles time!
-          // this needs to be made configurable once the app moves out of PST/PDT areas!!!
-          utcDateTime = new Date(presenceData[w].dateEvent);
-          momentInLA = moment.tz(utcDateTime.toISOString(), "America/Los_Angeles");
-          losAngelesDateTime = new Date(momentInLA.format('YYYY-MM-DD[T]HH:mm:ss'));
-          hour = losAngelesDateTime.getHours();
-          min = losAngelesDateTime.getMinutes();
+        // console.log("PRESENCE DATA: " + "\n");
 
-          console.log(hour + ":" + min + "\n");
+        var presenceMatrices = populateDataMatrix(presenceData, previousDayPresenceMatrix, currentDayPresenceMatrix);
+        previousDayPresenceMatrix = presenceMatrices.previousDayDataMatrix;
+        currentDayPresenceMatrix = presenceMatrices.currentDayDataMatrix;
 
-          if(presenceData[w].data.code = 200) {
-            presenceMatrix[hour][min] = true;
-          }
+        // console.log("FRIDGE DATA: " + "\n");
 
-          if(presenceData[w].data.code = 404) {
-            constantPresence[hour] = false;
-          }
+        var fridgeMatrices = populateDataMatrix(fridgeData, previousDayFridgeMatrix, currentDayFridgeMatrix);
+        previousDayFridgeMatrix = fridgeMatrices.previousDayDataMatrix;
+        currentDayFridgeMatrix = fridgeMatrices.currentDayDataMatrix;
+
+        // console.log("MEDS DATA: " + "\n");
+
+        var medsMatrices = populateDataMatrix(medsData, previousDayMedsMatrix, currentDayMedsMatrix);
+        previousDayMedsMatrix = medsMatrices.previousDayDataMatrix;
+        currentDayMedsMatrix = medsMatrices.currentDayDataMatrix;
+
+        previousDayPresenceByHour = presenceAnalysis(previousDayPresenceMatrix, previousDayPresenceByHour, 23, 59);
+        currentDayPresenceByHour = presenceAnalysis(currentDayPresenceMatrix, currentDayPresenceByHour, 13, 59);
+
+        for(w = 0; w < presenceData.length; w++ ) {
+          console.log("presenceData[" + w + "] " + presenceData[w]);
         }
 
-        console.log("FRIDGE DATA: " + "\n");
-
-        for(w =0; w < fridgeData.length; ++w) {
-          // Need to convert dateEvent's from Paris time to Los Angeles time!
-          // this needs to be made configurable once the app moves out of PST/PDT areas!!!
-          utcDateTime = new Date(fridgeData[w].dateEvent);
-          momentInLA = moment.tz(utcDateTime.toISOString(), "America/Los_Angeles");
-          losAngelesDateTime = new Date(momentInLA.format('YYYY-MM-DD[T]HH:mm:ss'));
-          hour = losAngelesDateTime.getHours();
-          min = losAngelesDateTime.getMinutes();
-
-          console.log(hour + ":" + min + "\n");
-
-          fridgeMatrix[hour][min] += 1;
+        /*
+        for(w = 0; w < previousDayPresenceByHour.length; w++ ) {
+          console.log("previousDayPresenceByHour[" + w + "] " + previousDayPresenceByHour[w]);
         }
 
-        console.log("MEDS DATA: " + "\n");
+        for(w = 0; w < currentDayPresenceByHour.length; w++ ) {
+          console.log("currentDayPresenceByHour[" + w + "] " + currentDayPresenceByHour[w]);
+        }
+        */
 
-        for(w =0; w < medsData.length; ++w) {
-          utcDateTime = new Date(medsData[w].dateEvent);
-          momentInLA = moment.tz(utcDateTime.toISOString(), "America/Los_Angeles");
-          losAngelesDateTime = new Date(momentInLA.format('YYYY-MM-DD[T]HH:mm:ss'));
-          hour = losAngelesDateTime.getHours();
-          min = losAngelesDateTime.getMinutes();
 
-          console.log(hour + ":" + min + "\n");
+        var fridgeIntervalObjectArray = getFridgeIntervals();
+        var medsIntervalObjectArray = getMedsIntervals();
+        var analysisObject = null;
+        var previousDayCurrentHour = 24;
+        var currentDayCurrentHour = currentHour;
+        // var currentDayCurrentHour = 13;   // Testing value.
+        var newFridgeRollingAlertLevel = 0;
+        var previousDayFridgeRollingAlertLevelArray = [];
+        var currentDayFridgeRollingAlertLevelArray = [];
+        var newMedsRollingAlertLevel = 0;
+        var previousDayMedsRollingAlertLevelArray = [];
+        var currentDayMedsRollingAlertLevelArray = [];
 
-          medsMatrix[hour][min] += 1;
+        // Need to pull the custom fields for medication interval exclusion
+        // from the group info factory and then update the values in medsIntervalObjectArray
+
+        for(w in fridgeIntervalObjectArray) {
+
+          analysisObject = intervalAnalysis(previousDayFridgeMatrix, fridgeIntervalObjectArray[w], previousDayPresenceByHour,
+            newFridgeRollingAlertLevel, previousDayFridgeRollingAlertLevelArray, previousDayCurrentHour);
+
+          newFridgeRollingAlertLevel = analysisObject.newRollingAlertLevel;
+          previousDayFridgeRollingAlertLevelArray = analysisObject.rollingAlertLevelArray;
         }
 
-        //Presence of user pre-current hour: at end of hour, Displayed analysis as prescribed by
-        // Claude should look at the status of the user "at the end of the hour"
-        // Due to sensor timing this will need to be a bit fuzzy.
-        for(w = 0; w < currentHour - 1; ++w) {
+        for(w in fridgeIntervalObjectArray) {
 
-          if(presenceMatrix[w][57] || presenceMatrix[w][58] || presenceMatrix[w][59] ) {
-            presenceByHour[w] = true;
-          }
+          analysisObject = intervalAnalysis(currentDayFridgeMatrix, fridgeIntervalObjectArray[w], currentDayPresenceByHour,
+            newFridgeRollingAlertLevel, currentDayFridgeRollingAlertLevelArray, currentDayCurrentHour);
+
+          newFridgeRollingAlertLevel = analysisObject.newRollingAlertLevel;
+          currentDayFridgeRollingAlertLevelArray = analysisObject.rollingAlertLevelArray;
         }
 
-        // Display of presence for current hour, should be the "True" presence of the user.
-        // Still need to go fuzzy, as we can't rely on a sensor ping to be in the current minute.
-       // Edge case of any hour between 0 to 3 min into that hour.
-       if(currentMin < 3 && currentHour != 0) {
-         if(presenceMatrix[currentHour - 1][57] || presenceMatrix[currentHour - 1][58] || presenceMatrix[currentHour - 1][59] ) {
-           presenceByHour[currentHour] = true;
-         }
-       }
-       // Very edge case of 12:00am to 12:03am
-       if(currentMin < 3 && currentHour == 0) {
-         presenceByHour[currentHour] = true;
-       }
+        for(w in medsIntervalObjectArray) {
 
-       // Normal case, do a fuzzy check for presence.
-       if(presenceMatrix[currentHour][currentMin - 2] || presenceMatrix[currentHour][currentMin - 1] ||
-         presenceMatrix[currentHour][currentMin] ) {
-         presenceByHour[currentHour] = true;
-       }
+          analysisObject = intervalAnalysis(previousDayMedsMatrix, medsIntervalObjectArray[w], previousDayPresenceByHour,
+            newMedsRollingAlertLevel, previousDayMedsRollingAlertLevelArray, previousDayCurrentHour);
 
-
-        //Analyze the fridge for hits by hour
-        for(w = 0; w < currentHour; ++w) {
-
-          for(var y = 0; y < 60; ++y) {
-            fridgeHitsByHour[w] += fridgeMatrix[w][y];
-          }
+          newMedsRollingAlertLevel = analysisObject.newRollingAlertLevel;
+          previousDayMedsRollingAlertLevelArray = analysisObject.rollingAlertLevelArray;
         }
 
-        //Analyze the meds for hits by hour
-        for(w = 0; w < currentHour; ++w) {
+        for(w in medsIntervalObjectArray) {
 
-          for(var y = 0; y < 60; ++y) {
-            medsHitsByHour[w] += medsMatrix[w][y];
-          }
+          analysisObject = intervalAnalysis(currentDayMedsMatrix, medsIntervalObjectArray[w], currentDayPresenceByHour,
+            newMedsRollingAlertLevel, currentDayMedsRollingAlertLevelArray, currentDayCurrentHour);
+
+          newMedsRollingAlertLevel = analysisObject.newRollingAlertLevel;
+          currentDayMedsRollingAlertLevelArray = analysisObject.rollingAlertLevelArray;
         }
 
-        // Begin clearing the fridgeAlertInterval's if we have criteria to do so.
-        // If they opened their fridge during an interval OR
-        //     If a person isn't constantly at home during an interval we will consider
-        //     that they ate somewhere else during that interval
-        // Interval 1: 6:00am to 10:59am
-        for(w = 5; w < 10; ++w) {
+        // console.log("newFridgeRollingAlertLevel: " + newFridgeRollingAlertLevel);
+        // console.log("previousDayFridgeRollingAlertLevelArray length: " + previousDayFridgeRollingAlertLevelArray.length);
+        // console.log("currentDayFridgeRollingAlertLevelArray length: " + currentDayFridgeRollingAlertLevelArray.length);
 
-          if(fridgeHitsByHour[w] > 0 || !constantPresence[w]) {
-            fridgeAlertInterval1 = false;
-          }
+        /*
+        for(w = 0; w < previousDayFridgeRollingAlertLevelArray.length; w++) {
+          console.log("previousDayFridgeRollingAlertLevelArray[" + w + "] " + previousDayFridgeRollingAlertLevelArray[w]);
         }
 
-        // Interval 2: 11:00am to 3:59pm
-        for(w = 10; w < 15; ++w) {
-
-          if(fridgeHitsByHour[w] > 0 || !constantPresence[w]) {
-            fridgeAlertInterval2 = false;
-          }
+        for(w = 0; w < currentDayFridgeRollingAlertLevelArray.length; w++) {
+          console.log("currentDayFridgeRollingAlertLevelArray[" + w + "] " + currentDayFridgeRollingAlertLevelArray[w]);
         }
 
-        // Interval 3: 4:00pm to 9:59pm
-        for(w = 15; w < 21; ++w) {
-
-          if(fridgeHitsByHour[w] > 0 || !constantPresence[w]) {
-            fridgeAlertInterval3 = false;
-          }
+        for(w = 0; w < previousDayMedsRollingAlertLevelArray.length; w++) {
+          console.log("previousDayMedsRollingAlertLevelArray[" + w + "] " + previousDayMedsRollingAlertLevelArray[w]);
         }
 
-        // Begin clearing the medsAlertInterval's if we have criteria to do so.
-        // If they moved their medication during an interval OR
-        //     If a person isn't constantly at home during an interval we will consider
-        //     that they ate somewhere else during that interval
-        // Interval 1: 6:00am to 10:59am
-        for(w = 5; w < 10; ++w) {
-
-          if(medsHitsByHour[w] > 0 || !constantPresence[w]) {
-            medsAlertInterval1 = false;
-          }
+        for(w = 0; w < currentDayMedsRollingAlertLevelArray.length; w++) {
+          console.log("currentDayMedsRollingAlertLevelArray[" + w + "] " + currentDayMedsRollingAlertLevelArray[w]);
         }
+        */
 
-        // Interval 2: 11:00am to 3:59pm
-        for(w = 10; w < 15; ++w) {
+        if(newMedsRollingAlertLevel >= 2) {
 
-          if(medsHitsByHour[w] > 0 || !constantPresence[w]) {
-            medsAlertInterval2 = false;
-          }
-        }
-
-        // Interval 3: 4:00pm to 9:59pm
-        for(w = 15; w < 21; ++w) {
-
-          if(medsHitsByHour[w] > 0 || !constantPresence[w]) {
-            medsAlertInterval3 = false;
-          }
-        }
-
-        // Use this hard coded date until we can pull it from each member in currentGroup
-        var lastOwnershipTimeTaken = new Date("2016-01-01T01:35:29.189");
-        var lastOwnershipHour = lastOwnershipTimeTaken.getHours();
-
-        // If the last ownership time taken was on the same day,
-        // we will check to see when that time was, and if after or within an
-        // interval we will set the fridge alert to false.
-        if(now.toDateString() == lastOwnershipTimeTaken.toDateString()) {
-
-          if(lastOwnershipHour >= fridgeInterval1StartHour) {
-            fridgeAlertInterval1 = false;
-          }
-
-          if(lastOwnershipHour >= fridgeInterval2StartHour) {
-            fridgeAlertInterval2 = false;
-          }
-
-          if(lastOwnershipHour >= fridgeInterval3StartHour) {
-            fridgeAlertInterval3 = false;
-          }
-
-        }
-
-        // If the last ownership time taken was on the same day,
-        // we will check to see when that time was, and if after or within an
-        // interval we will set the meds alert to false.
-        if(now.toDateString() == lastOwnershipTimeTaken.toDateString()) {
-
-          if(lastOwnershipHour >= fridgeInterval1StartHour) {
-            medsAlertInterval1 = false;
-          }
-
-          if(lastOwnershipHour >= fridgeInterval2StartHour) {
-            medsAlertInterval2 = false;
-          }
-
-          if(lastOwnershipHour >= fridgeInterval3StartHour) {
-            medsAlertInterval3 = false;
-          }
-
-        }
-
-        // We have finished processing all exceptions to fridge interval alerts
-        // when there are no fridge hits. Begin adding up fridge alert points.
-        if(fridgeAlertInterval1) {
-          fridgeAlertPoints += 1;
-        }
-
-        if(fridgeAlertInterval2) {
-          fridgeAlertPoints += 1;
-        }
-
-        if(fridgeAlertInterval3) {
-          fridgeAlertPoints += 1;
-        }
-
-        // They've only missed one meal set
-        // their alert level to 1 for yellow.
-        if(fridgeAlertPoints = 1) {
-          fridgeAlertLevel = 1;
-        }
-
-        if(fridgeAlertPoints >= 2) {
-
-          // Set the users fridgeAlert level to 2 for red alert.
-          fridgeAlertLevel = 2;
-
-          // **************************
-          // Call local notifications here to send a red alert out for this person.
-          // **************************
           var notifViewModel = $scope.$new();   //to access Notifications functions
           $controller('NotificationController',{$scope : notifViewModel });
           notifViewModel.Create_Notif(0, 0, 0, false, 0);
         }
 
-        // We have finished processing all exceptions to meds interval alerts
-        // when there are no meds hits. Begin adding up meds alert points.
-        if(medsAlertInterval1) {
-          medsAlertPoints += 1;
-        }
+        if(newFridgeRollingAlertLevel >= 2) {
 
-        if(medsAlertInterval2) {
-          medsAlertPoints += 1;
-        }
-
-        if(medsAlertInterval3) {
-          medsAlertPoints += 1;
-        }
-
-        // If they've missed any medications set
-        // their alert level to red.
-        if(medsAlertPoints > 0) {
-          medsAlertLevel = 2;
-
-          // **************************
-          // Call local notifications here to send a red alert out for this person.
-          // **************************
           var notifViewModel = $scope.$new();   //to access Notifications functions
           $controller('NotificationController',{$scope : notifViewModel });
           notifViewModel.Create_Notif(0, 0, 0, false, 0);
         }
 
 
-        // presenceMatrix a [24][60] matrix containing true in a
-        // second dimension element if there was a sensor ping recorded
-        // in the corresponding minute, false otherwise.
+        var analysisData = {
 
-        // constantPresence a 24 element array, an element contains true
-        // if the user was present at all times, specifically if an "Absent"
-        // status was sent, then an element will be false.
+          medsAlertLevel: newMedsRollingAlertLevel,
+          medsRollingAlertLevel: currentDayMedsRollingAlertLevelArray,
+          previousDayMedsRollingAlertLevelArray: previousDayMedsRollingAlertLevelArray,
+          fridgeAlertLevel: newFridgeRollingAlertLevel,
+          FridgeRollingAlertLevel: currentDayFridgeRollingAlertLevelArray,
+          previousDayFridgeRollingAlertLevelArray: previousDayFridgeRollingAlertLevelArray,
+          currentDayPresenceByHour: currentDayPresenceByHour,
+          previousDayPresenceByhour: previousDayPresenceByHour,
+          currentDayPresenceMatrix: currentDayPresenceMatrix,
+          previousDayPresenceMatrix: previousDayPresenceMatrix,
+          presenceData: presenceData,
+          fridgeData: fridgeData,
+          medsData: medsData
+        };
 
-        // presenceByHour a 24 element array, previous to the current hour an element
-        // is determined by the user's presence as described in the presenceMatrix according
-        // to the end of that hour and nothing else.
-        // for the current hour, the user's presence is determined by their presence at the current time
-        // as a fuzzy calculation of the past few minutes, as described in the presenceMatrix.
+        // *******************************************************************************
 
-        // fridgeMatrix a [24][60] matrix containing the number of fridge motion pings during each
-        // minute described by the second dimension of the matrix.
-
-        // fridgeHitsByHour a 24 element matrix, an element is true if the fridgeMatrix had a ping anytime
-        // during that corresponding hour, false otherwise.
-
-        // fridgeInterval1Starthour a hard coded hour for the time meal interval 1 begins.
-        // fridgeInterval2StarHour a hard coded hour for the time meal interval 2 begins.
-        // fridgeInterval3StartHour a hard coded hour for the time meal interval 3 begins.
-
-        // fridgeAlertInterval1 a boolean indicating true if there was no refridgerator pings
-        // during meal interval 1, false otherwise.
-        // fridgeAlertInterval2 a boolean indicating true if there was no refridgerator pings
-        // during meal interval 2, false otherwise.
-        // fridgeAlertInterval3 a boolean indicating true if there was no refridgerator pings
-        // during meal interval 3, false otherwise.
-
-        // fridgeAlertPoints the internally calculated value of fridgeAlertIntervals that were true
-        // and could not be set to false due to exceptions. Currently the same as fridgeAlertLevel.
-
-        // fridgeAlertLevel a value set by the calculation of fridgeAlertPoints, should be used as to
-        // what the user's current fridge alert level should be, 0 = blue, 1 = yellow, 2 = red. Currently
-        // the same as fridgeAlertPoints, may change in the future as algroithm becomes more complex.
-        //
-        // medsMatrix a [24][60] matrix containing the number of meds motion pings during each
-        // minute described by the second dimension of the matrix.
-
-        // medsHitsByHour a 24 element matrix, an element is true if the medsMatrix had a ping anytime
-        // during that corresponding hour, false otherwise.
-
-        // medsInterval1Starthour a hard coded hour for the time meds interval 1 begins.
-        // medsInterval2StarHour a hard coded hour for the time meds interval 2 begins.
-        // medsInterval3StartHour a hard coded hour for the time meds interval 3 begins.
-
-        // medsAlertInterval1 a boolean indicating true if there was no meds pings
-        // during meds interval 1, false otherwise.
-        // medsAlertInterval2 a boolean indicating true if there was no meds pings
-        // during meds interval 2, false otherwise.
-        // medsAlertInterval3 a boolean indicating true if there was no meds pings
-        // during meds interval 3, false otherwise.
-
-        // medsAlertPoints the internally calculated value of medsAlertIntervals that were true
-        // and could not be set to false due to exceptions. Currently the same as medsAlertLevel.
-
-        // medsAlertLevel a value set by the calculation of medsAlertPoints, should be used as to
-        // what the user's current meds alert level should be, 0 = blue, 1 = yellow, 2 = red. Currently
-        // the same as medsAlertPoints, may change in the future as algroithm becomes more complex.
-
-
-        analysisData = {
-
-          "presenceMatrix": presenceMatrix,
-          "constantPresence": constantPresence,
-          "presenceByHour": presenceByHour,
-          "fridgeMatrix": fridgeMatrix,
-          "fridgeHitsByHour": fridgeHitsByHour,
-          "fridgeInterval1StartHour": fridgeInterval1StartHour,
-          "fridgeInterval2StartHour": fridgeInterval2StartHour,
-          "fridgeInterval3StartHour": fridgeInterval3StartHour,
-          "fridgeAlertInterval1": fridgeAlertInterval1,
-          "fridgeAlertInterval2": fridgeAlertInterval2,
-          "fridgeAlertInterval3": fridgeAlertInterval3,
-          "fridgeAlertPoints": fridgeAlertPoints,
-          "fridgeAlertLevel": fridgeAlertLevel,
-          "medsMatrix": medsMatrix,
-          "medsHitsByHour": medsHitsByHour,
-          "medsInterval1StartHour": medsInterval1StartHour,
-          "medsInterval2StartHour": medsInterval2StartHour,
-          "medsInterval3StartHour": medsInterval3StartHour,
-          "medsAlertInterval1": medsAlertInterval1,
-          "medsAlertInterval2": medsAlertInterval2,
-          "medsAlertInterval3": medsAlertInterval3,
-          "medsAlertPoints": medsAlertPoints,
-          "medsAlertLevel": medsAlertLevel
-        }
-
-
-        console.log("GROUP MEMBER ANALYSIS FOR: " + z + " " + "\n"
-        + "Member name: " + $scope.groupData[z].username + "\n"
-        + "presenceMatrix: " + analysisData.presenceMatrix + "\n"
-        + "presenceByHour: " + analysisData.presenceByHour + "\n"
-        + "fridgeMatrix: " + analysisData.fridgeMatrix + "\n"
-        + "fridgeHitsByhour: " + analysisData.fridgeHitsByHour + "\n"
-        + "fridgeAlertInterval1: " + analysisData.fridgeAlertInterval1 + "\n"
-        + "fridgeAlertInterval2: " + analysisData.fridgeAlertInterval2 + "\n"
-        + "fridgeAlertInterval3: " + analysisData.fridgeAlertInterval3 + "\n"
-        + "fridgeAlertPoints: " + analysisData.fridgeAlertPoints + "\n"
-        + "fridgeAlertLevel: " + analysisData.fridgeAlertLevel + "\n"
-        + "medsMatrix: " + analysisData.medsMatrix + "\n"
-        + "medsHitsByhour: " + analysisData.medsHitsByHour + "\n"
-        + "medsAlertInterval1: " + analysisData.medsAlertInterval1 + "\n"
-        + "medsAlertInterval2: " + analysisData.medsAlertInterval2 + "\n"
-        + "medsAlertInterval3: " + analysisData.medsAlertInterval3 + "\n"
-        + "medsAlertPoints: " + analysisData.medsAlertPoints + "\n"
-        + "medsAlertLevel: " + analysisData.medsAlertLevel + "\n");
-
-
-        console.log("analysisData.presenceByHour[5]: " + analysisData.presenceByHour[5]);
-
-        $scope.analysis += "GROUP MEMBER: " + z + " " + "\n"
-                           + "Member name: " + $scope.groupData[z].username + "\n"
-                           + "presenceMatrix: " + analysisData.presenceMatrix + "\n"
-                           + "presenceByHour: " + analysisData.presenceByHour + "\n"
-                           + "fridgeMatrix: " + analysisData.fridgeMatrix + "\n"
-                           + "fridgeHitsByhour: " + analysisData.fridgeHitsByHour + "\n"
-                           + "fridgeAlertInterval1: " + analysisData.fridgeAlertInterval1 + "\n"
-                           + "fridgeAlertInterval2: " + analysisData.fridgeAlertInterval2 + "\n"
-                           + "fridgeAlertInterval3: " + analysisData.fridgeAlertInterval3 + "\n"
-                           + "fridgeAlertPoints: " + analysisData.fridgeAlertPoints + "\n"
-                           + "fridgeAlertLevel: " + analysisData.fridgeAlertLevel + "\n"
-                           + "medsMatrix: " + analysisData.medsMatrix + "\n"
-                           + "medsHitsByhour: " + analysisData.medsHitsByHour + "\n"
-                           + "medsAlertInterval1: " + analysisData.medsAlertInterval1 + "\n"
-                           + "medsAlertInterval2: " + analysisData.medsAlertInterval2 + "\n"
-                           + "medsAlertInterval3: " + analysisData.medsAlertInterval3 + "\n"
-                           + "medsAlertPoints: " + analysisData.medsAlertPoints + "\n"
-                           + "medsAlertLevel: " + analysisData.medsAlertLevel + "\n"
 
         $scope.groupData[z].analysisData = analysisData;
         memberObject = $scope.groupData[z];
@@ -496,17 +242,305 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
         console.log("group after analysis", GroupInfo.groupInfo());
       }
 
-
-      /*
-       if ($scope.groupData.length < 4){
-       console.log("group data array not yet ready for analysis");
-       }
-       */
-
     };
+
     testFunc();
     //console.log('contents of $scope.groupData in Analysis', $scope.groupData);
 
+  };
+
+  // sensorDataArray - The sensor data feed array to use as input when creating
+//                   the previous and current day matrices for that sensor.
+// previousDayDataMatrix - The 24x60 element array that will hold the sensor data pings
+//                         derived from the sensorDataArray values.
+// currentDayDataMatrix - The 24x60 element array that will hold the sensor data pings
+//                          derived from the sensorDataArray values.
+  function populateDataMatrix(sensorDataArray, previousDayDataMatrix, currentDayDataMatrix) {
+
+    var utcDateTime;
+    var momentInLA;
+    var losAngelesDateTime;
+    var hour;
+    var min;
+    var currentDate = new Date();
+    var previousDate = new Date();
+
+    previousDate.setDate(previousDate.getDate() - 1);
+
+    // Populate our matrices
+    for (var w = 0; w < sensorDataArray.length; ++w) {
+      // Need to convert dateEvent's from UTC time to Los Angeles time!
+      // this needs to be made configurable once the app moves out of PST/PDT areas!!!
+      // console.log(sensorDataArray[w].dateEvent);
+      utcDateTime = new Date(sensorDataArray[w].dateEvent);
+      // console.log("Presence UTC Time Date String: " + utcDateTime.toISOString());
+      momentInLA = moment.tz(utcDateTime.toISOString(), "America/Los_Angeles");
+      losAngelesDateTime = new Date(momentInLA.format('YYYY-MM-DD[T]HH:mm:ss'));
+      hour = losAngelesDateTime.getUTCHours();
+      min = losAngelesDateTime.getUTCMinutes();
+
+      // console.log(hour + ":" + min + " " + losAngelesDateTime.getUTCDate() + "\n");
+
+      if (currentDate.isSameDateAs(losAngelesDateTime)) {
+        // console.log("Found CURRENT day ping! current date: " + currentDate.toISOString());
+        // console.log("los angeles date time date: " + losAngelesDateTime.toISOString());
+        currentDayDataMatrix[hour][min] = true;
+      }
+      else if(previousDate.isSameDateAs(losAngelesDateTime)) {
+        // console.log("Found previous day ping! previous date: " + previousDate.toISOString());
+        // console.log("los angeles date time date: " + losAngelesDateTime.toISOString());
+        previousDayDataMatrix[hour][min] = true;
+      }
+    }
+
+    var dataMatrices = {
+
+      previousDayDataMatrix: previousDayDataMatrix,
+      currentDayDataMatrix: currentDayDataMatrix
+    };
+
+    return dataMatrices;
+  }
+
+// preseneMatrix - presenceMatrix containing the presence pings should be
+//                 two dimensional from 24 x 60 elements
+// presenceByHour - presenceByHour array that will have values added to it
+//                  after calculation of the members presence during an hour
+//                  should have 24 elements.
+// currentHour - The current hour, used so we don't produce data for an hour
+//               that hasn't occured yet. Should be 24 when calculating the
+//               previous day.
+// currentMin - The current minute, used so we don't produce data for a minute
+//              that hasn't occured yet. Should be 59 when calculating the
+//              previous day.
+  function presenceAnalysis(presenceMatrix, presenceByHour, currentHour, currentMin) {
+
+    //Presence of user pre-current hour: at end of hour, Displayed analysis as prescribed by
+    // Claude should look at the status of the user "at the end of the hour"
+    // Due to sensor timing this will need to be a bit fuzzy.
+    for (var w = 0; w < currentHour; ++w) {
+
+      if (presenceMatrix[w][57] || presenceMatrix[w][58] || presenceMatrix[w][59]) {
+        presenceByHour[w] = true;
+      }
+    }
+
+    // Display of presence for current hour, should be the "True" presence of the user.
+    // Still need to go fuzzy, as we can't rely on a sensor ping to be in the current minute.
+    // Edge case of any hour between 0 to 3 min into that hour.
+    if (currentMin < 3 && currentHour != 0) {
+      if (presenceMatrix[currentHour - 1][57] || presenceMatrix[currentHour - 1][58] || presenceMatrix[currentHour - 1][59]) {
+        presenceByHour[currentHour] = true;
+      }
+    }
+    // Very edge case of 12:00am to 12:03am
+    if (currentMin < 3 && currentHour == 0) {
+      presenceByHour[currentHour] = true;
+    }
+
+    // Normal case, do a fuzzy check for presence.
+    if (presenceMatrix[currentHour][currentMin - 2] || presenceMatrix[currentHour][currentMin - 1] ||
+      presenceMatrix[currentHour][currentMin]) {
+      presenceByHour[currentHour] = true;
+    }
+
+    return presenceByHour;
+  }
+
+
+// sensorDataMatrix - The [23][59] array that holds sensor data pings.
+// intervalA
+// intervalObject - An object that describes the properties of an interval
+// presenceByHourArray - The [24] element array that contains the true or false
+//                     values for a persons calculated presence during an hour.
+// newRollingAlertLevel - An integer expressing the corresponding sensor alert level at the time of
+//                        calling this function.
+// rollingAlertLevelArra - The [24] element array of integers representing the sensor alert level during
+//                         the corresponding hour.
+// currentHour - integer of the current hour in 24 time format.
+//               Set to current hour for present day and
+//               24 when analyzing previous day.
+  function intervalAnalysis(sensorDataMatrix, intervalObject, presenceByHourArray, newRollingAlertLevel,
+                            rollingAlertLevelArray, currentHour) {
+
+    var pingDuringInterval = false;
+
+    // Lets check on what the suspect is doing between the hours of this interval.
+    for (var w = intervalObject.intervalStartAtHour; w < intervalObject.intervalEndBeforeHour; w++) {
+
+      if (w <= currentHour) {
+        for (var z = 0; z < sensorDataMatrix[w].length; z++) {
+
+          // HEY THEY'RE ALIVE! THAT'S GREAT!
+          // OR
+          // The person was gone during one of the hours. Lets assume they
+          // "did stuff" while they were gone.
+          if (sensorDataMatrix[w][z] > 0 || presenceByHourArray[w] == false) {
+            pingDuringInterval = true;
+          }
+        }
+
+        // If there was a ping during the interval
+        // we need to completely reset the rolling
+        // alert level.
+        if (pingDuringInterval) {
+          newRollingAlertLevel = 0;
+        }
+        // We are only going to copy over the previous alert levels
+        // DURING the interval, since we can't escalate until
+        // the interval has passed and they haven't caused a ping.
+        rollingAlertLevelArray[w] = newRollingAlertLevel;
+      }
+    }
+
+
+    // Now that we have passed the interval we can
+    // increase the alert level if needed.
+    if ((currentHour >= intervalObject.intervalEndBeforeHour) && intervalObject.pointEscalation && !pingDuringInterval) {
+
+      // Well if they didn't produce a ping during the interval,
+      // and they didn't leave during that interval,
+      // and we are past the interval, let's increase their
+      // rolling alert level.
+      console.log("No ping in interval increasing alert level!");
+      newRollingAlertLevel += intervalObject.alertPointIncrement;
+    }
+
+    var intervalValues = {
+
+      newRollingAlertLevel: newRollingAlertLevel,
+      rollingAlertLevelArray: rollingAlertLevelArray,
+      pingDuringInterval: pingDuringInterval
+
+    };
+
+    return intervalValues;
+  }
+
+// Placeholder for fridge interval storage,
+// Should be moved to a file or database in the future.
+  function getFridgeIntervals() {
+
+    var fridgeIntervalObject1 = {
+      intervalStartAtHour: 0,
+      intervalEndBeforeHour: 6,
+      pointEscalation: false,
+      pingClearsAlertLevel: true,
+      alertPointIncrement: 1
+    };
+
+    var fridgeIntervalObject2 = {
+      intervalStartAtHour: 6,
+      intervalEndBeforeHour: 11,
+      pointEscalation: true,
+      pingClearsAlertLevel: true,
+      alertPointIncrement: 1
+    };
+
+    var fridgeIntervalObject3 = {
+      intervalStartAtHour: 11,
+      intervalEndBeforeHour: 16,
+      pointEscalation: true,
+      pingClearsAlertLevel: true,
+      alertPointIncrement: 1
+    };
+
+    var fridgeIntervalObject4 = {
+      intervalStartAtHour: 16,
+      intervalEndBeforeHour: 22,
+      pointEscalation: true,
+      pingClearsAlertLevel: true,
+      alertPointIncrement: 1
+    };
+
+    var fridgeIntervalObject5 = {
+      intervalStartAtHour: 22,
+      intervalEndBeforeHour: 24,
+      pointEscalation: false,
+      pingClearsAlertLevel: true,
+      alertPointIncrement: 1
+    };
+
+    var fridgeIntervalObjectArray = {
+
+      fridgeIntervalObject1: fridgeIntervalObject1,
+      fridgeIntervalObject2: fridgeIntervalObject2,
+      fridgeIntervalObject3: fridgeIntervalObject3,
+      fridgeIntervalObject4: fridgeIntervalObject4,
+      fridgeIntervalObject5: fridgeIntervalObject5
+    };
+
+    return fridgeIntervalObjectArray;
+  }
+
+// Placeholder for Medication interval storage,
+// Should be moved to a file or database in the future.
+  function getMedsIntervals() {
+
+    var medsIntervalObject1 = {
+      intervalStartAtHour: 0,
+      intervalEndBeforeHour: 6,
+      pointEscalation: false,
+      pingClearsAlertLevel: true,
+      alertPointIncrement: 2
+    };
+
+    var medsIntervalObject2 = {
+      intervalStartAtHour: 6,
+      intervalEndBeforeHour: 11,
+      pointEscalation: true,
+      pingClearsAlertLevel: true,
+      alertPointIncrement: 2
+    };
+
+    var medsIntervalObject3 = {
+      intervalStartAtHour: 11,
+      intervalEndBeforeHour: 16,
+      pointEscalation: true,
+      pingClearsAlertLevel: true,
+      alertPointIncrement: 2
+    };
+
+    var medsIntervalObject4 = {
+      intervalStartAtHour: 16,
+      intervalEndBeforeHour: 22,
+      pointEscalation: true,
+      pingClearsAlertLevel: true,
+      alertPointIncrement: 2
+    };
+
+    var medsIntervalObject5 = {
+      intervalStartAtHour: 22,
+      intervalEndBeforeHour: 24,
+      pointEscalation: false,
+      pingClearsAlertLevel: true,
+      alertPointIncrement: 2
+    };
+
+    var medsIntervalObjectArray = {
+
+      medsIntervalObject1: medsIntervalObject1,
+      medsIntervalObject2: medsIntervalObject2,
+      medsIntervalObject3: medsIntervalObject3,
+      medsIntervalObject4: medsIntervalObject4,
+      medsIntervalObject5: medsIntervalObject5
+    };
+
+    return medsIntervalObjectArray;
+  }
+
+// Checks if two dats have the same UTC year, month, and day.
+// nDate - Date object to compare to the current Date object.
+  Date.prototype.isSameDateAs = function(pDate) {
+    // console.log("this.getFullYear() " + this.getFullYear() + "===" + "nDate.getUTCFullYear() " + pDate.getFullYear());
+    // console.log("this.getMonth() " + this.getMonth() + "===" + "nDate.getUTCMonth( " + pDate.getMonth());
+    // console.log("this.getDate() " + this.getDate() + "===" + "nDate.getUTCDate() " + pDate.getDate());
+
+    return (
+    this.getUTCFullYear() === pDate.getUTCFullYear() &&
+    this.getUTCMonth() === pDate.getUTCMonth() &&
+    this.getUTCDate() === pDate.getUTCDate()
+    );
   };
 
 });
