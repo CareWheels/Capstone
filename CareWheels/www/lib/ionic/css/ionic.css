@@ -9355,8 +9355,10 @@ a.button {
  * Utility Classes
  * --------------------------------------------------
  */
+
+/* disable the hide class, this sometimes will cause the hamburger button to dias*/
 .hide {
-  display: none; }
+  /*display: none;*/ }
 
 .opacity-hide {
   opacity: 0; }
