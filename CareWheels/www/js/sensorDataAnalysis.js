@@ -110,7 +110,6 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
         for(w = 0; w < previousDayPresenceByHour.length; w++ ) {
           console.log("previousDayPresenceByHour[" + w + "] " + previousDayPresenceByHour[w]);
         }
-
         for(w = 0; w < currentDayPresenceByHour.length; w++ ) {
           console.log("currentDayPresenceByHour[" + w + "] " + currentDayPresenceByHour[w]);
         }
@@ -177,15 +176,12 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
         for(w = 0; w < previousDayFridgeRollingAlertLevelArray.length; w++) {
           console.log("previousDayFridgeRollingAlertLevelArray[" + w + "] " + previousDayFridgeRollingAlertLevelArray[w]);
         }
-
         for(w = 0; w < currentDayFridgeRollingAlertLevelArray.length; w++) {
           console.log("currentDayFridgeRollingAlertLevelArray[" + w + "] " + currentDayFridgeRollingAlertLevelArray[w]);
         }
-
         for(w = 0; w < previousDayMedsRollingAlertLevelArray.length; w++) {
           console.log("previousDayMedsRollingAlertLevelArray[" + w + "] " + previousDayMedsRollingAlertLevelArray[w]);
         }
-
         for(w = 0; w < currentDayMedsRollingAlertLevelArray.length; w++) {
           console.log("currentDayMedsRollingAlertLevelArray[" + w + "] " + currentDayMedsRollingAlertLevelArray[w]);
         }

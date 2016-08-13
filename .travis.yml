@@ -37,4 +37,6 @@ script:
   - ionic state reset
   - ionic platform remove android
   - ionic platform add android
+  - cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git
   - ionic build android
+  - karma start --single-run
