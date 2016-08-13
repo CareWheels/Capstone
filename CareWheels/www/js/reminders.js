@@ -7,36 +7,38 @@
 
 angular.module('careWheels')
 
-  .controller('remindersController', ['$scope', '$controller', '$ionicPopup', '$state', 'User', function($scope, $controller, $ionicPopup, $state, User){
+  .controller('remindersController', ['$scope', '$controller', '$ionicPopup', '$state', 'User', 'API', function($scope, $controller, $ionicPopup, $state, User, API){
+    console.log("hit reminders controller");//////////////////////////testing
 
-    var notifViewModel = $scope.$new();   //to access Notifications functions
-    var restViewModel = $scope.$new();    //to access Reminder REST controller
+    //var notifViewModel = $scope.$new();   //to access Notifications functions
+    //var restViewModel = $scope.$new();    //to access Reminder REST controller
 
-    $controller('NotificationController',{$scope : notifViewModel });
-    $controller('ReminderRestController',{$scope : restViewModel });
+    //$controller('NotificationController',{$scope : notifViewModel });
+    //$controller('ReminderRestController',{$scope : restViewModel });
+    API.updateUserReminders;
 
     $scope.reminders = [    //array of live definitions; to be displayed to user
       {/* Reminder 0 */
-        hour: notifViewModel.data[0].hours,
-        min: notifViewModel.data[0].minutes, // leading zeros will automatically be added
+        hour: 12, //notifViewModel.data[0].hours,
+        min: 00, //notifViewModel.data[0].minutes, // leading zeros will automatically be added
         isPM: false,                          // make sure these two values match
         amOrPm: 'AM',                        // ng-change will update this value
-        isOn: notifViewModel.data[0].on
+        isOn: true //notifViewModel.data[0].on
       },
       {/* Reminder 1 */
-        hour: notifViewModel.data[1].hours,
-        min: notifViewModel.data[1].minutes,
-        isPM: true,
-        amOrPm: 'PM',
-        isOn: notifViewModel.data[1].on
+        hour: 12, //notifViewModel.data[0].hours,
+        min: 00, //notifViewModel.data[0].minutes, // leading zeros will automatically be added
+        isPM: false,                          // make sure these two values match
+        amOrPm: 'AM',                        // ng-change will update this value
+        isOn: true //notifViewModel.data[0].on
 
       },
       {/* Reminder 2 */
-        hour: notifViewModel.data[2].hours,
-        min: notifViewModel.data[2].minutes,
-        isPM: true,
-        amOrPm: 'PM',
-        isOn: notifViewModel.data[2].on
+        hour: 12, //notifViewModel.data[0].hours,
+        min: 00, //notifViewModel.data[0].minutes, // leading zeros will automatically be added
+        isPM: false,                          // make sure these two values match
+        amOrPm: 'AM',                        // ng-change will update this value
+        isOn: true //notifViewModel.data[0].on
       }
     ];
 
@@ -98,8 +100,8 @@ angular.module('careWheels')
             var rem2 = notifViewModel.Reminder_As_String(1);
             var rem3 = notifViewModel.Reminder_As_String(2);
 
-            restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);   //will handle generating error if necessary
-          } else console.error("Cannot contact server because user credentials are undefined.");
+            $scope.CallRest(rem1, rem2, rem3);
+          } else console.error("Cannot make REST call in Reminders because user credentials are undefined.");
           $state.go($state.current, {}, {reload: true});    //reset view so changes are immediately visible
         } else {
           console.log('Reset canceled!');
@@ -130,14 +132,49 @@ angular.module('careWheels')
         } else rem3 = '';
 
         console.log("rem1="+rem1+" rem2="+rem2+" rem3="+rem3);
-        restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);
-      } else console.warn("Cannot contact server because user credentials are undefined.");    
-    }
+        $scope.CallRest(rem1, rem2, rem3);
+      } else console.error("Cannot make REST call in Reminders because user credentials are undefined.");
+    };
+
+    //Handle the REST call to custom server API
+    $scope.CallRest(rem1, rem2, rem3){
+      //restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);   //will handle generating error if necessary
+      var myUser = User.credentials();
+      if(myUser!=undefined){
+        var status = null;
+        var response = null;
+        $http({
+          url:API.updateUserReminders, 
+          method:'POST',    //all our custom REST endpoints have been designed to use POST
+          data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
+            username:myUser.username, 
+            password:myUser.password, 
+            usernametoupdate:myUser.username,
+            reminder1:rem1,
+            reminder2:rem2,
+            reminder3:rem3        
+          }), 
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+          }
+        }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
+            status = response.status;
+            data = response.data;
+            $log.log(data);
+          }, function(response) {
+            $scope.data = response.data || "Request failed";
+            $scope.status = response.status;
+            if(response.status!=200){
+              $log.error(data);
+            }
+        })
+      } else $log.error("Cannot make REST call in Reminders because user credentials are undefined.");
+    };
   }])
 
   //Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
   .controller("NotificationController", function($scope, $log, $cordovaLocalNotification){
-
+    console.log('hit notification controller');//////////////////////ttesting
     var isAndroid = window.cordova!=undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
     function Time() {this.hours=0; this.minutes=0; this.seconds=0; this.on=true;};
     //window.localStorage['Reminders'] = null;    //Turning this on simulates starting from fresh storage every time controller is called by view change

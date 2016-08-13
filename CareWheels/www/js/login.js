@@ -57,13 +57,12 @@ angular.module('careWheels')
             if (loginIntervalSteps > 120) // 120 * 500 = 1.5 min timeout
               loginTimeout = true;
 
-
             // alright, lets try to analyze the data
             try {
-              info = GroupInfo.groupInfo();
               // only run analyze if sensor data is present
-              if (info[4].sensorData != null)
+              if (info[4].sensorData != null){
                 dataAnalysis.AnalyzeData();
+              }
             }
             catch (Exception){ console.log('caught! during analyze data'); } // oh no...
 
