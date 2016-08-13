@@ -7,7 +7,7 @@
 
 angular.module('careWheels')
 
-  .controller('remindersController', ['$scope', '$controller', '$ionicPopup', '$state', 'User', 'API', function($scope, $controller, $ionicPopup, $state, User, API){
+  .controller('remindersController', ['$scope', '$controller', '$ionicPopup', '$http', '$state', '$httpParamSerializerJQLike', 'User', 'API', function($scope, $controller, $ionicPopup, $http, $state, $httpParamSerializerJQLike, User, API){
     console.log("hit reminders controller");//////////////////////////testing
 
     //var notifViewModel = $scope.$new();   //to access Notifications functions
@@ -90,15 +90,15 @@ angular.module('careWheels')
 
       confirmPopup.then(function(res) {
         if(res) {    //if yes button was pressed
-          notifViewModel.Delete_Reminders();  //Delete old reminder files and
-          notifViewModel.Init_Notifs();       //reset to default
+          //notifViewModel.Delete_Reminders();  //Delete old reminder files and
+          //notifViewModel.Init_Notifs();       //reset to default
 
           //Reset Cyclos custom fields to default
           var myUser = User.credentials();   //retrieve user credentials
           if(myUser!=undefined){
-            var rem1 = notifViewModel.Reminder_As_String(0);
-            var rem2 = notifViewModel.Reminder_As_String(1);
-            var rem3 = notifViewModel.Reminder_As_String(2);
+            var rem1 = '10:00:00'; //notifViewModel.Reminder_As_String(0);
+            var rem2 = '02:00:00'; //notifViewModel.Reminder_As_String(1);
+            var rem3 = '06:00:00'; //notifViewModel.Reminder_As_String(2);
 
             $scope.CallRest(rem1, rem2, rem3);
           } else console.error("Cannot make REST call in Reminders because user credentials are undefined.");
@@ -115,20 +115,20 @@ angular.module('careWheels')
       for(var i=0; i<3; ++i){
         var myHours = $scope.reminders[i].hour;
         if($scope.reminders[i].amOrPm == 'PM') myHours = parseInt(myHours)+12;    //convert to military time
-        notifViewModel.Create_Notif(myHours, $scope.reminders[i].min, 0, $scope.reminders[i].isOn, i+1);    //this creates Tray notification and also updates Notification file
+        //notifViewModel.Create_Notif(myHours, $scope.reminders[i].min, 0, $scope.reminders[i].isOn, i+1);    //this creates Tray notification and also updates Notification file
         console.log(myHours + ":" + $scope.reminders[i].min + ":" + 0 + " " + $scope.reminders[i].isOn + i);
       }
       var myUser = User.credentials();   //retrieve user credentials
       if(myUser!=undefined){    //do we have user credentials?
         //update Cyclos server's reminder fields
         if($scope.reminders[0].isOn){
-          var rem1 = notifViewModel.Reminder_As_String(0);
+          var rem1 = '10:00:00'; //notifViewModel.Reminder_As_String(0);
         } else rem1 = '';
         if($scope.reminders[1].isOn){
-          var rem2 = notifViewModel.Reminder_As_String(1);
+          var rem2 = '02:00:00'; //notifViewModel.Reminder_As_String(1);
         } else rem2 = '';
         if($scope.reminders[2].isOn){
-          var rem3 = notifViewModel.Reminder_As_String(2);
+          var rem3 = '06:00:00'; //notifViewModel.Reminder_As_String(2);
         } else rem3 = '';
 
         console.log("rem1="+rem1+" rem2="+rem2+" rem3="+rem3);
@@ -160,15 +160,15 @@ angular.module('careWheels')
         }).then(function(response) {    //the old $http success/error methods have been depricated; this is the new format
             status = response.status;
             data = response.data;
-            $log.log(data);
+            console.log('Rest Status = ' + status);
           }, function(response) {
             $scope.data = response.data || "Request failed";
             $scope.status = response.status;
             if(response.status!=200){
-              $log.error(data);
-            }
+              console.error(data);
+            } else console.log('Success: ' + data);
         })
-      } else $log.error("Cannot make REST call in Reminders because user credentials are undefined.");
+      } else console.error("Cannot make REST call in Reminders because user credentials are undefined.");
     };
   }])
 
