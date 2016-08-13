@@ -65,7 +65,7 @@ angular.module('careWheels')
                 dataAnalysis.AnalyzeData();
               }
             }
-            catch (Exception){ console.log('caught! during analyze data'); } // oh no...
+            catch (Exception){ console.log(Exception + ' caught! during analyze data'); } // oh no...
 
             // were taking way to long, ABORT
             if (loginTimeout){
