@@ -3,7 +3,7 @@ var app = angular.module('careWheels')
 //Controller for Sensor Data Analysis
 //Will receive parsed feed data from the injected DataService factory
 /////////////////////////////////////////////////////////////////////////////////////////
-app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) {
+app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment, notifications) {
 
   $scope.AnalyzeData = function(){
     var testFunc = function(){
@@ -315,9 +315,9 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
           // **************************
           // Call local notifications here to send a red alert out for this person.
           // **************************
-          var notifViewModel = $scope.$new();   //to access Notifications functions
-          $controller('NotificationController',{$scope : notifViewModel });
-          notifViewModel.Create_Notif(0, 0, 0, false, 0);
+          //var notifViewModel = $scope.$new();   //to access Notifications functions
+          //$controller('NotificationController',{$scope : notifViewModel });
+          notifications.Create_Notif(0, 0, 0, false, 0);
         }
 
         // We have finished processing all exceptions to meds interval alerts
@@ -342,9 +342,9 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
           // **************************
           // Call local notifications here to send a red alert out for this person.
           // **************************
-          var notifViewModel = $scope.$new();   //to access Notifications functions
-          $controller('NotificationController',{$scope : notifViewModel });
-          notifViewModel.Create_Notif(0, 0, 0, false, 0);
+          //var notifViewModel = $scope.$new();   //to access Notifications functions
+          //$controller('NotificationController',{$scope : notifViewModel });
+          notifications.Create_Notif(0, 0, 0, false, 0);
         }
 
 
@@ -436,7 +436,7 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
           "medsAlertInterval3": medsAlertInterval3,
           "medsAlertPoints": medsAlertPoints,
           "medsAlertLevel": medsAlertLevel
-        }
+        };
 
 
         console.log("GROUP MEMBER ANALYSIS FOR: " + z + " " + "\n"
