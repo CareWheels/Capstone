@@ -50,14 +50,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     var prevDay = input['time'];
 
     var carewheelMembers = input['carewheelMembers'];
-    var presenceUids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
-    var fridgeUids = [];
-    var medUids = [];
-    var alertUids = [];
-    var presenceEvents = [];//this will store all events gathered from each presence UID
-    var fridgeEvents = [];
-    var medEvents = [];
-    var alertEvents = [];
+
     var sensorData = {//this will be the object sent to analysis
       "Presence": [],
       "Fridge": [],
@@ -67,6 +60,15 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     var count = 1;//this will be used in constructing the page 
 
     var downloadFunc = function(thisMember, accesstoken, refreshtoken){
+    var presenceUids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
+    var fridgeUids = [];
+    var medUids = [];
+    var alertUids = [];
+    var presenceEvents = [];//this will store all events gathered from each presence UID
+    var fridgeEvents = [];
+    var medEvents = [];
+    var alertEvents = [];
+
     var dataUrl = "https://apis.sen.se/v2/nodes/";//get page of nodes for this user
     $http({
       url:dataUrl,
@@ -81,8 +83,8 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //of the node object with the desired label (presence, med, fridge)
         var getUids = function(arg){
 
-        var feeds = arg.data;
-        var objects = feeds.objects;
+        var nodes = arg.data;
+        var objects = nodes.objects;
         var objectsLength = objects.length;
         for (var i = 0; i < objectsLength; i++){//iterate over all node objects on the returned page
           console.log("CHECKING NODES...");
@@ -134,38 +136,38 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 
       getUids(response);//adds all specified node objects (and their published uids) to appropriate arrays
                         //only for the first page (10 node objects) of response
-
+/*
 /////////HANDLE > 1 pages from /nodes/ endpoint
           if (response.data.links.next != null){ //if there is more than one page of node objects in response
-            var feedPages = Math.ceil(feeds.totalObjects / 10);
-            for (var p = 2; p < feedPages + 1; p++){ //this is to handle multiple pages of node objects returned from sense api
+            var nodePages = Math.ceil(response.data.totalObjects / 10);
+            for (var p = 2; p < nodePages + 1; p++){ //this is to handle multiple pages of node objects returned from sense api
 
             $http({
-              url: "https://apis.sen.se/v2/feeds/?page="+p, //get url of next page
+              url: "https://apis.sen.se/v2/nodes/?page="+p, //get url of next page
               method:'GET',
               headers: {
                 'Authorization': 'Bearer '+input['accesstoken']
               }
             }).then(function(response) {
-              console.log("getting page "+p+" of /feeds/ response");
+              console.log("getting page "+p+" of /nodes/ response");
                 getUids(response);
 
             }, function(response) {
 
                 if (response.status === 403){
                 refreshFunc();
-                console.log("refreshed while retrieving next page of feed objects ");
+                console.log("refreshed while retrieving next page of nodes objects ");
                 //FINISH//////
                 //try to download from sense, but limit after n attempts
                 //to prevent infinite re-attempts
                 }
 
-              console.log("failed while attempting to retrieve next page of feed objects", response);
+              console.log("failed while attempting to retrieve next page of nodes objects", response);
               }
             )
             }
           };
-  
+  */
 
         var presenceLength = presenceUids.length;
         var fridgeLength = fridgeUids.length;
@@ -537,7 +539,66 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //check to see if each group member has valid sense keys.  if not, set sensorData property to null,
     //output the groupmember back to main thread so it can be added to groupInfoWithData array
     //display error in console
+    
+    var length = carewheelMembers.length;
+function syncLoop(iterations, process, exit){  
+    var index = 0,
+        done = false,
+        shouldExit = false;
+    var loop = {
+        next:function(){
+            if(done){
+                if(shouldExit && exit){
+                    return exit(); // Exit if we're done
+                }
+            }
+            // If we're not finished
+            if(index < iterations){
+                index++; // Increment our index
+                process(loop); // Run our process, pass in the loop
+            // Otherwise we're done
+            } else {
+                done = true; // Make sure we say we're done
+                if(exit) exit(); // Call the callback on exit
+            }
+        },
+        iteration:function(){
+            return index - 1; // Return the loop number we're on
+        },
+        break:function(end){
+            done = true; // End the loop
+            shouldExit = end; // Passing end as true means we still call the exit callback
+        }
+    };
+    loop.next();
+    return loop;
+}
 
+syncLoop(length, function(loop){  
+    setTimeout(function(){
+        var z = loop.iteration();
+        //downloadfunc
+        carewheelMembers[z].index = z;
+        if (carewheelMembers[z].customValues[1].stringValue == "000" || carewheelMembers[z].customValues[1].stringValue == "" ||
+          carewheelMembers[z].customValues[2].stringValue == "000" || carewheelMembers[z].customValues[2].stringValue == "")
+          {
+          carewheelMembers[z].sensorData = null;
+          output.notify(JSON.parse(JSON.stringify(carewheelMembers[z])));
+          console.log("error, please obtain valid sen.se keys!");
+        }
+        else{
+        //setTimeout(function(){
+        downloadFunc(carewheelMembers[z], carewheelMembers[z].customValues[1].stringValue, carewheelMembers[z].customValues[2].stringValue);
+        //}, 5000);
+        };
+        loop.next();
+    }, 3000);
+}, function(){
+    console.log('done');
+});
+
+
+/*
     //if user has valid keys, call download function with appropriate keys
     for(z=0; z < carewheelMembers.length; z++ ){
             //return angularWorker.run({name: thesemembers[z].name, refreshtoken: thesemembers[z].customValues[2], accesstoken: thesemembers[z].customValues[1]});
@@ -550,10 +611,16 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         console.log("error, please obtain valid sen.se keys!");
     }
     else{
+      //setTimeout(function(){
       downloadFunc(carewheelMembers[z], carewheelMembers[z].customValues[1].stringValue, carewheelMembers[z].customValues[2].stringValue);
+      //}, 5000);
     };
 
     };
+
+    */
+
+
     //output.notify(JSON.parse(JSON.stringify(events)));
     //refreshFunc();
 
