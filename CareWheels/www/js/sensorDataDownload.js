@@ -48,15 +48,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //we save the value passed in as time to the prevDay variable
     //the time value will be 24 less than current user time, and adjusted for the offset of the sen.se server's timezone
     var prevDay = input['time'];
-
     var carewheelMembers = input['carewheelMembers'];
-
-    var sensorData = {//this will be the object sent to analysis
-      "Presence": [],
-      "Fridge": [],
-      "Meds": [],
-      "Alert": []
-    };
     var count = 1;//this will be used in constructing the page 
 
     var downloadFunc = function(thisMember, accesstoken, refreshtoken){
@@ -68,6 +60,12 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     var fridgeEvents = [];
     var medEvents = [];
     var alertEvents = [];
+    var sensorData = {//this will be the object sent to analysis
+      "Presence": [],
+      "Fridge": [],
+      "Meds": [],
+      "Alert": []
+    };
 
     var dataUrl = "https://apis.sen.se/v2/nodes/";//get page of nodes for this user
     $http({
@@ -195,13 +193,13 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                 var eventsLeftToAdd = presenceEventList.totalObjects;
                 if (eventsLeftToAdd < 100){
                   for (var j = 0; j < eventsLeftToAdd; j++){
-                    console.log("pushing presence event to array in first if block...");
+                    console.log("pushing presence event to array. under 100 events, so only 1 page");
                     sensorData.Presence.push(presenceEventList.objects[j]);
                   };
                 }
                 else { // >100 event objects implies more than one page of data
                   for (var k = 0; k < 100; k++){
-                    console.log("pushing presence event to array in first else block...");
+                    console.log("pushing presence event to array. first page of > 1 pages");
                     sensorData.Presence.push(presenceEventList.objects[k]);
                     eventsLeftToAdd = eventsLeftToAdd - 100;
                   };
@@ -216,13 +214,15 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                     }).then(function(response) {
                         if (eventsLeftToAdd < 100){
                           for (var n = 0; n < eventsLeftToAdd; n++){
-                          console.log("pushing presence event from next page to array (if block)...");
+                          console.log("getting page "+m+" of /events/ response");
+                          console.log("pushing presence event to array.  less than 100 on this page");
                           sensorData.Presence.push(presenceEventList.objects[n]);
                           };
                         }
                         else {
                           for (var n = 0; n < 100; n++){
-                          console.log("pushing presence event from next page to array (else block)...");
+                          console.log("getting page "+m+" of /events/ response");
+                          console.log("pushing presence event to array.  still more pages left...");
                           sensorData.Presence.push(presenceEventList.objects[n]);
                           eventsLeftToAdd = eventsLeftToAdd - 100;
                           };
