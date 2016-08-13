@@ -1,6 +1,6 @@
 <ion-view view-title="app.groupStatus">
   <ion-nav-title>CareWheels Group</ion-nav-title>
-  !-- user group block: holds the -->
+  <!-- user group block: holds the -->
   <ion-content>
 
     <ion-list>
@@ -33,20 +33,9 @@
         <div id="careBankBlock" class="card" ng-click="clickCareBank()">
           <div id="careBankHeader" class="item item-stable">CareBank</div>
           <div id="careBankData" class="">
-            <div class="card careBankDetail careBankCredits">
-              <div class="item item-stable miniCardHeader">
-                <h2>Credits</h2>
-              </div>
-              <div class="item item-light miniCardHeader">
-                <h2><b>{{group[0].credits}}</b></h2>
-              </div>
-            </div>
-            <div class=" card careBankDetail careBankDebits">
-              <div class="item item-stable miniCardHeader">
-                <h2>Debits</h2>
-              </div>
-              <div class="item item-light miniCardHeader">
-                <h2><b>{{group[0].debits}}</b></h2>
+            <div class="card careBankDetail careBankBalance">
+              <div class="item item-light miniCardHeader center">
+                Balance: <b>{{group[0].balance}}</b>
               </div>
             </div>
           </div>
