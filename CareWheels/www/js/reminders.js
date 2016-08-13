@@ -10,11 +10,6 @@ angular.module('careWheels')
   .controller('remindersController', ('$scope', '$controller', '$ionicPopup', '$http', '$state', '$httpParamSerializerJQLike', 'User', 'API', function ($scope, $controller, $ionicPopup, $http, $state, $httpParamSerializerJQLike, User, API, notifications) {
     console.log("hit reminders controller");//////////////////////////testing
 
-    //var notifViewModel = $scope.$new();   //to access Notifications functions
-    //var restViewModel = $scope.$new();    //to access Reminder REST controller
-
-    //$controller('NotificationController',{$scope : notifViewModel });
-    //$controller('ReminderRestController',{$scope : restViewModel });
     API.updateUserReminders;
 
 
@@ -133,13 +128,13 @@ angular.module('careWheels')
       var myUser = User.credentials();   //retrieve user credentials
       if (myUser != undefined) {    //do we have user credentials?
         //update Cyclos server's reminder fields
-        if ($scope.reminders[0].isOn) {
+        if ($scope.reminders[0].isOn == true) {
           var rem1 = notifications.Reminder_As_String(0);
         } else rem1 = '';
-        if ($scope.reminders[1].isOn) {
+        if ($scope.reminders[1].isOn == true) {
           var rem2 = notifications.Reminder_As_String(1);
         } else rem2 = '';
-        if ($scope.reminders[2].isOn) {
+        if ($scope.reminders[2].isOn == true) {
           var rem3 = notifications.Reminder_As_String(2);
         } else rem3 = '';
 

@@ -225,7 +225,6 @@ app.controller('menu', function ($scope, $state) {
 app.factory("notifications", function($log, $cordovaLocalNotification){
   console.log('hit notification factory');//////////////////////ttesting
   var isAndroid = window.cordova!=undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
-  //window.localStorage['Reminders'] = null;    //Turning this on simulates starting from fresh storage every time controller is called by view change
   var data;   //needs to be called outside the functions so it persists for all of them
 
   var notifications = {};
@@ -282,7 +281,7 @@ app.factory("notifications", function($log, $cordovaLocalNotification){
         });
       } else $log.warn("Plugin disabled");
     } if(reminderNum>0 && reminderNum <4){    //is notif a user reminder?
-      var time = new Date(data[0].hours + ":" + data[0].minutes);    //defaults to current date/time
+      var time = new Date();    //defaults to current date/time
       time.setHours(hours);     //update
       data[reminderNum-1].hours = hours;
       time.setMinutes(minutes);
@@ -291,18 +290,24 @@ app.factory("notifications", function($log, $cordovaLocalNotification){
       data[reminderNum-1].seconds = seconds;
       data[reminderNum-1].on = isOn;
       window.localStorage['Reminders'] = angular.toJson(data);   //save data so new reminder is stored
-      if(isAndroid){
-        $cordovaLocalNotification.schedule({
-          id: reminderNum,
-          firstAt: time,
-          every: "day",
-          message: "Reminder " + reminderNum + ": Please check in with your CareWheel!",
-          title: "CareWheels",
-          sound: null   //same, hopefully a different sound than red alerts
-        }).then(function() {
-          $log.log("Notification" + reminderNum + "has been scheduled for " + time.toTimeString() + ", daily");
-        });
-      } else $log.warn("Plugin disabled");
+      if(isOn){
+        if(isAndroid){
+              $cordovaLocalNotification.schedule({
+                id: reminderNum,
+                at: time,
+                every: "day",
+                text: "Reminder " + reminderNum + ": Please check in with your CareWheel!",
+                title: "CareWheels",
+                sound: null   //same, hopefully a different sound than red alerts
+              }).then(function() {
+                $log.log("Notification" + reminderNum + "has been scheduled for " + time.toTimeString() + ", daily");
+              });
+          } else console.warn("Plugin disabled");          
+        } else {    //need to deschedule notification if it has been turned off
+          $cordovaLocalNotification.cancel(reminderNum, function() {
+            console.log("Reminder" + reminderNum + " has been descheduled.");
+          });
+        }
     } else if(reminderNum >=4) $log.warn("Incorrect attempt to create notification for id #" + reminderNum);
   };
 
