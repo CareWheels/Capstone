@@ -137,23 +137,23 @@ angular.module('careWheels')
     };
 
     //Handle the REST call to custom server API
-    $scope.CallRest(rem1, rem2, rem3){
+    $scope.CallRest = function (rem1, rem2, rem3) {
       //restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);   //will handle generating error if necessary
       var myUser = User.credentials();
       if(myUser!=undefined){
         var status = null;
         var response = null;
         $http({
-          url:API.updateUserReminders, 
+          url:API.updateUserReminders,
           method:'POST',    //all our custom REST endpoints have been designed to use POST
-          data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
-            username:myUser.username, 
-            password:myUser.password, 
+          data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
+            username:myUser.username,
+            password:myUser.password,
             usernametoupdate:myUser.username,
             reminder1:rem1,
             reminder2:rem2,
-            reminder3:rem3        
-          }), 
+            reminder3:rem3
+          }),
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
           }
