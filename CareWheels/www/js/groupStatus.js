@@ -9,8 +9,10 @@ angular.module('careWheels').controller('groupStatusController',
     // the groupInfo object is not available immediately, spin until available
     var initGroupInfo = setInterval(function(){
       var groupArray = GroupInfo.groupInfo();
+      //console.log(groupArray);
       if ( groupArray[0] != null ){
         clearInterval(initGroupInfo);
+        $scope.group[0].balance = trimZeros(groupArray[0].balance);
         for (var i = 0; i < groupArray.length; i++){
           $scope.group[i].image = groupArray[i].photoUrl;
           $scope.group[i].username = groupArray[i].username;
@@ -108,6 +110,12 @@ angular.module('careWheels').controller('groupStatusController',
     $scope.clickCareBank    = function () {};
 
 
+    //removes insignificant zeros
+    function trimZeros(input) {
+      var number = parseFloat(input);
+      return number.toString();
+
+    }
 
 
     function clickUser(index){
