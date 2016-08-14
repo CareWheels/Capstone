@@ -181,6 +181,49 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         ///////////////////////////////////////////////////////////////////
 
 /////////////////LOOP TO COLLECT PRESENCE OBJECTS AND PUSH TO APPROPRIATE
+
+        var thisUid = presenceUids[0];//only getting 1 presenceUid right now
+            $http({
+              url:"https://apis.sen.se/v2/feeds/"+thisUid+"/events/"+"?gt="+prevDay,
+              method:'GET',
+              headers: {
+                'Authorization': 'Bearer '+accesstoken
+              }
+            })
+            .then(function(response) {//this will add the first page of objects from /events/ to array
+                var presenceEventList = response.data;
+                for (var j = 0; j < 100; j++){
+                    console.log("getting page 1 of presence events response");
+                    sensorData.Presence.push(presenceEventList.objects[j]);
+                  };  
+            })
+            .catch(function(error) {
+            console.log("An error occured on page 1: " + error);
+            });    
+
+        for (var m = 2; m < 15; m++){//this is a bad solution (collect 15 pages of presence data)
+            $http({
+              url:"https://apis.sen.se/v2/feeds/"+thisUid+"/events/"+"?gt="+prevDay+"&page="+m,
+              method:'GET',
+              headers: {
+                'Authorization': 'Bearer '+accesstoken
+              }
+            })
+            .then(function(response) {//add each page of event objects (100 objects) to presence array
+                for (var n = 0; n < 100; n++){
+                console.log("getting page "+m+" of /events/ response");
+                sensorData.Presence.push(response.data.objects[n]);
+                };
+            })
+            .catch(function(error) {
+            console.log("An error occured after page 1: " + error);
+            });
+            
+    };
+
+/*
+
+/////////////////LOOP TO COLLECT PRESENCE OBJECTS AND PUSH TO APPROPRIATE
         for (var i = 0; i < presenceLength; i++){//for each uid in uids array
             $http({
               url:"https://apis.sen.se/v2/feeds/"+presenceUids[i]+"/events/"+"?gt="+prevDay,
@@ -203,8 +246,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                     sensorData.Presence.push(presenceEventList.objects[k]);
                     eventsLeftToAdd = eventsLeftToAdd - 100;
                   };
-                  var pages = Math.ceil(presenceEventList.totalObjects / 100);
+                  var pages = Math.ceil(presenceEventList.totalObjects / 100);                  
                   for (var m = 2; m < pages + 1; m++){
+                    console.log("getting page "+m+" of /events/ response within for loop");
                     $http({
                       url:"https://apis.sen.se/v2/feeds/"+presenceUids[i]+"/events/"+"?gt="+prevDay+"&page="+m,
                       method:'GET',
@@ -216,14 +260,14 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                           for (var n = 0; n < eventsLeftToAdd; n++){
                           console.log("getting page "+m+" of /events/ response");
                           console.log("pushing presence event to array.  less than 100 on this page");
-                          sensorData.Presence.push(presenceEventList.objects[n]);
+                          sensorData.Presence.push(response.data.objects[n]);
                           };
                         }
                         else {
                           for (var n = 0; n < 100; n++){
                           console.log("getting page "+m+" of /events/ response");
                           console.log("pushing presence event to array.  still more pages left...");
-                          sensorData.Presence.push(presenceEventList.objects[n]);
+                          sensorData.Presence.push(response.data.objects[n]);
                           eventsLeftToAdd = eventsLeftToAdd - 100;
                           };
                         };
@@ -253,6 +297,8 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               }
             )
         };
+
+*/
 
 /////////////////LOOP TO COLLECT FRIDGE OBJECTS AND PUSH TO APPROPRIATE
         for (var i = 0; i < fridgeLength; i++){//for each uid in uids array
