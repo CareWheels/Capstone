@@ -11,6 +11,9 @@
 include('login.php');
 
 $userService = new Cyclos\UserService();
+$accountService = new Cyclos\AccountService();
+$phoneService = new Cyclos\PhoneService();
+$groupMemberLocator = new stdclass();
 $locator = new stdclass();
 $locator->username = $_POST['usernametofind'];
 
@@ -35,16 +38,31 @@ try {
 
     for($x = 0; $x < count($page->pageItems); $x++) {
 
-        $user = $userService->load($page->pageItems[$x]->id);
+        $user = $userService->load($page->pageItems[$x]->id); 
+        $groupMemberLocator->username = $user->username; 
+        $phoneList = $phoneService->getPhoneListData($groupMemberLocator);
         $userImages = $userImageService->_list($user->id);
+        $userPhoneNumber = null;
+
+        foreach($phoneList->phones as $item) {
+
+           if($item->nature == "MOBILE" ) {
+              $userPhoneNumber = $item->normalizedNumber;
+           }
+        }
         
+        $user->phoneNumber = $userPhoneNumber;
+
         if(!empty($userImages)) {
-          $user->photoUrl = "https://carebank.carewheels.org/content/images/user/".$userImages[0]->key;
+          $user->photoUrl = CYCLOSBASEURL . "/content/images/user/".$userImages[0]->key;
         }
         else {
           $user->photoUrl = null;
         }
         
+        $accountSummary = $accountService->getAccountsSummary(array('username' => $user->username), NULL);
+        $user->balance = $accountSummary[0]->status->balance;
+
         array_push($groupMemberArray, $user);
     }
 }  catch (Cyclos\ServiceException $e) {
