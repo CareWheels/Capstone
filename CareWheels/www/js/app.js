@@ -304,9 +304,11 @@ app.factory("notifications", function($log, $cordovaLocalNotification){
               });
           } else console.warn("Plugin disabled");          
         } else {    //need to deschedule notification if it has been turned off
-          $cordovaLocalNotification.cancel(reminderNum, function() {
-            console.log("Reminder" + reminderNum + " has been descheduled.");
-          });
+          if(isAndroid){
+            $cordovaLocalNotification.cancel(reminderNum, function() {
+              console.log("Reminder" + reminderNum + " has been descheduled.");
+            });
+          }
         }
     } else if(reminderNum >=4) $log.warn("Incorrect attempt to create notification for id #" + reminderNum);
   };
