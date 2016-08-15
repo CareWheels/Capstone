@@ -59,18 +59,18 @@ angular.module('careWheels')
      *  update the scope variables. by triggering by angular's 'ng-change'
      *  */
     $scope.toggleOnOff = function (index) {
-      $scope.reminders[index].isOn = $scope.reminders[index].isOn != false;
+      $scope.reminders[index].isOn = !$scope.reminders[index].isOn;
       console.log("Toggled: " + $scope.reminders[index].isOn); ////////////// testing
     };
     $scope.toggleAmPm = function (index) {
-      if ($scope.reminders[index].isPM == false) {
+      if ($scope.reminders[index].isPM) {
         $scope.reminders[index].isPM = false;
         $scope.reminders[index].amOrPm = 'AM';
       } else {
         $scope.reminders[index].isPM = true;
         $scope.reminders[index].amOrPm = 'PM';
       }
-      console.log("Toggled: " + $scope.reminders[index].amOrPm); ////////////// testing
+      //console.log("Toggled " + $scope.reminders[index].isPM + ": " + $scope.reminders[index].amOrPm); ////////////// testing
     };
 
 
