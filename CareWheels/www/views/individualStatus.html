@@ -156,7 +156,16 @@
       <div class="col" ng-class="getMedsStatus('twentythree')">{{getPings('twentythree', 'meds')}}</div>
     </div>
 
-    <a href="tel:360-550-4787" class="button button-positive">Call</a>
+    <!--
+      This is the one that works
+    <a href="tel:360-550-4787" class="button button-positive">Call</a>-->
+
+    <a href="getPhoneNumber()" class="button button-positive">Call</a>
+
+    <p>{{showPhoneNumber()}}</p>
+    <p>{{showMeals()}}</p>
+    <p>{{showMeds()}}</p>
+    <p>{{getPhoneNumber()}}</p>
 
   </ion-content>
 </ion-view>
