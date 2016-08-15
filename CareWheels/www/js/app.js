@@ -60,7 +60,7 @@ app.factory('API', function (BASE_URL) {
     groupMemberInfo: BASE_URL + '/groupmemberinfo.php',
     updateLastOwnership: BASE_URL + '/updatelastownershiptakentime.php',
     dailyTrxHist: BASE_URL + '/dailytransactionhistory.php',
-    creditUser: BASE_URL + '/creditUser.php'
+    creditUser: BASE_URL + '/credituser.php'
   };
   return api;
 });
@@ -416,7 +416,7 @@ app.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, 
         data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
           username: myUser.username,
           password: myUser.password,
-          usernametodebt: '',
+          usernametodebt: userToDebtAsString,
           usernametocredit: myUser.username,
           credits: creditsAsFloat,
           alertlevel: alertlevelAsString,
@@ -432,8 +432,8 @@ app.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, 
         data = response.data;
         console.log('Rest Status = ' + status);
       }, function (response) {
-        $scope.data = response.data || "Request failed";
-        $scope.status = response.status;
+        var data = response.data || "Request failed";
+        status = response.status;
         if (response.status != 200) {
           console.error(data);
         } else console.log('Success: ' + data);
@@ -468,8 +468,8 @@ app.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, 
         data = response.data;
         console.log('Rest Status = ' + status);
       }, function (response) {
-        $scope.data = response.data || "Request failed";
-        $scope.status = response.status;
+        var data = response.data || "Request failed";
+        status = response.status;
         if (response.status != 200) {
           console.error(data);
         } else console.log('Success: ' + data);
@@ -491,7 +491,7 @@ app.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, 
           usernametodebt: '',
           usernametocredit: myUser.username,
           credits: creditsAsFloat,
-          alertlevel: '',
+          alertlevel: 'na',
           callpayment: 'False',
           sensordataviewpayment: 'False',
           membersummarypayment: 'True'
@@ -504,8 +504,8 @@ app.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, 
         data = response.data;
         console.log('Rest Status = ' + status);
       }, function (response) {
-        $scope.data = response.data || "Request failed";
-        $scope.status = response.status;
+        var data = response.data || "Request failed";
+        status = response.status;
         if (response.status != 200) {
           console.error(data);
         } else console.log('Success: ' + data);
