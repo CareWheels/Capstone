@@ -59,7 +59,8 @@ app.factory('API', function (BASE_URL) {
     updateUserReminders: BASE_URL + '/updateuserreminders.php',
     groupMemberInfo: BASE_URL + '/groupmemberinfo.php',
     updateLastOwnership: BASE_URL + '/updatelastownershiptakentime.php',
-    dailyTrxHist: BASE_URL + '/dailytransactionhistory.php'
+    dailyTrxHist: BASE_URL + '/dailytransactionhistory.php',
+    creditUser: BASE_URL + '/creditUser.php'
   };
   return api;
 });
@@ -134,6 +135,7 @@ app.factory('GroupInfo', function () {
 // User factory
 
 app.factory('User', function (GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
+  console.log('hit User factory');
   var user = {};
   var userService = {};
   //window.localStorage['loginCredentials'] = null;
@@ -376,4 +378,133 @@ app.factory("notifications", function($log, $cordovaLocalNotification){
   };
 
   return notifications;
+});
+
+/*
+   Parameters
+   username: username for login.
+   password: password for login.
+   usernametocredit: username of the user to credit.
+   usernametodebt: username of the user to debt, only needed for a transaction
+                   between two users.
+   credits as float: Number of credits to credit the user.
+   alertlevel as string: Any string to record the alert level of the monitored member,
+                         such as "Blue", "Yellow", or "Red".
+   callpayment a boolean as String: Records whether or not the crediting is occuring due to
+                         a call to a group member. Must be "True" or "False"!
+   sensordataviewpayment a boolean as String: Records whether or not the crediting is occuring due to
+                         a detailed sensor screen viewing or not. Must be "True" or "False"! 
+   membersummarypayment a boolean as String: Records whether or not the crediting is occuring due to 
+                                             a member summary screen viewing or not. Must be "True" 
+                                             or "False"!
+*/
+app.factory("PaymentService", function($http, $httpParamSerializerJQLike){
+  console.log("Hit PaymentService factory");
+  PaymentService.call = function(userToDebtAsString, creditsAsFloat, alertlevelAsString) {
+    var myUser = User.credentials();
+    if (myUser != undefined) {
+      var status = null;
+      var response = null;
+      $http({
+        url: API.creditUser,
+        method: 'POST',    //all our custom REST endpoints have been designed to use POST
+        data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
+          username: myUser.username,
+          password: myUser.password,
+          usernametodebt: userToDebt,
+          usernametocredit: myUser.username,
+          credits: creditsAsFloat,
+          alertlevel: alertlevelAsString,
+          callpayment: 'True',
+          sensordataviewpayment: 'False',
+          membersummarypayment: 'False'
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+        }
+      }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
+        status = response.status;
+        data = response.data;
+        console.log('Rest Status = ' + status);
+      }, function (response) {
+        $scope.data = response.data || "Request failed";
+        $scope.status = response.status;
+        if (response.status != 200) {
+          console.error(data);
+        } else console.log('Success: ' + data);
+      })
+    } else console.error("Cannot make REST call for Call  Payment because user credentials are undefined.");
+  };
+
+  PaymentService.sensorDataView = function(creditsAsFloat, alertlevelAsString) {
+    var myUser = User.credentials();
+    if (myUser != undefined) {
+      var status = null;
+      var response = null;
+      $http({
+        url: API.creditUser,
+        method: 'POST',    //all our custom REST endpoints have been designed to use POST
+        data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
+          username: myUser.username,
+          password: myUser.password,
+          usernametodebt: '',
+          usernametocredit: myUser.username,
+          credits: creditsAsFloat,
+          alertlevel: alertlevelAsString,
+          callpayment: 'False',
+          sensordataviewpayment: 'True',
+          membersummarypayment: 'False'
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+        }
+      }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
+        status = response.status;
+        data = response.data;
+        console.log('Rest Status = ' + status);
+      }, function (response) {
+        $scope.data = response.data || "Request failed";
+        $scope.status = response.status;
+        if (response.status != 200) {
+          console.error(data);
+        } else console.log('Success: ' + data);
+      })
+    } else console.error("Cannot make REST call for sensorDataView Payment because user credentials are undefined.");
+  };
+
+  PaymentService.memberSummary = function(creditsAsFloat) {
+    var myUser = User.credentials();
+    if (myUser != undefined) {
+      var status = null;
+      var response = null;
+      $http({
+        url: API.creditUser,
+        method: 'POST',    //all our custom REST endpoints have been designed to use POST
+        data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
+          username: myUser.username,
+          password: myUser.password,
+          usernametodebt: '',
+          usernametocredit: myUser.username,
+          credits: creditsAsFloat,
+          alertlevel: '',
+          callpayment: 'False',
+          sensordataviewpayment: 'False',
+          membersummarypayment: 'True'
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+        }
+      }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
+        status = response.status;
+        data = response.data;
+        console.log('Rest Status = ' + status);
+      }, function (response) {
+        $scope.data = response.data || "Request failed";
+        $scope.status = response.status;
+        if (response.status != 200) {
+          console.error(data);
+        } else console.log('Success: ' + data);
+      })
+    } else console.error("Cannot make REST call for memberSummary Payment because user credentials are undefined.");
+  };
 });

@@ -3,7 +3,7 @@
  *
  */
 angular.module('careWheels').controller('groupStatusController',
-  function ($scope, $interval, $state, $ionicPopup, GroupInfo) {
+  function ($scope, $interval, $state, $ionicPopup, GroupInfo, PaymentService) {
 
     /* TODO find a better solution */
     // the groupInfo object is not available immediately, spin until available
@@ -108,6 +108,14 @@ angular.module('careWheels').controller('groupStatusController',
     $scope.clickBottomRight = function () { clickUser(4); };
     $scope.clickCenter      = function () {};
     $scope.clickCareBank    = function () {};
+
+    //For testing:
+    console.log("Calling Call Payment:");
+    PaymentService.call('test', 1.0, 'Red');
+    console.log("Calling sensorDataView Payment:");
+    PaymentService.sensorDataView(1.0, 'Blue');
+    console.log("Calling memberSummary Payment:");
+    PaymentService.memberSummary(1.0);    
 
 
     //removes insignificant zeros
