@@ -8,12 +8,6 @@ angular.module('careWheels')
 
   /**
    * grabs the analysis of the member selected on the previous view
-   *
-   * note:
-   *  this object is exactly the same as you were previously using.
-   *  also i tested that this is working, by using the analysis object
-   *  to change the name(line 338), so now the header will display the name
-   *  of whomever was clicked
    */
   var analysis = GroupInfo.getMember_new();
   //console.log(analysis); ////////////testing
@@ -78,7 +72,10 @@ angular.module('careWheels')
   $scope.showTime = function() {
     return timeNow;
   };
-
+  
+  /**
+   * This function returns the color for the call button.
+   */
   $scope.getCallButtonColor = function() {
     console.log("getCallButtonColor();", analysis);
 
@@ -96,7 +93,7 @@ angular.module('careWheels')
     else if (fridge == 2 || meds == 2)
       return  'button-assertive';
     else
-      return 'button-calm';
+      return 'button-positive';
  };
 
   /**
@@ -887,7 +884,14 @@ angular.module('careWheels')
         return 'error';
     }
   };
-
+  
+  /**
+   * This function takes the phone number string returned from Cyclos (which 
+   * us in the incorrect format), and it changes the string to a format
+   * necessary for making a call. Note: if no phone number is put on the
+   * Cyclos server, the number (000) 000-0000 will be inserted. This indicates
+   * that the number needs to be placed in the system.
+   */
   $scope.getPhoneNumber = function() {
     console.log('hit getPhoneNumber()');
     console.log(analysis);
