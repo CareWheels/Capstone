@@ -29,17 +29,6 @@ describe('Notifications -', function() {
     expectDefaultValues(data);
   });
 
-/*  describe('Create_Notif():', function() {
-    notifs.Create_Notif(10, 5, 0, true, 1);//hours, minutes, seconds, isOn, reminderNum
-    it('verify data', function(){
-      var data = angular.fromJson(window.localStorage['Reminders']);
-      expect(data).toBeDefined();
-      expect(data[0].hours).toBe(10);
-      expect(data[0].minutes).toBe(5);
-      expect(data[0].on).toBe(true);
-    });
-  });*/
-
   function expectDefaultValues(data) {
     for (var i=0; i<3; i++){
       expect(data[i].hours).toBe(defaultNotif[i].hours);
