@@ -1,8 +1,15 @@
 <ion-view view-title="app.individualStatus" class="overflow-scroll">
-  <ion-nav-title>Status: {{name}}</ion-nav-title>
+  <ion-nav-title>Status: {{name}}
+    <a href="{{getPhoneNumber()}}">
+    <div id="callArea" class="button button-positive">
+        Call
+    </div>
+    </a>
+  </ion-nav-title>
+
 
   <!-- individual status content -->
-  <ion-content class="moveDown" ng-controller="individualStatusController">
+  <ion-content class="moveDown">
     <ul class="row header">
       <li class="col no_border col-25 blackFont"></li>
       <li class="col no_border col-25 blackFont">presence</li>
@@ -159,15 +166,6 @@
     <!--
       This is the one that works
     <a href="tel:360-550-4787" class="button button-positive">Call</a>-->
-
-    <a ng-click="getPhoneNumber()" class="button button-positive">Call</a>
-
-    <p>{{showPhoneNumber()}}</p>
-    <p>{{showMeals()}}</p>
-    <p>{{showMeds()}}</p>
-<!--
-    <p>{{getPhoneNumber()}}</p>
--->
 
   </ion-content>
 </ion-view>
