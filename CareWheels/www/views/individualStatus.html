@@ -1,8 +1,17 @@
 <ion-view view-title="app.individualStatus" class="overflow-scroll">
-  <ion-nav-title>Status: {{name}}</ion-nav-title>
+  <ion-nav-title>Status: {{name}}
+    <a href="{{getPhoneNumber()}}" class="blue">
+    <div id="callArea"
+         class="button"
+         ng-class="getCallButtonColor()">
+        Call
+    </div>
+    </a>
+  </ion-nav-title>
+
 
   <!-- individual status content -->
-  <ion-content class="moveDown" ng-controller="individualStatusController">
+  <ion-content class="moveDown">
     <ul class="row header">
       <li class="col no_border col-25 blackFont"></li>
       <li class="col no_border col-25 blackFont">presence</li>
@@ -155,8 +164,6 @@
       <div class="col" ng-class="getMealsStatus('twentythree')">{{getPings('twentythree', 'meals')}}</div>
       <div class="col" ng-class="getMedsStatus('twentythree')">{{getPings('twentythree', 'meds')}}</div>
     </div>
-
-    <a href="tel:360-550-4787" class="button button-positive">Call Mom</a>
 
   </ion-content>
 </ion-view>

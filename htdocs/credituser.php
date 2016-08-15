@@ -23,8 +23,73 @@ include('login.php');
 
 $transactionService = new Cyclos\TransactionService();
 $paymentService = new Cyclos\PaymentService();
+$query = new stdclass();
+$query->owner = $_POST['usernametofind'];
+$query->period = array("begin"=> date("Y-m-d")."T00:00:00.000", "end" => date("Y-m-d")."T23:59:59.999");
+$query->pageSize = 9999;
+
+$memberSummaryPaymentCheck;
+$callPaymentCheck;
+$sensorDataViewPaymentCheck;
+$memberSummaryPaymentCount = 0;
+$parsed_date;
+http_response_code(400);  
 
 try {
+
+    if($_POST['membersummarypayment'] == "True") {
+        $memberSummaryPaymentValue = True;
+
+        $paymentList = $paymentService->search($query);
+
+        foreach($paymentList->pageItems as $item) {
+
+            $payment = $paymentService->getData($item->id);
+
+            foreach($payment->transaction->customValues as $value) {
+
+                if($value->field->internalName == MEMBER_SUMMARY_PAYMENT) {
+                     $memberSummaryPaymentCheck = $value->booleanValue;
+                     #echo("Member summary payment value: " . $memberSummaryPaymentCheck . " ");
+                }
+
+                if($value->field->internalName == CALL_PAYMENT) {
+                    $callPaymentCheck = $value->booleanValue;
+                    #echo("Call payment value: "  . $callPaymentCheck . " ");
+                }
+
+                if($value->field->internalName == SENSOR_DATA_VIEW_PAYMENT) {
+                    $sensorDataViewPaymentCheck = $value->booleanValue;
+                    #echo("Sensor Data View Payment value: " . $sensorDataViewPaymentCheck . " ");
+                }
+            }
+
+            # We are currently not doing anything with SENSOR_DATA_VIEW PAYMENT or CALL_PAYMENT.
+
+            if($memberSummaryPaymentCheck == "1") {
+               #echo("FOUND A MEMBER SUMMARY PAYMENT! ");
+               $memberSummaryPaymentCount++;
+
+               $parsed_date = date_parse($payment->transaction->date);
+               #echo("PARSED DATE HOUR: " . $parsed_date["hour"]);
+               if($parsed_date["hour"] == date("H") ) {
+                  #echo("FOUND A MEMBER SUMMARY PAYMENT DURING THE CURRENT HOUR!");
+                  http_response_code(200);
+                  die();
+               }
+            }
+
+           if($memberSummaryPaymentCount >= MAX_MEMBER_SUMMARY_CREDITS_PER_DAY) {
+               #echo("FOUND MAX MEMBER SUMMARY CREDITS PER DAY!");
+               http_response_code(200);
+               die();
+           }
+       }
+    }
+    else {
+         $memberSummaryPaymentValue = False;
+    }
+
 
     if($_POST['callpayment'] == "True") {
       $callPaymentValue = True;
@@ -41,14 +106,6 @@ try {
     
     $memberSummaryPayment_field = new stdclass();
     $memberSummaryPayment_field->field = array('internalName' => 'MemberSummaryPayment');
-
-    if($_POST['membersummarypayment'] == "True") {
-      $memberSummaryPaymentValue = True;  
-    }
-    else {
-     $memberSummaryPaymentValue = False;
-    }
-  
     $memberSummaryPayment_field->booleanValue = $memberSummaryPaymentValue ;
 
     $sensorDataViewPayment_field = new stdclass();
