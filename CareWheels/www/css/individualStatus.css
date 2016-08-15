@@ -1,0 +1,23 @@
+/* For individualStatus */
+.col {
+  border: solid 1px grey;
+  text-align: center;
+  color: white;
+}
+.blackFont{
+  color: black;
+}
+
+.col.no_border {
+  border: none;
+}
+
+#callArea {
+  position: absolute;
+  height: 100%;
+  width: 60px;
+  right: 0;
+  top: 0;
+  color: white;
+  padding-top: 3px;
+}
