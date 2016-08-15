@@ -28,7 +28,10 @@ angular.module('careWheels')
    * the ion-content tag:
    *  <p>{{showMacguffin()}}</p>
    *  <p>{{showName()}}</p>
-   *  <p>{{showPresence ()}}</p>
+   *  <p>{{showPhoneNumber()}}</p>
+   *  <p>{{showPresence()}}</p>
+   *  <p>{{showMeals()}}</p>
+   *  <p>{{showMeds()}}</p>
    *  <p>{{showFridgeHits()}}</p>
    *  <p>{{showMedsHits()}}</p>
    *  <p>{{showTime()}}</p>
@@ -42,8 +45,23 @@ angular.module('careWheels')
     return test;
   };
 
+  $scope.showPhoneNumber = function() {
+    var test = analysis.phoneNumber;
+    return test;
+  };
+
   $scope.showPresence = function() {
     var test = analysis.analysisData.presenceByHour;
+    return test;
+  };
+
+  $scope.showMeals = function() {
+    var test = analysis.analysisData.fridgeRollingAlertLevel;
+    return test;
+  };
+
+  $scope.showMeds = function() {
+    var test = analysis.analysisData.medsRollingAlertLevel;
     return test;
   };
   
@@ -850,7 +868,14 @@ angular.module('careWheels')
     }
   };
 
+  $scope.getPhoneNumber = function() {
+    var cyclosPhoneNumber = analysis.phoneNumber;
+    var callString = "tel:";
+    callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) + "-" + cyclosPhoneNumber.substring(8);
+    return callString;
+  };
 
   $scope.name = analysis.name;
   $scope.phoneNumber = analysis.phoneNumber;
+
 });
