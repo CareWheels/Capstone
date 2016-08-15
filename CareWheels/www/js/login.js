@@ -59,13 +59,10 @@ angular.module('careWheels')
               loginTimeout = true;
 
             // alright, lets try to analyze the data
-            try {
-              // only run analyze if sensor data is present
-              if (info[4].sensorData != null){
+            // only run analyze if sensor data is present
+            if (info[4].sensorData != null){
                 dataAnalysis.AnalyzeData();
-              }
             }
-            catch (Exception){ console.log(Exception + ' caught! during analyze data'); } // oh no...
 
             // were taking way to long, ABORT
             if (loginTimeout){

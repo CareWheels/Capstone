@@ -138,6 +138,7 @@ app.factory('User', function (GroupInfo, BASE_URL, $http, API, $state, $httpPara
   console.log('hit User factory');
   var user = {};
   var userService = {};
+  var failCount = 0;
   //window.localStorage['loginCredentials'] = null;
 
   userService.login = function (uname, passwd, rmbr) {
@@ -178,13 +179,16 @@ app.factory('User', function (GroupInfo, BASE_URL, $http, API, $state, $httpPara
       //console.log(response.data);
       //
 
-      if (response.data === "Missing username / password" || response.data === "Invalid username / password")
+      if (failCount >= 3)
+        errorMsg = "Exceeding invalid login attempts. Please Contact admin";
+      else if (response.data === "Missing username / password" || response.data === "Invalid username / password")
         errorMsg = "Please check your credentials!";
       else if (response.data === "Your access is blocked by exceeding invalid login attempts")
         errorMsg = "Account got blocked by exceeding invalid login attempts. Please contact admin";
       else if (response.status == 404)
         errorMsg = "Unable to reach the server";
 
+      failCount++;
       var alertPopup = $ionicPopup.alert({
         title: 'Login failed!',
         template: errorMsg
