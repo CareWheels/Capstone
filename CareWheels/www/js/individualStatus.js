@@ -77,7 +77,7 @@ angular.module('careWheels')
    * This function returns the color for the call button.
    */
   $scope.getCallButtonColor = function() {
-    console.log("getCallButtonColor();", analysis);
+    //console.log("getCallButtonColor();", analysis);
 
     // check for null params
     if (analysis.analysisData.fridgeAlertLevel == null || analysis.analysisData.medsAlertLevel == null)
