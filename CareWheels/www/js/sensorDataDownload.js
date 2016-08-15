@@ -48,8 +48,10 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //we save the value passed in as time to the prevDay variable
     //the time value will be 24 less than current user time, and adjusted for the offset of the sen.se server's timezone
     var prevDay = input['time'];
-
     var carewheelMembers = input['carewheelMembers'];
+    var count = 1;//this will be used in constructing the page 
+
+    var downloadFunc = function(thisMember, accesstoken, refreshtoken){
     var presenceUids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
     var fridgeUids = [];
     var medUids = [];
@@ -64,8 +66,6 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       "Meds": [],
       "Alert": []
     };
-    var count = 1;//this will be used in constructing the page urls
-    var downloadFunc = function(thisMember, accesstoken, refreshtoken){
 
     var dataUrl = "https://apis.sen.se/v2/nodes/";//get page of nodes for this user
     $http({
@@ -81,8 +81,8 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //of the node object with the desired label (presence, med, fridge)
         var getUids = function(arg){
 
-        var feeds = arg.data;
-        var objects = feeds.objects;
+        var nodes = arg.data;
+        var objects = nodes.objects;
         var objectsLength = objects.length;
         for (var i = 0; i < objectsLength; i++){//iterate over all node objects on the returned page
           console.log("CHECKING NODES...");
@@ -134,33 +134,33 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
 
       getUids(response);//adds all specified node objects (and their published uids) to appropriate arrays
                         //only for the first page (10 node objects) of response
-
-/////////HANDLE > 1 pages from /nodes/ endpoint
 /*
-          if (feeds.links.next != null){
-            var feedPages = Math.ceil(feeds.totalObjects / 10);
-            for (var p = 2; p < feedPages + 1; p++){ //this is to handle multiple pages of feed objects returned from sense api
+/////////HANDLE > 1 pages from /nodes/ endpoint
+          if (response.data.links.next != null){ //if there is more than one page of node objects in response
+            var nodePages = Math.ceil(response.data.totalObjects / 10);
+            for (var p = 2; p < nodePages + 1; p++){ //this is to handle multiple pages of node objects returned from sense api
 
             $http({
-              url: "https://apis.sen.se/v2/feeds/?page="+p, //get url of next page
+              url: "https://apis.sen.se/v2/nodes/?page="+p, //get url of next page
               method:'GET',
               headers: {
                 'Authorization': 'Bearer '+input['accesstoken']
               }
             }).then(function(response) {
+              console.log("getting page "+p+" of /nodes/ response");
                 getUids(response);
 
             }, function(response) {
 
                 if (response.status === 403){
                 refreshFunc();
-                console.log("refreshed while retrieving next page of feed objects ");
+                console.log("refreshed while retrieving next page of nodes objects ");
                 //FINISH//////
                 //try to download from sense, but limit after n attempts
                 //to prevent infinite re-attempts
                 }
 
-              console.log("failed while attempting to retrieve next page of feed objects", response);
+              console.log("failed while attempting to retrieve next page of nodes objects", response);
               }
             )
             }
@@ -174,11 +174,57 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         //use lt or gt at end of url to only return events occuring within the last 24 hours
         //1994-11-05T08:15:30-05:00 corresponds to November 5, 1994, 8:15:30 am, US Eastern Standard Time
 
-        ///////////////////
+        ///////////////////////////////////////////////////////////////////
         //TODO
         //handle additional pages of event objects by constructing url for those pages
         //e.g. add &page=15 to get event objects on page 15 if available
-        ///////////////////
+        ///////////////////////////////////////////////////////////////////
+
+/////////////////LOOP TO COLLECT PRESENCE OBJECTS AND PUSH TO APPROPRIATE
+        //var pages;
+        var thisUid = presenceUids[0];//only getting 1 presenceUid right now
+            $http({
+              url:"https://apis.sen.se/v2/feeds/"+thisUid+"/events/"+"?gt="+prevDay,
+              method:'GET',
+              headers: {
+                'Authorization': 'Bearer '+accesstoken
+              }
+            })
+            .then(function(response) {//this will add the first page of objects from /events/ to array
+                var presenceEventList = response.data;
+                //pages = Math.ceil(presenceEventList.totalObjects / 100);
+                for (var j = 0; j < 100; j++){
+                    console.log("getting page 1 of presence events response");
+                    sensorData.Presence.push(presenceEventList.objects[j]);
+                  };  
+            })
+            .catch(function(error) {
+            console.log("An error occured on page 1: " + error);
+            });    
+                             
+                  //for (var m = 2; m < pages + 1; m++){
+             //console.log("this group member has "+pages+" pages of presence event data");
+        for (var m = 2; m < 15; m++){//this is a bad solution (collect 15 pages of presence data)
+            $http({
+              url:"https://apis.sen.se/v2/feeds/"+thisUid+"/events/"+"?gt="+prevDay+"&page="+m,
+              method:'GET',
+              headers: {
+                'Authorization': 'Bearer '+accesstoken
+              }
+            })
+            .then(function(response) {//add each page of event objects (100 objects) to presence array
+                for (var n = 0; n < 100; n++){
+                console.log("getting page "+m+" of /events/ response");
+                sensorData.Presence.push(response.data.objects[n]);
+                };
+            })
+            .catch(function(error) {
+            console.log("An error occured after page 1: " + error);
+            });
+            
+    };
+
+/*
 
 /////////////////LOOP TO COLLECT PRESENCE OBJECTS AND PUSH TO APPROPRIATE
         for (var i = 0; i < presenceLength; i++){//for each uid in uids array
@@ -193,18 +239,19 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                 var eventsLeftToAdd = presenceEventList.totalObjects;
                 if (eventsLeftToAdd < 100){
                   for (var j = 0; j < eventsLeftToAdd; j++){
-                    console.log("pushing presence event to array in first if block...");
+                    console.log("pushing presence event to array. under 100 events, so only 1 page");
                     sensorData.Presence.push(presenceEventList.objects[j]);
                   };
                 }
                 else { // >100 event objects implies more than one page of data
                   for (var k = 0; k < 100; k++){
-                    console.log("pushing presence event to array in first else block...");
+                    console.log("pushing presence event to array. first page of > 1 pages");
                     sensorData.Presence.push(presenceEventList.objects[k]);
                     eventsLeftToAdd = eventsLeftToAdd - 100;
                   };
-                  var pages = Math.ceil(presenceEventList.totalObjects / 100);
+                  var pages = Math.ceil(presenceEventList.totalObjects / 100);                  
                   for (var m = 2; m < pages + 1; m++){
+                    console.log("getting page "+m+" of /events/ response within for loop");
                     $http({
                       url:"https://apis.sen.se/v2/feeds/"+presenceUids[i]+"/events/"+"?gt="+prevDay+"&page="+m,
                       method:'GET',
@@ -214,14 +261,16 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
                     }).then(function(response) {
                         if (eventsLeftToAdd < 100){
                           for (var n = 0; n < eventsLeftToAdd; n++){
-                          console.log("pushing presence event from next page to array (if block)...");
-                          sensorData.Presence.push(presenceEventList.objects[n]);
+                          console.log("getting page "+m+" of /events/ response");
+                          console.log("pushing presence event to array.  less than 100 on this page");
+                          sensorData.Presence.push(response.data.objects[n]);
                           };
                         }
                         else {
                           for (var n = 0; n < 100; n++){
-                          console.log("pushing presence event from next page to array (else block)...");
-                          sensorData.Presence.push(presenceEventList.objects[n]);
+                          console.log("getting page "+m+" of /events/ response");
+                          console.log("pushing presence event to array.  still more pages left...");
+                          sensorData.Presence.push(response.data.objects[n]);
                           eventsLeftToAdd = eventsLeftToAdd - 100;
                           };
                         };
@@ -251,6 +300,8 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
               }
             )
         };
+
+*/
 
 /////////////////LOOP TO COLLECT FRIDGE OBJECTS AND PUSH TO APPROPRIATE
         for (var i = 0; i < fridgeLength; i++){//for each uid in uids array
@@ -537,7 +588,66 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
     //check to see if each group member has valid sense keys.  if not, set sensorData property to null,
     //output the groupmember back to main thread so it can be added to groupInfoWithData array
     //display error in console
+    
+    var length = carewheelMembers.length;
+function syncLoop(iterations, process, exit){  
+    var index = 0,
+        done = false,
+        shouldExit = false;
+    var loop = {
+        next:function(){
+            if(done){
+                if(shouldExit && exit){
+                    return exit(); // Exit if we're done
+                }
+            }
+            // If we're not finished
+            if(index < iterations){
+                index++; // Increment our index
+                process(loop); // Run our process, pass in the loop
+            // Otherwise we're done
+            } else {
+                done = true; // Make sure we say we're done
+                if(exit) exit(); // Call the callback on exit
+            }
+        },
+        iteration:function(){
+            return index - 1; // Return the loop number we're on
+        },
+        break:function(end){
+            done = true; // End the loop
+            shouldExit = end; // Passing end as true means we still call the exit callback
+        }
+    };
+    loop.next();
+    return loop;
+}
 
+syncLoop(length, function(loop){  
+    setTimeout(function(){
+        var z = loop.iteration();
+        //downloadfunc
+        carewheelMembers[z].index = z;
+        if (carewheelMembers[z].customValues[1].stringValue == "000" || carewheelMembers[z].customValues[1].stringValue == "" ||
+          carewheelMembers[z].customValues[2].stringValue == "000" || carewheelMembers[z].customValues[2].stringValue == "")
+          {
+          carewheelMembers[z].sensorData = null;
+          output.notify(JSON.parse(JSON.stringify(carewheelMembers[z])));
+          console.log("error, please obtain valid sen.se keys!");
+        }
+        else{
+        //setTimeout(function(){
+        downloadFunc(carewheelMembers[z], carewheelMembers[z].customValues[1].stringValue, carewheelMembers[z].customValues[2].stringValue);
+        //}, 5000);
+        };
+        loop.next();
+    }, 2000);
+}, function(){
+    console.log('done');
+});
+
+
+/*
     //if user has valid keys, call download function with appropriate keys
     for(z=0; z < carewheelMembers.length; z++ ){
             //return angularWorker.run({name: thesemembers[z].name, refreshtoken: thesemembers[z].customValues[2], accesstoken: thesemembers[z].customValues[1]});
@@ -550,10 +660,16 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         console.log("error, please obtain valid sen.se keys!");
     }
     else{
+      //setTimeout(function(){
       downloadFunc(carewheelMembers[z], carewheelMembers[z].customValues[1].stringValue, carewheelMembers[z].customValues[2].stringValue);
+      //}, 5000);
     };
 
     };
+
+    */
+
+
     //output.notify(JSON.parse(JSON.stringify(events)));
     //refreshFunc();
 
@@ -571,7 +687,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
       .then(function success(angularWorker) {
 
         var date = new Date();//create new data object
-        date.setDate(date.getDate()-1);
+        date.setDate(date.getDate()-2); //roll back date 48 hours (-2 days)
         var userTime = date.toISOString();
 
         //make input object as arg for run()
