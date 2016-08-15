@@ -1,7 +1,9 @@
 <ion-view view-title="app.individualStatus" class="overflow-scroll">
   <ion-nav-title>Status: {{name}}
-    <a href="{{getPhoneNumber()}}">
-    <div id="callArea" class="button button-positive">
+    <a href="{{getPhoneNumber()}}" class="blue">
+    <div id="callArea"
+         class="button"
+         ng-class="getCallButtonColor()">
         Call
     </div>
     </a>

@@ -79,6 +79,26 @@ angular.module('careWheels')
     return timeNow;
   };
 
+  $scope.getCallButtonColor = function() {
+    console.log("getCallButtonColor();", analysis);
+
+    // check for null params
+    if (analysis.analysisData.fridgeAlertLevel == null || analysis.analysisData.medsAlertLevel == null)
+      return 'button-calm';
+
+    var fridge = parseInt(analysis.analysisData.fridgeAlertLevel);
+    var meds = parseInt(analysis.analysisData.medsAlertLevel);
+
+    // check for acceptable bounds
+    if (meds < 0 || meds > 2 || fridge < 0 || fridge > 2)
+      return 'button-calm'; // error state
+
+    else if (fridge == 2 || meds == 2)
+      return  'button-assertive';
+    else
+      return 'button-calm';
+ };
+
   /**
    * This function returns the number of sensor pings to create astericks
    * in the meals and meds columns.
