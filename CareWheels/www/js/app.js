@@ -304,7 +304,7 @@ app.factory("notifications", function($log, $cordovaLocalNotification){
               }).then(function() {
                 $log.log("Notification" + reminderNum + "has been scheduled for " + time.toTimeString() + ", daily");
               });
-          } else console.warn("Plugin disabled");          
+          } else console.warn("Plugin disabled");
         } else {    //need to deschedule notification if it has been turned off
           if(isAndroid){
             $cordovaLocalNotification.cancel(reminderNum, function() {
@@ -380,7 +380,7 @@ app.factory("notifications", function($log, $cordovaLocalNotification){
   return notifications;
 });
 
-/*
+/**
    Parameters
    username: username for login.
    password: password for login.
@@ -393,15 +393,20 @@ app.factory("notifications", function($log, $cordovaLocalNotification){
    callpayment a boolean as String: Records whether or not the crediting is occuring due to
                          a call to a group member. Must be "True" or "False"!
    sensordataviewpayment a boolean as String: Records whether or not the crediting is occuring due to
-                         a detailed sensor screen viewing or not. Must be "True" or "False"! 
-   membersummarypayment a boolean as String: Records whether or not the crediting is occuring due to 
-                                             a member summary screen viewing or not. Must be "True" 
+                         a detailed sensor screen viewing or not. Must be "True" or "False"!
+   membersummarypayment a boolean as String: Records whether or not the crediting is occuring due to
+                                             a member summary screen viewing or not. Must be "True"
                                              or "False"!
 */
-app.factory("PaymentService", function($http, $httpParamSerializerJQLike){
+app.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, API){
   console.log("Hit PaymentService factory");
+
+  var PaymentService = {};
+
+
   PaymentService.call = function(userToDebtAsString, creditsAsFloat, alertlevelAsString) {
     var myUser = User.credentials();
+    console.log(myUser);
     if (myUser != undefined) {
       var status = null;
       var response = null;
@@ -411,7 +416,7 @@ app.factory("PaymentService", function($http, $httpParamSerializerJQLike){
         data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
           username: myUser.username,
           password: myUser.password,
-          usernametodebt: userToDebt,
+          usernametodebt: '',
           usernametocredit: myUser.username,
           credits: creditsAsFloat,
           alertlevel: alertlevelAsString,
@@ -507,4 +512,5 @@ app.factory("PaymentService", function($http, $httpParamSerializerJQLike){
       })
     } else console.error("Cannot make REST call for memberSummary Payment because user credentials are undefined.");
   };
+  return PaymentService;
 });
