@@ -14,19 +14,34 @@ $userService = new Cyclos\UserService();
 $locator = new stdclass();
 $locator->username = $_POST['usernametofind'];
 $userImageService = new Cyclos\UserImageService();
+$accountService = new Cyclos\AccountService();
+$phoneService = new Cyclos\PhoneService();
+$userPhoneNumber = null;
 
 try {
     $user = $userService->locate($locator);
     $userInfo = $userService->load($user->id);
     $userImages = $userImageService->_list($user->id);
-    
+
+    $accountSummary = $accountService->getAccountsSummary(array('username' => $_POST['usernametofind']),NULL);
+    $phoneList = $phoneService->getPhoneListData($locator);
+
+    foreach($phoneList->phones as $item) {
+      
+      if($item->nature == "MOBILE" ) {
+         $userPhoneNumber = $item->normalizedNumber;
+      }
+    }
+
+    $userInfo->phoneNumber = $userPhoneNumber;
+
     if(!empty($userImages)) {
-          $userInfo->photoUrl = "https://carebank.carewheels.org/content/images/user/".$userImages[0]->key;
+          $userInfo->photoUrl = CYCLOSBASEURL . "/content/images/user/".$userImages[0]->key;
     }
     else {
           $userInfo->photoUrl = null;
     }
-
+    $userInfo->balance = $accountSummary[0]->status->balance;
 } catch (Cyclos\ServiceException $e) {
     echo("Error while performing user search: {$e->errorCode}");
     die();

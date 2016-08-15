@@ -4,7 +4,7 @@
  */
 angular.module('careWheels')
 
-  .controller('loginController', function($scope, $controller, User, $state, $ionicLoading, GroupInfo, $interval){
+  .controller('loginController', function($scope, $controller, User, $state, $ionicLoading, GroupInfo, $interval, notifications){
 
     var DOWNLOAD_INTERVAL = 1000 * 60 * 5; // constant interval for download, 5mins
     var dataDownload = $scope.$new();
@@ -21,6 +21,7 @@ angular.module('careWheels')
 
     $scope.rememberMe = false;
     $scope.logoImage = 'img/CareWheelsLogo.png';
+
 
 
     /**
@@ -44,6 +45,9 @@ angular.module('careWheels')
           // do the data download
           dataDownload.DownloadData();
 
+
+
+
           // store the interval promise in this variable
           var intervalPromise = $interval( function(){
             // keep track of how many times we step through the interval
@@ -55,14 +59,10 @@ angular.module('careWheels')
               loginTimeout = true;
 
             // alright, lets try to analyze the data
-            try {
-              // only run analyze if sensor data is present
-              if (info[4].sensorData != null){
+            // only run analyze if sensor data is present
+            if (info[4].sensorData != null){
                 dataAnalysis.AnalyzeData();
-              }
-
             }
-            catch (Exception){ console.log(Exception + ' caught! during analyze data'); } // oh no...
 
             // were taking way to long, ABORT
             if (loginTimeout){
@@ -76,9 +76,10 @@ angular.module('careWheels')
             // sweet we got data, lets break out of this interval
             if (info[4].analysisData != null){
               $interval.cancel(intervalPromise);  // break out of interval
-              $ionicLoading.hide();               // hide loading screen
+              notifications.Init_Notifs();
               scheduleDownload();                 // spin up a download/analyze scheduler
               $state.go('app.groupStatus');       // go to group view
+              $ionicLoading.hide();               // hide loading screen
             }
           }, 500 );
         }

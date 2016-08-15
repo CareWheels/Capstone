@@ -39,10 +39,13 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
         var currentDayPresenceMatrix = [];
         var previousDayPresenceByHour = [];
         var currentDayPresenceByHour = [];
+        var previousDayPresenceHitsByHour = [];
+        var currentDayPresenceHitsByHour = [];
         var constantPresence = [];
         var previousDayFridgeMatrix = [];
         var currentDayFridgeMatrix = [];
-        var fridgeHitsByHour = [];
+        var currentDayFridgeHitsByHour = [];
+        var previousDayFridgeHitsByHour = [];
         var currentDayMedsMatrix = [];
         var previousDayMedsMatrix = [];
         var currentDayMedsHitsByHour = [];
@@ -58,9 +61,12 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
         for (w = 0; w < 24; ++w) {
           previousDayPresenceMatrix[w] = [];
           currentDayPresenceMatrix[w] = [];
+          previousDayPresenceHitsByHour[w] = 0;
+          currentDayPresenceHitsByHour[w] = 0;
           previousDayFridgeMatrix[w] = [];
           currentDayFridgeMatrix[w] = [];
-          fridgeHitsByHour[w] = 0;
+          currentDayFridgeHitsByHour[w] = 0;
+          previousDayFridgeHitsByHour[w] = 0;
           previousDayMedsMatrix[w] = [];
           currentDayMedsMatrix[w] = [];
           previousDayMedsHitsByHour[w] = 0;
@@ -83,21 +89,30 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
         // Populate our matrices
         // console.log("PRESENCE DATA: " + "\n");
 
-        var presenceMatrices = populateDataMatrix(presenceData, previousDayPresenceMatrix, currentDayPresenceMatrix);
+        var presenceMatrices = populateDataMatrix(presenceData, previousDayPresenceMatrix, currentDayPresenceMatrix,
+                                                   previousDayPresenceHitsByHour, currentDayPresenceHitsByHour);
         previousDayPresenceMatrix = presenceMatrices.previousDayDataMatrix;
         currentDayPresenceMatrix = presenceMatrices.currentDayDataMatrix;
+        previousDayPresenceHitsByHour = presenceMatrices.previousDayHitsByHour;
+        currentDayPresenceHitsByHour = presenceMatrices.currentDayHitsByHour;
 
         // console.log("FRIDGE DATA: " + "\n");
 
-        var fridgeMatrices = populateDataMatrix(fridgeData, previousDayFridgeMatrix, currentDayFridgeMatrix);
+        var fridgeMatrices = populateDataMatrix(fridgeData, previousDayFridgeMatrix, currentDayFridgeMatrix,
+                                                 previousDayFridgeHitsByHour, currentDayFridgeHitsByHour);
         previousDayFridgeMatrix = fridgeMatrices.previousDayDataMatrix;
         currentDayFridgeMatrix = fridgeMatrices.currentDayDataMatrix;
+        previousDayFridgeHitsByHour = fridgeMatrices.previousDayHitsByHour;
+        currentDayFridgeHitsByHour = fridgeMatrices.currentDayHitsByHour;
 
         // console.log("MEDS DATA: " + "\n");
 
-        var medsMatrices = populateDataMatrix(medsData, previousDayMedsMatrix, currentDayMedsMatrix);
+        var medsMatrices = populateDataMatrix(medsData, previousDayMedsMatrix, currentDayMedsMatrix,
+                                              previousDayMedsHitsByHour, currentDayMedsHitsByHour);
         previousDayMedsMatrix = medsMatrices.previousDayDataMatrix;
         currentDayMedsMatrix = medsMatrices.currentDayDataMatrix;
+        previousDayMedsHitsByHour = medsMatrices.previousDayHitsByHour;
+        currentDayMedsHitsByHour = medsMatrices.currentDayHitsByHour;
 
         previousDayPresenceByHour = presenceAnalysis(previousDayPresenceMatrix, previousDayPresenceByHour, 23, 59);
         currentDayPresenceByHour = presenceAnalysis(currentDayPresenceMatrix, currentDayPresenceByHour, 13, 59);
@@ -110,7 +125,6 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
         for(w = 0; w < previousDayPresenceByHour.length; w++ ) {
           console.log("previousDayPresenceByHour[" + w + "] " + previousDayPresenceByHour[w]);
         }
-
         for(w = 0; w < currentDayPresenceByHour.length; w++ ) {
           console.log("currentDayPresenceByHour[" + w + "] " + currentDayPresenceByHour[w]);
         }
@@ -177,15 +191,12 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
         for(w = 0; w < previousDayFridgeRollingAlertLevelArray.length; w++) {
           console.log("previousDayFridgeRollingAlertLevelArray[" + w + "] " + previousDayFridgeRollingAlertLevelArray[w]);
         }
-
         for(w = 0; w < currentDayFridgeRollingAlertLevelArray.length; w++) {
           console.log("currentDayFridgeRollingAlertLevelArray[" + w + "] " + currentDayFridgeRollingAlertLevelArray[w]);
         }
-
         for(w = 0; w < previousDayMedsRollingAlertLevelArray.length; w++) {
           console.log("previousDayMedsRollingAlertLevelArray[" + w + "] " + previousDayMedsRollingAlertLevelArray[w]);
         }
-
         for(w = 0; w < currentDayMedsRollingAlertLevelArray.length; w++) {
           console.log("currentDayMedsRollingAlertLevelArray[" + w + "] " + currentDayMedsRollingAlertLevelArray[w]);
         }
@@ -210,17 +221,11 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
 
           medsAlertLevel: newMedsRollingAlertLevel,
           medsRollingAlertLevel: currentDayMedsRollingAlertLevelArray,
-          previousDayMedsRollingAlertLevelArray: previousDayMedsRollingAlertLevelArray,
+          medsHitsByHour: currentDayMedsHitsByHour,
           fridgeAlertLevel: newFridgeRollingAlertLevel,
-          FridgeRollingAlertLevel: currentDayFridgeRollingAlertLevelArray,
-          previousDayFridgeRollingAlertLevelArray: previousDayFridgeRollingAlertLevelArray,
-          currentDayPresenceByHour: currentDayPresenceByHour,
-          previousDayPresenceByhour: previousDayPresenceByHour,
-          currentDayPresenceMatrix: currentDayPresenceMatrix,
-          previousDayPresenceMatrix: previousDayPresenceMatrix,
-          presenceData: presenceData,
-          fridgeData: fridgeData,
-          medsData: medsData
+          fridgeRollingAlertLevel: currentDayFridgeRollingAlertLevelArray,
+          fridgeHitsByHour: currentDayFridgeHitsByHour,
+          presenceByHour: currentDayPresenceByHour
         };
 
         // *******************************************************************************
@@ -255,7 +260,8 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
 //                         derived from the sensorDataArray values.
 // currentDayDataMatrix - The 24x60 element array that will hold the sensor data pings
 //                          derived from the sensorDataArray values.
-  function populateDataMatrix(sensorDataArray, previousDayDataMatrix, currentDayDataMatrix) {
+  function populateDataMatrix(sensorDataArray, previousDayDataMatrix, currentDayDataMatrix,
+                              previousDayHitsByHour, currentDayHitsByHour) {
 
     var utcDateTime;
     var momentInLA;
@@ -285,18 +291,22 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) 
         // console.log("Found CURRENT day ping! current date: " + currentDate.toISOString());
         // console.log("los angeles date time date: " + losAngelesDateTime.toISOString());
         currentDayDataMatrix[hour][min] = true;
+        currentDayHitsByHour[hour] += 1;
       }
       else if(previousDate.isSameDateAs(losAngelesDateTime)) {
         // console.log("Found previous day ping! previous date: " + previousDate.toISOString());
         // console.log("los angeles date time date: " + losAngelesDateTime.toISOString());
         previousDayDataMatrix[hour][min] = true;
+        previousDayHitsByHour[hour] += 1;
       }
     }
 
     var dataMatrices = {
 
       previousDayDataMatrix: previousDayDataMatrix,
-      currentDayDataMatrix: currentDayDataMatrix
+      currentDayDataMatrix: currentDayDataMatrix,
+      previousDayHitsByHour: previousDayHitsByHour,
+      currentDayHitsByHour: currentDayHitsByHour
     };
 
     return dataMatrices;
