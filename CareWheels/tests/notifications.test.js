@@ -4,7 +4,6 @@
 describe('Notifications -', function() {
 
   var notifs = '';
-  var data = '';
   var defaultNotif = [
     {hours: 10, minutes: 0, seconds: 0, on: true},
     {hours: 14, minutes: 0, seconds: 0, on: true},
@@ -17,41 +16,36 @@ describe('Notifications -', function() {
     notifs = _notifications_;
   }));
 
-  it('Init_Notifs():', function() {
-    notifs.Init_Notifs();
-
-    expect(User.credentials).toBeDefined();
-  });
-
-  describe('getData():', function() {
-    var data = notifs.getData();
-    console.log(data);
-
-    expect(data[0].hours).toBe(10);
-    expect(data[0].minutes).toBe(0);
-    expect(data[0].on).toBe(true);
-
-  });
-
-  it('Create_Notif():', function() {
-    //notifs.Create_Notif();
-  });
-
   it('Delete_Reminders():', function() {
     notifs.Delete_Reminders();
+    var data = angular.fromJson(window.localStorage['Reminders']);
+    expect(data).toBe(null);
   });
 
-  it('Toggle_Off_Notif():', function() {
-    //notifs.Toggle_Off_Notif();
+  it('Init_Notifs():', function() {
+    notifs.Init_Notifs();
+    var data = angular.fromJson(window.localStorage['Reminders']);
+    expect(data).toBeDefined();
+    expectDefaultValues(data);
   });
 
-  it('Notifs_Status():', function() {
-    //notifs.Notifs_Status();
-  });
+/*  describe('Create_Notif():', function() {
+    notifs.Create_Notif(10, 5, 0, true, 1);//hours, minutes, seconds, isOn, reminderNum
+    it('verify data', function(){
+      var data = angular.fromJson(window.localStorage['Reminders']);
+      expect(data).toBeDefined();
+      expect(data[0].hours).toBe(10);
+      expect(data[0].minutes).toBe(5);
+      expect(data[0].on).toBe(true);
+    });
+  });*/
 
-  it('Reminder_As_String():', function() {
-    //notifs.Reminder_As_String();
-  });
-
+  function expectDefaultValues(data) {
+    for (var i=0; i<3; i++){
+      expect(data[i].hours).toBe(defaultNotif[i].hours);
+      expect(data[i].minutes).toBe(defaultNotif[i].minutes);
+      expect(data[i].on).toBe(defaultNotif[i].on);
+    }
+  }
 
 });
