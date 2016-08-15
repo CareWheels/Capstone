@@ -181,7 +181,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
         ///////////////////////////////////////////////////////////////////
 
 /////////////////LOOP TO COLLECT PRESENCE OBJECTS AND PUSH TO APPROPRIATE
-
+        //var pages;
         var thisUid = presenceUids[0];//only getting 1 presenceUid right now
             $http({
               url:"https://apis.sen.se/v2/feeds/"+thisUid+"/events/"+"?gt="+prevDay,
@@ -192,6 +192,7 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
             })
             .then(function(response) {//this will add the first page of objects from /events/ to array
                 var presenceEventList = response.data;
+                //pages = Math.ceil(presenceEventList.totalObjects / 100);
                 for (var j = 0; j < 100; j++){
                     console.log("getting page 1 of presence events response");
                     sensorData.Presence.push(presenceEventList.objects[j]);
@@ -200,7 +201,9 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
             .catch(function(error) {
             console.log("An error occured on page 1: " + error);
             });    
-
+                             
+                  //for (var m = 2; m < pages + 1; m++){
+             //console.log("this group member has "+pages+" pages of presence event data");
         for (var m = 2; m < 15; m++){//this is a bad solution (collect 15 pages of presence data)
             $http({
               url:"https://apis.sen.se/v2/feeds/"+thisUid+"/events/"+"?gt="+prevDay+"&page="+m,
@@ -638,7 +641,7 @@ syncLoop(length, function(loop){
         //}, 5000);
         };
         loop.next();
-    }, 3000);
+    }, 2000);
 }, function(){
     console.log('done');
 });
