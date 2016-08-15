@@ -393,145 +393,145 @@ angular.module('careWheels')
     switch(time) {
     case 'midnight':
       if (timeNow >= 0) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[0]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[0]);
       } else {
         return "";
       }
     case 'one':
       if (timeNow >= 1) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[1]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[1]);
       } else {
         return "";
       }
     case 'two':
       if (timeNow >= 2) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[2]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[2]);
       } else {
         return "";
       }
     case 'three':
       if (timeNow >= 3) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[3]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[3]);
       } else {
         return "";
       }
     case 'four':
       if (timeNow >= 4) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[4]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[4]);
       } else {
         return "";
       }
     case 'five':
       if (timeNow >= 5) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[5]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[5]);
       } else {
         return "";
       }
     case 'six':
       if (timeNow >= 6) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[6]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[6]);
       } else {
         return "";
       }
     case 'seven':
       if (timeNow >= 7) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[7]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[7]);
       } else {
         return "";
       }
     case 'eight':
       if (timeNow >= 8) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[8]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[8]);
       } else {
         return "";
       }
     case 'nine':
       if (timeNow >= 9) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[9]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[9]);
       } else {
         return "";
       }
     case 'ten':
       if (timeNow >= 10) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[10]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[10]);
       } else {
         return "";
       }
     case 'eleven':
       if (timeNow >= 11) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[11]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[11]);
       } else {
         return "";
       }
     case 'twelve':
       if (timeNow >= 12) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[12]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[12]);
       } else {
         return "";
       }
     case 'thirteen':
       if (timeNow >= 13) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[13]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[13]);
       } else {
         return "";
       }
     case 'fourteen':
       if (timeNow >= 14) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[14]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[14]);
       } else {
         return "";
       }
     case 'fifteen':
       if (timeNow >= 15) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[15]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[15]);
       } else {
         return "";
       }
     case 'sixteen':
       if (timeNow >= 16) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[16]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[16]);
       } else {
         return "";
       }
     case 'seventeen':
       if (timeNow >= 17) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[17]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[17]);
       } else {
         return "";
       }
     case 'eighteen':
       if (timeNow >= 18) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[18]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[18]);
       } else {
         return "";
       }
     case 'nineteen':
       if (timeNow >= 19) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[19]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[19]);
       } else {
         return "";
       }
     case 'twenty':
       if (timeNow >= 20) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[20]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[20]);
       } else {
         return "";
       }
     case 'twentyone':
       if (timeNow >= 21) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[21]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[21]);
       } else {
         return "";
       }
     case 'twentytwo':
       if (timeNow >= 22) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[22]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[22]);
       } else {
         return "";
       }
     case 'twentythree':
       if (timeNow >= 23) {
-        return $scope.returnStatusColor(analysis.analysisData.fridgeHitsByHour[23]);
+        return $scope.returnStatusColor(analysis.analysisData.fridgeRollingAlertLevel[23]);
       } else {
         return "";
       }
@@ -548,145 +548,145 @@ angular.module('careWheels')
     switch(time) {
     case 'midnight':
       if (timeNow >= 0) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[0]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[0]);
       } else {
         return "";
       }
     case 'one':
       if (timeNow >= 1) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[1]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[1]);
       } else {
         return "";
       }
     case 'two':
       if (timeNow >= 2) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[2]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[2]);
       } else {
         return "";
       }
     case 'three':
       if (timeNow >= 3) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[3]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[3]);
       } else {
         return "";
       }
     case 'four':
       if (timeNow >= 4) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[4]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[4]);
       } else {
         return "";
       }
     case 'five':
       if (timeNow >= 5) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[5]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[5]);
       } else {
         return "";
       }
     case 'six':
       if (timeNow >= 6) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[6]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[6]);
       } else {
         return "";
       }
     case 'seven':
       if (timeNow >= 7) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[7]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[7]);
       } else {
         return "";
       }
     case 'eight':
       if (timeNow >= 8) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[8]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[8]);
       } else {
         return "";
       }
     case 'nine':
       if (timeNow >= 9) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[9]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[9]);
       } else {
         return "";
       }
     case 'ten':
       if (timeNow >= 10) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[10]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[10]);
       } else {
         return "";
       }
     case 'eleven':
       if (timeNow >= 11) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[11]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[11]);
       } else {
         return "";
       }
     case 'twelve':
       if (timeNow >= 12) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[12]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[12]);
       } else {
         return "";
       }
     case 'thirteen':
       if (timeNow >= 13) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[13]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[13]);
       } else {
         return "";
       }
     case 'fourteen':
       if (timeNow >= 14) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[14]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[14]);
       } else {
         return "";
       }
     case 'fifteen':
       if (timeNow >= 15) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[15]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[15]);
       } else {
         return "";
       }
     case 'sixteen':
       if (timeNow >= 16) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[16]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[16]);
       } else {
         return "";
       }
     case 'seventeen':
       if (timeNow >= 17) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[17]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[17]);
       } else {
         return "";
       }
     case 'eighteen':
       if (timeNow >= 18) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[18]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[18]);
       } else {
         return "";
       }
     case 'nineteen':
       if (timeNow >= 19) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[19]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[19]);
       } else {
         return "";
       }
     case 'twenty':
       if (timeNow >= 20) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[20]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[20]);
       } else {
         return "";
       }
     case 'twentyone':
       if (timeNow >= 21) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[21]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[21]);
       } else {
         return "";
       }
     case 'twentytwo':
       if (timeNow >= 22) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[22]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[22]);
       } else {
         return "";
       }
     case 'twentythree':
       if (timeNow >= 23) {
-        return $scope.returnStatusColor(analysis.analysisData.medsHitsByHour[23]);
+        return $scope.returnStatusColor(analysis.analysisData.medsRollingAlertLevel[23]);
       } else {
         return "";
       }
@@ -852,4 +852,5 @@ angular.module('careWheels')
 
 
   $scope.name = analysis.name;
+  $scope.phoneNumber = analysis.phoneNumber;
 });
