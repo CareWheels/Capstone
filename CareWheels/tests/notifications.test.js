@@ -5,6 +5,11 @@ describe('Notifications -', function() {
 
   var notifs = '';
   var data = '';
+  var defaultNotif = [
+    {hours: 10, minutes: 0, seconds: 0, on: true},
+    {hours: 14, minutes: 0, seconds: 0, on: true},
+    {hours: 19, minutes: 0, seconds: 0, on: true}
+  ];
 
   beforeEach(module('careWheels'));
 
@@ -14,10 +19,18 @@ describe('Notifications -', function() {
 
   it('Init_Notifs():', function() {
     notifs.Init_Notifs();
+
+    expect(User.credentials).toBeDefined();
   });
 
-  it('getData():', function() {
-    notifs.getData();
+  describe('getData():', function() {
+    var data = notifs.getData();
+    console.log(data);
+
+    expect(data[0].hours).toBe(10);
+    expect(data[0].minutes).toBe(0);
+    expect(data[0].on).toBe(true);
+
   });
 
   it('Create_Notif():', function() {
