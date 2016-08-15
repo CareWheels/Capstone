@@ -21,7 +21,7 @@ angular.module('careWheels')
   var timeNow = new Date().getHours();
 
   /**
-   * The following several functions are used to display text on the 
+   * The following several functions are used to display text on the
    * individualStatus page. This is so that you can check if the page
    * is populating as expected based on the data that was analyzed.
    * To use them paste the following in indiviualStatus.html within
@@ -64,7 +64,7 @@ angular.module('careWheels')
     var test = analysis.analysisData.medsRollingAlertLevel;
     return test;
   };
-  
+
   $scope.showFridgeHits = function() {
     var test = analysis.analysisData.fridgeHitsByHour;
     return test;
@@ -101,9 +101,9 @@ angular.module('careWheels')
       return "* * * * * * ";
     }
   };
-  
+
   /**
-   * This function displays the number of times a sensor pinged during a 
+   * This function displays the number of times a sensor pinged during a
    * partucular hour using the analysis object.
    */
   $scope.getPings = function(time, type) {
@@ -376,9 +376,9 @@ angular.module('careWheels')
         return 'error';
     }
   };
-  
+
   /**
-   * This function returns the color to be returned to populate the presence 
+   * This function returns the color to be returned to populate the presence
    * column.
    */
   $scope.returnPresenceColor = function(data) {
@@ -388,9 +388,9 @@ angular.module('careWheels')
       return "grey";
     }
   };
-  
+
   /**
-   * This function returns the color to be returned to populate the meals/meds 
+   * This function returns the color to be returned to populate the meals/meds
    * columns.
    */
   $scope.returnStatusColor = function(data) {
@@ -402,9 +402,9 @@ angular.module('careWheels')
       return "red";
     }
   };
-  
+
   /**
-   * This function uses the analysis object to populate the meals column for the 
+   * This function uses the analysis object to populate the meals column for the
    * given times.
    */
   $scope.getMealsStatus = function(time) {
@@ -559,7 +559,7 @@ angular.module('careWheels')
   };
 
   /**
-   * This function uses the analysis object to populate the meds column for the 
+   * This function uses the analysis object to populate the meds column for the
    * given times.
    */
   $scope.getMedsStatus = function(time) {
@@ -714,7 +714,7 @@ angular.module('careWheels')
   };
 
   /**
-   * This function uses the analysis object to populate the presence column for the 
+   * This function uses the analysis object to populate the presence column for the
    * given times.
    */
   $scope.getPresence = function(time) {
@@ -869,9 +869,13 @@ angular.module('careWheels')
   };
 
   $scope.getPhoneNumber = function() {
+    console.log('hit getPhoneNumber()');
+    console.log(analysis);
     var cyclosPhoneNumber = analysis.phoneNumber;
+    console.log(cyclosPhoneNumber);
     var callString = "tel:";
     callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) + "-" + cyclosPhoneNumber.substring(8);
+    console.log(callString);
     return callString;
   };
 
