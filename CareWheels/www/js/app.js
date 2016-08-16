@@ -289,8 +289,14 @@ angular.module('careWheels', [
 
 
 //Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
-.factory("notifications", function($log, $cordovaLocalNotification){
+.factory("notifications", function($log, $cordovaLocalNotification, $fileLogger, fileloggerService){
+  fileloggerService.initLogComponent();
   var isAndroid = window.cordova!=undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
+  var errorMsg = true;
+  if(!isAndroid && errorMsg){
+    $fileLogger.log('warn', 'Notifications are disabled.');    
+    errorMsg = false;
+  } 
   var data;   //needs to be called outside the functions so it persists for all of them
 
   var notifications = {};
@@ -435,8 +441,10 @@ angular.module('careWheels', [
                                              a member summary screen viewing or not. Must be "True"
                                              or "False"!
 */
-.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, API){
+.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, API, $fileLogger, fileloggerService){
   var PaymentService = {};
+  fileloggerService.initLogComponent();
+  var credentialsError = true;     //to prevent error from flooding log
 
   //creates a calling transaction; endpoint will also debit the user passed in as userToDebtAsString same amount
   PaymentService.call = function(userToDebtAsString, creditsAsFloat, alertlevelAsString) {
@@ -472,7 +480,13 @@ angular.module('careWheels', [
           console.error(data);
         } else console.log('Success: ' + data);
       })
-    } else console.error("Cannot make REST call for Call  Payment because user credentials are undefined.");
+    } else{
+      console.error("Cannot make REST call for Call  Payment because user credentials are undefined.");
+      if(credentialsError){
+        $fileLogger.log('error', 'Cannot make REST calls for Call Payment because user credentials are undefined.');
+        credentialsError = false;
+      }
+    } 
   };
 
   //creates IndividualStatus Sensor View transaction; alertLevel is status of the user that is being viewed
@@ -509,7 +523,13 @@ angular.module('careWheels', [
           console.error(data);
         } else console.log('Success: ' + data);
       })
-    } else console.error("Cannot make REST call for sensorDataView Payment because user credentials are undefined.");
+    } else{
+      console.error("Cannot make REST call for DataView Payment because user credentials are undefined.");
+      if(credentialsError){
+        $fileLogger.log('error', 'Cannot make REST calls for DataView Payment because user credentials are undefined.');
+        credentialsError = false;
+      }
+    }
   };
 
   //creates home page transaction
@@ -546,7 +566,13 @@ angular.module('careWheels', [
           console.error(data);
         } else console.log('Success: ' + data);
       })
-    } else console.error("Cannot make REST call for memberSummary Payment because user credentials are undefined.");
+    } else{
+      console.error("Cannot make REST call for memberSummary Payment because user credentials are undefined.");
+      if(credentialsError){
+        $fileLogger.log('error', 'Cannot make REST calls for memberSummary Payment because user credentials are undefined.');
+        credentialsError = false;
+      }
+    }
   };
   return PaymentService;
 });
