@@ -372,7 +372,7 @@ angular.module('careWheels', [
   };
 
   return notifications;
-});
+})
 
 /** Call one of this service's functions to create credit the user for one of the types of transactions.
    Parameters
@@ -392,9 +392,7 @@ angular.module('careWheels', [
                                              a member summary screen viewing or not. Must be "True"
                                              or "False"!
 */
-app.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, API){
-  console.log("Hit PaymentService factory");
-
+.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, API){
   var PaymentService = {};
 
   //creates a calling transaction; endpoint will also debit the user passed in as userToDebtAsString same amount
