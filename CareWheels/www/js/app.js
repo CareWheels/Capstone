@@ -384,7 +384,7 @@ app.factory("notifications", function($log, $cordovaLocalNotification){
   return notifications;
 });
 
-/**
+/** Call one of this service's functions to create credit the user for one of the types of transactions.
    Parameters
    username: username for login.
    password: password for login.
@@ -407,15 +407,14 @@ app.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, 
 
   var PaymentService = {};
 
-
+  //creates a calling transaction; endpoint will also debit the user passed in as userToDebtAsString same amount
   PaymentService.call = function(userToDebtAsString, creditsAsFloat, alertlevelAsString) {
-    var myUser = User.credentials();
-    console.log(myUser);
-    if (myUser != undefined) {
+    var myUser = User.credentials();    //get credentials
+    if (myUser != undefined) {    //can't do anything without them
       var status = null;
       var response = null;
       $http({
-        url: API.creditUser,
+        url: API.creditUser,    //creates URL for REST call
         method: 'POST',    //all our custom REST endpoints have been designed to use POST
         data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
           username: myUser.username,
@@ -424,7 +423,7 @@ app.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, 
           usernametocredit: myUser.username,
           credits: creditsAsFloat,
           alertlevel: alertlevelAsString,
-          callpayment: 'True',
+          callpayment: 'True',    //all three of these fields are needed
           sensordataviewpayment: 'False',
           membersummarypayment: 'False'
         }),
@@ -445,6 +444,7 @@ app.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, 
     } else console.error("Cannot make REST call for Call  Payment because user credentials are undefined.");
   };
 
+  //creates IndividualStatus Sensor View transaction; alertLevel is status of the user that is being viewed
   PaymentService.sensorDataView = function(creditsAsFloat, alertlevelAsString) {
     var myUser = User.credentials();
     if (myUser != undefined) {
@@ -481,6 +481,7 @@ app.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, 
     } else console.error("Cannot make REST call for sensorDataView Payment because user credentials are undefined.");
   };
 
+  //creates home page transaction
   PaymentService.memberSummary = function(creditsAsFloat) {
     var myUser = User.credentials();
     if (myUser != undefined) {
@@ -495,7 +496,7 @@ app.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, 
           usernametodebt: '',
           usernametocredit: myUser.username,
           credits: creditsAsFloat,
-          alertlevel: 'na',
+          alertlevel: 'na',   //field needs to have something in it
           callpayment: 'False',
           sensordataviewpayment: 'False',
           membersummarypayment: 'True'
