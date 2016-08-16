@@ -174,17 +174,21 @@ angular.module('careWheels', [
       //CHECKING TO FOR 404 ERRROR
       //response.status = 404;
       //response.data = "nothing";
-      //console.log(response.data);
       //
+      console.log(response.status);
+      console.log(response.data); 
+
 
       if (failCount >= 3)
         errorMsg = "Exceeding invalid login attempts. Please Contact admin";
-      else if (response.data === "Missing username / password" || response.data === "Invalid username / password")
+      else if (response.status == 400)
         errorMsg = "Please check your credentials!";
-      else if (response.data === "Your access is blocked by exceeding invalid login attempts")
-        errorMsg = "Account got blocked by exceeding invalid login attempts. Please contact admin";
+      else if (response.status == 401)
+        errorMsg = "The entered username is incorrect.";
       else if (response.status == 404)
         errorMsg = "Unable to reach the server";
+      else if (response.data === "Your access is blocked by exceeding invalid login attempts")
+        errorMsg = "Account got blocked by exceeding invalid login attempts. Please contact admin";
 
       failCount++;
       var alertPopup = $ionicPopup.alert({
