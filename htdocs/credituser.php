@@ -29,9 +29,10 @@ $query->period = array("begin"=> date("Y-m-d")."T00:00:00.000", "end" => date("Y
 $query->pageSize = 9999;
 
 $memberSummaryPaymentCheck;
+$memberSummaryPaymentCount = 0;
 $callPaymentCheck;
 $sensorDataViewPaymentCheck;
-$memberSummaryPaymentCount = 0;
+$sensorDataViewPaymentCount = 0;
 $parsed_date;
 http_response_code(400);  
 
@@ -52,19 +53,7 @@ try {
                      $memberSummaryPaymentCheck = $value->booleanValue;
                      #echo("Member summary payment value: " . $memberSummaryPaymentCheck . " ");
                 }
-
-                if($value->field->internalName == CALL_PAYMENT) {
-                    $callPaymentCheck = $value->booleanValue;
-                    #echo("Call payment value: "  . $callPaymentCheck . " ");
-                }
-
-                if($value->field->internalName == SENSOR_DATA_VIEW_PAYMENT) {
-                    $sensorDataViewPaymentCheck = $value->booleanValue;
-                    #echo("Sensor Data View Payment value: " . $sensorDataViewPaymentCheck . " ");
-                }
             }
-
-            # We are currently not doing anything with SENSOR_DATA_VIEW PAYMENT or CALL_PAYMENT.
 
             if($memberSummaryPaymentCheck == "1") {
                #echo("FOUND A MEMBER SUMMARY PAYMENT! ");
@@ -89,6 +78,45 @@ try {
     else {
          $memberSummaryPaymentValue = False;
     }
+	
+    if($_POST['sensordataviewpayment'] == "True") {
+        $sensorDataPaymentValue = True;
+	  
+	$paymentList = $paymentService->search($query);
+
+        foreach($paymentList->pageItems as $item) {
+
+            $payment = $paymentService->getData($item->id);
+
+            foreach($payment->transaction->customValues as $value) {
+
+                if($value->field->internalName == SENSOR_DATA_VIEW_PAYMENT) {
+                    $sensorDataViewPaymentCheck = $value->booleanValue;
+                    #echo("Sensor Data View Payment value: " . $sensorDataViewPaymentCheck . " ");
+                }
+            }
+
+            if($sensorDataViewPaymentCheck == "1") {
+
+                 $parsed_date = date_parse($payment->transaction->date);
+                 #echo("PARSED DATE HOUR: " . $parsed_date["hour"]);
+
+                 if($parsed_date["hour"] == date("H") ) {
+                    $sensorDataViewPaymentCount++;
+		    
+                    #echo('TOTAL NUMBER OF $sensorDataViewPaymentCount: ' . $sensorDataViewPaymentCount . ' ');    		  
+	            if($sensorDataViewPaymentCount >= MAX_SENSOR_DATA_VIEW_CREDITS_PER_HOUR) {
+                        #echo("FOUND MAX SENSOR DATA VIEW CREDITS PER HOUR!");
+                        http_response_code(200);
+		        die();
+	            }
+                 }
+            }
+       }
+    }
+    else {
+     $sensorDataPaymentValue = False;
+    }
 
 
     if($_POST['callpayment'] == "True") {
@@ -110,14 +138,6 @@ try {
 
     $sensorDataViewPayment_field = new stdclass();
     $sensorDataViewPayment_field->field = array('internalName' => 'SensorDataViewPayment');
-
-    if($_POST['sensordataviewpayment'] == "True") {
-      $sensorDataPaymentValue = True;
-    }
-    else {
-     $sensorDataPaymentValue = False;
-    }
-
     $sensorDataViewPayment_field->booleanValue = $sensorDataPaymentValue; 
 
     $callPayment_field = new stdclass();

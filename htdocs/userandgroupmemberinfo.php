@@ -10,6 +10,7 @@
 
 include('login.php');
 
+http_response_code(400);
 $userService = new Cyclos\UserService();
 $accountService = new Cyclos\AccountService();
 $phoneService = new Cyclos\PhoneService();
@@ -30,6 +31,11 @@ $groupInternalName = $userInfo->group->internalName;
 $query = new stdclass();
 $query->groups = $groupInternalName;
 $query->pageSize = 9999;
+
+if($groupInternalName == "") {
+  echo("User is not in a group!");
+  die();
+}
 
 try {
     $page = $userService->search($query);
