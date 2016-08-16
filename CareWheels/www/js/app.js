@@ -176,7 +176,7 @@ angular.module('careWheels', [
       //response.data = "nothing";
       //
       console.log(response.status);
-      console.log(response.data); 
+      console.log(response.data);
 
 
       if (failCount >= 3)
@@ -197,6 +197,48 @@ angular.module('careWheels', [
       });
     })
   };
+
+    userService.credentials = function () {
+      if (!user.username)
+        return null;
+      return user;
+    };
+
+    userService.getVacationValue = function () {
+
+      var creds = userService.credentials();
+      var currentUserObject = GroupInfo.getMember(creds.username);
+      // console.log("currentUserobject is: " + currentUserObject);
+
+      for(var i = 0; i < currentUserObject.customValues.length; i++) {
+
+        if (currentUserObject.customValues[i].field.internalName == "onVacation") {
+          // console.log("Found custom field onVacation!");
+          //console.log("Setting value to: " + currentUserObject.customValues[i].booleanValue);
+           return currentUserObject.customValues[i].booleanValue;
+        }
+      }
+
+      return null;
+    };
+
+    userService.setVacationValue = function (newValue) {
+
+      var creds = userService.credentials();
+      var currentUserObject = GroupInfo.getMember(creds.username);
+
+      // console.log("currentUserobject is: " + currentUserObject);
+
+      for(var i = 0; i < currentUserObject.customValues.length; i++) {
+
+        if (currentUserObject.customValues[i].field.internalName == "onVacation") {
+          // console.log("Found custom field onVacation!");
+          // console.log("Setting local value to: " + currentUserObject.customValues[i].booleanValue);
+          currentUserObject.customValues[i].booleanValue = newValue;
+          //console.log("Local value is now: " + currentUserObject.customValues[i].booleanValue);
+        }
+      }
+    };
 
     userService.setOnVacation = function (uname, passwd, onVacationSetting) {
       $ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
@@ -221,12 +263,6 @@ angular.module('careWheels', [
         $ionicLoading.hide();   //make sure to hide loading screen
       })
     };
-
-  userService.credentials = function () {
-    if (!user.username)
-      return null;
-    return user;
-  };
 
   return userService;
 })
