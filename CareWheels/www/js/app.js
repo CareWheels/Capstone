@@ -30,7 +30,7 @@ angular.module('careWheels', [
         $state.go('login');
       }
     }
-  })
+  });
 
 
   $ionicPlatform.registerBackButtonAction(function (event) {
@@ -264,6 +264,7 @@ angular.module('careWheels', [
       })
     };
 
+
   return userService;
 })
 
@@ -285,6 +286,7 @@ angular.module('careWheels', [
       $state.go('app.tests');
     };
 })
+
 
 //Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
 .factory("notifications", function($log, $cordovaLocalNotification){
@@ -391,33 +393,6 @@ angular.module('careWheels', [
 
     window.localStorage['Reminders'] = null;   //and delete Reminders array
     data = null;
-  };
-
-  //Unschedules a local notification as per Delete_Notif but does NOT clear storage or data index; to be used by User Reminder's Toggle()
-  notifications.Toggle_Off_Notif = function(id){
-    data = angular.fromJson(window.localStorage['Reminders']);
-    if(id==1||id==2||id==3){
-      data[id-1].on = false;
-      window.localStorage['Reminders'] = angular.toJson(data);   //and save data so toggle is remembered
-    }
-    if(isAndroid){
-      $cordovaLocalNotification.clear(id, function() {
-        $log.log(id + " is cleared");
-      });
-    } else $log.warn("Plugin disabled");
-  };
-
-  //prints the in-memory and scheduled status of Reminders, for testing purposes
-  notifications.Notifs_Status = function(){
-    //data = angular.fromJson(window.localStorage['Reminders']);
-    alert("In memory: \nReminder 1= (" +data[0].on +") "+ data[0].hours + ":" + data[0].minutes + ":" + data[0].seconds +
-      "\nReminder 2= (" +data[0].on +") "+ data[1].hours + ":" + data[1].minutes + ":" + data[1].seconds +
-      "\nReminder 3= (" +data[0].on +") "+ data[2].hours + ":" + data[2].minutes + ":" + data[2].seconds);
-    if(isAndroid){
-      cordova.plugins.notification.local.get([1, 2, 3], function (notifications) {
-        alert("Scheduled: " + notifications);
-      });
-    } else $log.warn("Plugin disabled");
   };
 
   /**

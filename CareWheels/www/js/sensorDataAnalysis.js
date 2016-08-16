@@ -1,9 +1,12 @@
-angular.module('careWheels')
+
+var app = angular.module('careWheels');
 /////////////////////////////////////////////////////////////////////////////////////////
 //Controller for Sensor Data Analysis
 //Will receive parsed feed data from the injected DataService factory
 /////////////////////////////////////////////////////////////////////////////////////////
-.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) {
+
+app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment, notifications) {
+
 
   $scope.AnalyzeData = function(){
     var analyzeData = function(){
@@ -203,17 +206,11 @@ angular.module('careWheels')
         */
 
         if(newMedsRollingAlertLevel >= 2) {
-
-          var notifViewModel = $scope.$new();   //to access Notifications functions
-          $controller('NotificationController',{$scope : notifViewModel });
-          notifViewModel.Create_Notif(0, 0, 0, false, 0);
+          notifications.Create_Notif(0, 0, 0, false, 0);
         }
 
         if(newFridgeRollingAlertLevel >= 2) {
-
-          var notifViewModel = $scope.$new();   //to access Notifications functions
-          $controller('NotificationController',{$scope : notifViewModel });
-          notifViewModel.Create_Notif(0, 0, 0, false, 0);
+          notifications.Create_Notif(0, 0, 0, false, 0);
         }
 
 
