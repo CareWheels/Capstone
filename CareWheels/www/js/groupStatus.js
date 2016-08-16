@@ -47,7 +47,7 @@ angular.module('careWheels').controller('groupStatusController',
         balance: '0.0',
         image: '',
         userSelected: '',
-        displayedError: false,
+        displayedError: GroupInfo.getSensorError(),
         selfUserIndex: 0
 
       },
