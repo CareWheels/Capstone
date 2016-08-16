@@ -71,6 +71,14 @@ angular.module('careWheels', [
   var groupInfoService = {};
   var groupInfo = [];
   var memberSelected;
+  var sensorError = false;
+
+  groupInfoService.setSensorError = function(boolean){
+    sensorError = boolean;
+  };
+  groupInfoService.getSensorError = function(){
+    return sensorError;
+  };
 
   groupInfoService.initGroupInfo = function (data) {
     return groupInfo = data;
