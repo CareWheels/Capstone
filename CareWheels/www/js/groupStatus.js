@@ -141,9 +141,11 @@ angular.module('careWheels').controller('groupStatusController',
           }
           // on the last element of the loop, now check health
           if (i == groupArray.length - 1) {
+            if(!GroupInfo.getSensorError())
             $scope.checkGroupHealth();
           }
         }
+
       }
       // sweet, next lets set the data for the user that logged in,
       // this is reserved at index zero.
@@ -227,8 +229,15 @@ angular.module('careWheels').controller('groupStatusController',
         // on the last element now
         if (i == $scope.group.length - 1) {
           // no errors? then return
-          if (errorCount == 0)
+          if (errorCount == 0){
+            GroupInfo.setSensorError(false);
             return true;
+          }
+
+
+          // error found! set the error variable
+          if(errorCount > 0)
+            GroupInfo.setSensorError(true);
 
           //lets craft up a string to be displayed
           var errorString = '';
