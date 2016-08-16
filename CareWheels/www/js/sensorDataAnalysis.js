@@ -6,7 +6,7 @@ angular.module('careWheels')
 .controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) {
 
   $scope.AnalyzeData = function(){
-    var testFunc = function(){
+    var analyzeData = function(){
 
       $scope.groupData = GroupInfo.groupInfo();
       console.log('contents of $scope.groupData before analysis ', $scope.groupData);
@@ -118,7 +118,7 @@ angular.module('careWheels')
         currentDayPresenceByHour = presenceAnalysis(currentDayPresenceMatrix, currentDayPresenceByHour, 13, 59);
 
         for(w = 0; w < presenceData.length; w++ ) {
-          console.log("presenceData[" + w + "] " + presenceData[w]);
+        //  console.log("presenceData[" + w + "] " + presenceData[w]);
         }
 
         /*
@@ -246,10 +246,9 @@ angular.module('careWheels')
         GroupInfo.groupInfo();
         console.log("group after analysis", GroupInfo.groupInfo());
       }
-
     };
 
-    testFunc();
+    analyzeData();
     //console.log('contents of $scope.groupData in Analysis', $scope.groupData);
 
   };

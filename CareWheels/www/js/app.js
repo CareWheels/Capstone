@@ -59,8 +59,8 @@ angular.module('careWheels', [
     updateUserReminders: BASE_URL + '/updateuserreminders.php',
     groupMemberInfo: BASE_URL + '/groupmemberinfo.php',
     updateLastOwnership: BASE_URL + '/updatelastownershiptakentime.php',
-    dailyTrxHist: BASE_URL + '/dailytransactionhistory.php',
-    creditUser: BASE_URL + '/credituser.php'
+    creditUser: BASE_URL + '/credituser.php',
+    updateSettings:BASE_URL + '/updatesettings.php'
   };
   return api;
 })
@@ -194,6 +194,30 @@ angular.module('careWheels', [
     })
   };
 
+    userService.setOnVacation = function (uname, passwd, onVacationSetting) {
+      $ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
+        template: '<ion-spinner></ion-spinner>' +
+        '<p>Contacting Server...</p>'
+      });
+
+      return $http({
+        url: API.updateSettings,
+        method: 'POST',
+        data: $httpParamSerializerJQLike({
+          username: uname,
+          password: passwd,
+          usernametoupdate: uname,
+          onvacation: onVacationSetting
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }).then(function (response) {
+        console.log("Successfully updated vacation setting!");
+        $ionicLoading.hide();   //make sure to hide loading screen
+      })
+    };
+
   userService.credentials = function () {
     if (!user.username)
       return null;
@@ -205,17 +229,21 @@ angular.module('careWheels', [
 
 .controller('menu', function ($scope, $state) {
 
-  $scope.clickGroup = function () {
-    $state.go('app.groupStatus');
-  };
+    $scope.clickGroup = function () {
+      $state.go('app.groupStatus');
+    };
 
-  $scope.clickReminders = function () {
-    $state.go('app.reminders');
-  };
+    $scope.clickReminders = function () {
+      $state.go('app.reminders');
+    };
 
-  $scope.clickTests = function () {
-    $state.go('app.tests');
-  }
+    $scope.clickSettings = function () {
+      $state.go('app.settings');
+    };
+
+    $scope.clickTests = function () {
+      $state.go('app.tests');
+    };
 })
 
 //Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
