@@ -5,20 +5,20 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 
-var app = angular.module('careWheels', [
+angular.module('careWheels', [
   'ionic',
   'ui.router',
   'ngCordova',
   'FredrikSandell.worker-pool',
   'angularMoment',
   'fileloggermodule'
-]);
+])
 
 
 //contant definition for endpoint base url
-app.constant('BASE_URL', 'https://carewheels.cecs.pdx.edu:8443');
+.constant('BASE_URL', 'https://carewheels.cecs.pdx.edu:8443')
 
-app.run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, User) {
+.run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, User) {
 
 //    window.localStorage['loginCredentials'] = null;
 
@@ -49,24 +49,25 @@ app.run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, User) {
     }
   });
 
-});
+})
 
 // API factory for making all php endpoints globally accessible.
-app.factory('API', function (BASE_URL) {
+.factory('API', function (BASE_URL) {
   var api = {
     userAndGroupInfo: BASE_URL + '/userandgroupmemberinfo.php',
     userInfo: BASE_URL + '/userinfo.php',
     updateUserReminders: BASE_URL + '/updateuserreminders.php',
     groupMemberInfo: BASE_URL + '/groupmemberinfo.php',
     updateLastOwnership: BASE_URL + '/updatelastownershiptakentime.php',
-    dailyTrxHist: BASE_URL + '/dailytransactionhistory.php'
+    creditUser: BASE_URL + '/credituser.php',
+    updateSettings:BASE_URL + '/updatesettings.php'
   };
   return api;
-});
+})
 
 // GroupInfo factory for global GroupInfo
 
-app.factory('GroupInfo', function () {
+.factory('GroupInfo', function () {
   var groupInfoService = {};
   var groupInfo = [];
   var memberSelected;
@@ -129,11 +130,10 @@ app.factory('GroupInfo', function () {
 
   return groupInfoService;
 
-});
+})
 
 // User factory
-
-app.factory('User', function (GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
+.factory('User', function (GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
   var user = {};
   var userService = {};
   var failCount = 0;
@@ -174,17 +174,21 @@ app.factory('User', function (GroupInfo, BASE_URL, $http, API, $state, $httpPara
       //CHECKING TO FOR 404 ERRROR
       //response.status = 404;
       //response.data = "nothing";
-      //console.log(response.data);
       //
+      console.log(response.status);
+      console.log(response.data);
+
 
       if (failCount >= 3)
         errorMsg = "Exceeding invalid login attempts. Please Contact admin";
-      else if (response.data === "Missing username / password" || response.data === "Invalid username / password")
+      else if (response.status == 400)
         errorMsg = "Please check your credentials!";
-      else if (response.data === "Your access is blocked by exceeding invalid login attempts")
-        errorMsg = "Account got blocked by exceeding invalid login attempts. Please contact admin";
+      else if (response.status == 401)
+        errorMsg = "The entered username is incorrect.";
       else if (response.status == 404)
         errorMsg = "Unable to reach the server";
+      else if (response.data === "Your access is blocked by exceeding invalid login attempts")
+        errorMsg = "Account got blocked by exceeding invalid login attempts. Please contact admin";
 
       failCount++;
       var alertPopup = $ionicPopup.alert({
@@ -194,34 +198,98 @@ app.factory('User', function (GroupInfo, BASE_URL, $http, API, $state, $httpPara
     })
   };
 
-  userService.credentials = function () {
-    if (!user.username)
+    userService.credentials = function () {
+      if (!user.username)
+        return null;
+      return user;
+    };
+
+    userService.getVacationValue = function () {
+
+      var creds = userService.credentials();
+      var currentUserObject = GroupInfo.getMember(creds.username);
+      // console.log("currentUserobject is: " + currentUserObject);
+
+      for(var i = 0; i < currentUserObject.customValues.length; i++) {
+
+        if (currentUserObject.customValues[i].field.internalName == "onVacation") {
+          // console.log("Found custom field onVacation!");
+          //console.log("Setting value to: " + currentUserObject.customValues[i].booleanValue);
+           return currentUserObject.customValues[i].booleanValue;
+        }
+      }
+
       return null;
-    return user;
-  };
+    };
+
+    userService.setVacationValue = function (newValue) {
+
+      var creds = userService.credentials();
+      var currentUserObject = GroupInfo.getMember(creds.username);
+
+      // console.log("currentUserobject is: " + currentUserObject);
+
+      for(var i = 0; i < currentUserObject.customValues.length; i++) {
+
+        if (currentUserObject.customValues[i].field.internalName == "onVacation") {
+          // console.log("Found custom field onVacation!");
+          // console.log("Setting local value to: " + currentUserObject.customValues[i].booleanValue);
+          currentUserObject.customValues[i].booleanValue = newValue;
+          //console.log("Local value is now: " + currentUserObject.customValues[i].booleanValue);
+        }
+      }
+    };
+
+    userService.setOnVacation = function (uname, passwd, onVacationSetting) {
+      $ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
+        template: '<ion-spinner></ion-spinner>' +
+        '<p>Contacting Server...</p>'
+      });
+
+      return $http({
+        url: API.updateSettings,
+        method: 'POST',
+        data: $httpParamSerializerJQLike({
+          username: uname,
+          password: passwd,
+          usernametoupdate: uname,
+          onvacation: onVacationSetting
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }).then(function (response) {
+        console.log("Successfully updated vacation setting!");
+        $ionicLoading.hide();   //make sure to hide loading screen
+      })
+    };
+
 
   return userService;
-});
+})
 
-app.controller('menu', function ($scope, $state) {
+.controller('menu', function ($scope, $state) {
 
-  $scope.clickGroup = function () {
-    $state.go('app.groupStatus');
-  };
+    $scope.clickGroup = function () {
+      $state.go('app.groupStatus');
+    };
 
-  $scope.clickReminders = function () {
-    $state.go('app.reminders');
-  };
+    $scope.clickReminders = function () {
+      $state.go('app.reminders');
+    };
 
-  $scope.clickTests = function () {
-    $state.go('app.tests');
-  }
-});
+    $scope.clickSettings = function () {
+      $state.go('app.settings');
+    };
+
+    $scope.clickTests = function () {
+      $state.go('app.tests');
+    };
+})
 
 
 //Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
-app.factory("notifications", function($log, $cordovaLocalNotification){
-  console.log('hit notification factory');//////////////////////ttesting
+.factory("notifications", function($log, $cordovaLocalNotification){
   var isAndroid = window.cordova!=undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
   var data;   //needs to be called outside the functions so it persists for all of them
 
@@ -347,4 +415,138 @@ app.factory("notifications", function($log, $cordovaLocalNotification){
   };
 
   return notifications;
+})
+
+/** Call one of this service's functions to create credit the user for one of the types of transactions.
+   Parameters
+   username: username for login.
+   password: password for login.
+   usernametocredit: username of the user to credit.
+   usernametodebt: username of the user to debt, only needed for a transaction
+                   between two users.
+   credits as float: Number of credits to credit the user.
+   alertlevel as string: Any string to record the alert level of the monitored member,
+                         such as "Blue", "Yellow", or "Red".
+   callpayment a boolean as String: Records whether or not the crediting is occuring due to
+                         a call to a group member. Must be "True" or "False"!
+   sensordataviewpayment a boolean as String: Records whether or not the crediting is occuring due to
+                         a detailed sensor screen viewing or not. Must be "True" or "False"!
+   membersummarypayment a boolean as String: Records whether or not the crediting is occuring due to
+                                             a member summary screen viewing or not. Must be "True"
+                                             or "False"!
+*/
+.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, API){
+  var PaymentService = {};
+
+  //creates a calling transaction; endpoint will also debit the user passed in as userToDebtAsString same amount
+  PaymentService.call = function(userToDebtAsString, creditsAsFloat, alertlevelAsString) {
+    var myUser = User.credentials();    //get credentials
+    if (myUser != undefined) {    //can't do anything without them
+      var status = null;
+      var response = null;
+      $http({
+        url: API.creditUser,    //creates URL for REST call
+        method: 'POST',    //all our custom REST endpoints have been designed to use POST
+        data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
+          username: myUser.username,
+          password: myUser.password,
+          usernametodebt: userToDebtAsString,
+          usernametocredit: myUser.username,
+          credits: creditsAsFloat,
+          alertlevel: alertlevelAsString,
+          callpayment: 'True',    //all three of these fields are needed
+          sensordataviewpayment: 'False',
+          membersummarypayment: 'False'
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+        }
+      }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
+        status = response.status;
+        data = response.data;
+        console.log('Rest Status = ' + status);
+      }, function (response) {
+        var data = response.data || "Request failed";
+        status = response.status;
+        if (response.status != 200) {
+          console.error(data);
+        } else console.log('Success: ' + data);
+      })
+    } else console.error("Cannot make REST call for Call  Payment because user credentials are undefined.");
+  };
+
+  //creates IndividualStatus Sensor View transaction; alertLevel is status of the user that is being viewed
+  PaymentService.sensorDataView = function(creditsAsFloat, alertlevelAsString) {
+    var myUser = User.credentials();
+    if (myUser != undefined) {
+      var status = null;
+      var response = null;
+      $http({
+        url: API.creditUser,
+        method: 'POST',    //all our custom REST endpoints have been designed to use POST
+        data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
+          username: myUser.username,
+          password: myUser.password,
+          usernametodebt: '',
+          usernametocredit: myUser.username,
+          credits: creditsAsFloat,
+          alertlevel: alertlevelAsString,
+          callpayment: 'False',
+          sensordataviewpayment: 'True',
+          membersummarypayment: 'False'
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+        }
+      }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
+        status = response.status;
+        data = response.data;
+        console.log('Rest Status = ' + status);
+      }, function (response) {
+        var data = response.data || "Request failed";
+        status = response.status;
+        if (response.status != 200) {
+          console.error(data);
+        } else console.log('Success: ' + data);
+      })
+    } else console.error("Cannot make REST call for sensorDataView Payment because user credentials are undefined.");
+  };
+
+  //creates home page transaction
+  PaymentService.memberSummary = function(creditsAsFloat) {
+    var myUser = User.credentials();
+    if (myUser != undefined) {
+      var status = null;
+      var response = null;
+      $http({
+        url: API.creditUser,
+        method: 'POST',    //all our custom REST endpoints have been designed to use POST
+        data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
+          username: myUser.username,
+          password: myUser.password,
+          usernametodebt: '',
+          usernametocredit: myUser.username,
+          credits: creditsAsFloat,
+          alertlevel: 'na',   //field needs to have something in it
+          callpayment: 'False',
+          sensordataviewpayment: 'False',
+          membersummarypayment: 'True'
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
+        }
+      }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
+        status = response.status;
+        data = response.data;
+        console.log('Rest Status = ' + status);
+      }, function (response) {
+        var data = response.data || "Request failed";
+        status = response.status;
+        if (response.status != 200) {
+          console.error(data);
+        } else console.log('Success: ' + data);
+      })
+    } else console.error("Cannot make REST call for memberSummary Payment because user credentials are undefined.");
+  };
+  return PaymentService;
 });

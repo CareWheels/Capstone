@@ -1,12 +1,15 @@
+
 var app = angular.module('careWheels');
 /////////////////////////////////////////////////////////////////////////////////////////
 //Controller for Sensor Data Analysis
 //Will receive parsed feed data from the injected DataService factory
 /////////////////////////////////////////////////////////////////////////////////////////
+
 app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment, notifications) {
 
+
   $scope.AnalyzeData = function(){
-    var testFunc = function(){
+    var analyzeData = function(){
 
       $scope.groupData = GroupInfo.groupInfo();
       console.log('contents of $scope.groupData before analysis ', $scope.groupData);
@@ -118,7 +121,7 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment, 
         currentDayPresenceByHour = presenceAnalysis(currentDayPresenceMatrix, currentDayPresenceByHour, 13, 59);
 
         for(w = 0; w < presenceData.length; w++ ) {
-          console.log("presenceData[" + w + "] " + presenceData[w]);
+        //  console.log("presenceData[" + w + "] " + presenceData[w]);
         }
 
         /*
@@ -240,10 +243,9 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment, 
         GroupInfo.groupInfo();
         console.log("group after analysis", GroupInfo.groupInfo());
       }
-
     };
 
-    testFunc();
+    analyzeData();
     //console.log('contents of $scope.groupData in Analysis', $scope.groupData);
 
   };
@@ -379,7 +381,7 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment, 
           // OR
           // The person was gone during one of the hours. Lets assume they
           // "did stuff" while they were gone.
-          if (sensorDataMatrix[w][z] > 0 || presenceByHourArray[w] == false) {
+          if (sensorDataMatrix[w][z] > 0) {
             pingDuringInterval = true;
           }
         }
@@ -400,7 +402,11 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment, 
 
     // Now that we have passed the interval we can
     // increase the alert level if needed.
-    if ((currentHour >= intervalObject.intervalEndBeforeHour) && intervalObject.pointEscalation && !pingDuringInterval) {
+    // But only escalate if: a) There was no ping during the hour,
+    //                       b) The member was at home during that hour.
+    //                       c) This interval has point escalation set to true.
+    if ((currentHour >= intervalObject.intervalEndBeforeHour) && intervalObject.pointEscalation &&
+      !pingDuringInterval && presenceByHourArray[w] == true) {
 
       // Well if they didn't produce a ping during the interval,
       // and they didn't leave during that interval,

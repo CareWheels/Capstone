@@ -169,8 +169,8 @@ angular.module('careWheels')
           data = response.data;
           console.log('Rest Status = ' + status);
         }, function (response) {
-          $scope.data = response.data || "Request failed";
-          $scope.status = response.status;
+          var data = response.data || "Request failed";
+          status = response.status;
           if (response.status != 200) {
             console.error(data);
           } else console.log('Success: ' + data);

@@ -6,14 +6,14 @@
 	username as string: username for login.
 	password as string: password for login.
 	usernametoupdate as string: username that will have their lastownershiptakentime custom field updated.
-    lastownershiptakentime as string: value to update lastownershiptakentime with, in the format
-                                      of YYYY/MM/DD HH:MM:SS	
+    onvacation as string: value to update onVacation cutom field to, must be
+                          either "True" or "False"	
 */
 
 // Configure Cyclos and obtain an instance of LoginService 
 
-if(empty($_POST['lastownershiptakentime'])) {
-    echo("lastownershiptakentime cannot be blank.");
+if(empty($_POST['onvacation'])) {
+    echo("onvacation cannot be blank.");
     die();
 }
 
@@ -34,11 +34,11 @@ try {
 try {
     for($x = 0; $x < count($userInfo->customValues); $x++) {
 
-        // Find the accessToken field
-        if($userInfo->customValues[$x]->field->internalName == 'LastOwnershipTakenTime') {
+        // Find the onvacation field
+        if($userInfo->customValues[$x]->field->internalName == 'onVacation') {
      
-             // Modify the string value in the access token custom field.
-             $userInfo->customValues[$x]->stringValue = $_POST['lastownershiptakentime'];
+             // Modify the string value in the onVacation custom field.
+             $userInfo->customValues[$x]->booleanValue = $_POST['onvacation'];
 
              // Save the change in the user object to the Cyclos server.
              $userService->save($userInfo);
