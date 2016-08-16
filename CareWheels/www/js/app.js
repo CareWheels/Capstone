@@ -18,7 +18,7 @@ angular.module('careWheels', [
 //contant definition for endpoint base url
 .constant('BASE_URL', 'https://carewheels.cecs.pdx.edu:8443')
 
-.run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, User) {
+.run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, $window, User) {
 
 //    window.localStorage['loginCredentials'] = null;
 
@@ -424,6 +424,56 @@ angular.module('careWheels', [
 
   return notifications;
 })
+
+
+
+
+  .factory('onlineStatus', ["$window", "$rootScope", function ($window, $rootScope) {
+    var onlineStatus = {};
+
+    onlineStatus.onLine = $window.navigator.onLine;
+
+    onlineStatus.isOnline = function() {
+      return onlineStatus.onLine;
+    };
+
+    $window.addEventListener("online", function () {
+      onlineStatus.onLine = true;
+      $rootScope.$digest();
+    }, true);
+
+    $window.addEventListener("offline", function () {
+      onlineStatus.onLine = false;
+      $rootScope.$digest();
+    }, true);
+
+    return onlineStatus;
+  }])
+
+
+
+/*.controller( 'OnlineStatusCtrl', function OnlineStatusCtrl( $scope, onlineStatus ) {
+  $scope.onlineStatus = onlineStatus;
+
+  $scope.$watch('onlineStatus.isOnline()', function(online) {
+    if($scope.online_status_string == true){
+      console.log('online');
+    }
+    else
+      console.log('offline');
+  });
+})*/
+
+
+
+
+
+
+
+
+
+
+
 
 /** Call one of this service's functions to create credit the user for one of the types of transactions.
    Parameters
