@@ -21,3 +21,8 @@
   color: white;
   padding-top: 3px;
 }
+
+.disableCallButton {
+  pointer-events: none;
+  color: black;
+}
