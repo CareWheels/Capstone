@@ -7,16 +7,13 @@
 
 angular.module('careWheels')
 
-  .controller('remindersController', ('$scope', '$controller', '$ionicPopup', '$http', '$state', '$httpParamSerializerJQLike', 'User', 'API', function ($scope, $controller, $ionicPopup, $http, $state, $httpParamSerializerJQLike, User, API, notifications) {
-    console.log("hit reminders controller");//////////////////////////testing
-
-    API.updateUserReminders;
-
-
+  .controller('remindersController', (function ($scope, $controller, $ionicPopup, $http, $state, $httpParamSerializerJQLike, User, API, notifications, $fileLogger, fileloggerService) {
+    fileloggerService.initLogComponent();
+    var credentialsError = true;
     var data = notifications.getData();
 
-    console.log('data in controller:', data);
-    console.log('notif object', notifications);
+    //console.log('data in controller:', data);
+    //console.log('notif object', notifications);
 
     $scope.reminders = [    //array of live definitions; to be displayed to user
       {
@@ -50,6 +47,10 @@ angular.module('careWheels')
       if ($scope.reminders[i].hour > 12) {
         $scope.reminders[i].hour -= 12;
         $scope.reminders[i].amOrPm = 'PM';
+        if($scope.reminders[i].hour > 12){    //is hour still more than 12? this should never happen!!!
+          var badTime = $scope.reminders[i].hour + 12;    //restore to 24-hour time so error is apparent
+          $fileLogger.log('error', 'Invalid Reminder hour value: ' + badTime);
+        }
       }
     }
 
@@ -60,7 +61,7 @@ angular.module('careWheels')
      *  */
     $scope.toggleOnOff = function (index) {
       $scope.reminders[index].isOn = !$scope.reminders[index].isOn;
-      console.log("Toggled: " + $scope.reminders[index].isOn); ////////////// testing
+      //console.log("Toggled: " + $scope.reminders[index].isOn); ////////////// testing
     };
     $scope.toggleAmPm = function (index) {
       if ($scope.reminders[index].isPM) {
@@ -108,7 +109,13 @@ angular.module('careWheels')
             var rem3 = notifications.Reminder_As_String(2); //notifViewModel.Reminder_As_String(2);
 
             $scope.CallRest(rem1, rem2, rem3);
-          } else console.error("Cannot make REST call in Reminders because user credentials are undefined.");
+          } else{
+            console.error("Cannot make REST call in Reminders because user credentials are undefined.");
+            if(credentialsError){
+              credentialsError = false;
+              $fileLogger.log('error', 'Cannot make REST calls for Reminders because user credentials are undefined.');
+            }
+          } 
           $state.go($state.current, {}, {reload: true});    //reset view so changes are immediately visible
         } else {
           console.log('Reset canceled!');
@@ -140,7 +147,13 @@ angular.module('careWheels')
 
         console.log("rem1=" + rem1 + " rem2=" + rem2 + " rem3=" + rem3);
         $scope.CallRest(rem1, rem2, rem3);
-      } else console.error("Cannot make REST call in Reminders because user credentials are undefined.");
+      } else{
+          console.error("Cannot make REST call in Reminders because user credentials are undefined.");
+          if(credentialsError){
+            credentialsError = false;
+            $fileLogger.log('error', 'Cannot make REST calls for Reminders because user credentials are undefined.');
+          }
+        } 
     };
 
     //Handle the REST call to custom server API
@@ -175,7 +188,13 @@ angular.module('careWheels')
             console.error(data);
           } else console.log('Success: ' + data);
         })
-      } else console.error("Cannot make REST call in Reminders because user credentials are undefined.");
+      } else{
+          console.error("Cannot make REST call in Reminders because user credentials are undefined.");
+          if(credentialsError){
+            credentialsError = false;
+            $fileLogger.log('error', 'Cannot make REST calls for Reminders because user credentials are undefined.');
+          }
+        } 
     };
   }));
 
