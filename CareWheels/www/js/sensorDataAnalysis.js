@@ -1,9 +1,9 @@
-var app = angular.module('careWheels')
+angular.module('careWheels')
 /////////////////////////////////////////////////////////////////////////////////////////
 //Controller for Sensor Data Analysis
 //Will receive parsed feed data from the injected DataService factory
 /////////////////////////////////////////////////////////////////////////////////////////
-app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) {
+.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment) {
 
   $scope.AnalyzeData = function(){
     var testFunc = function(){

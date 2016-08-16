@@ -5,20 +5,20 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 
-var app = angular.module('careWheels', [
+angular.module('careWheels', [
   'ionic',
   'ui.router',
   'ngCordova',
   'FredrikSandell.worker-pool',
   'angularMoment',
   'fileloggermodule'
-]);
+])
 
 
 //contant definition for endpoint base url
-app.constant('BASE_URL', 'https://carewheels.cecs.pdx.edu:8443');
+.constant('BASE_URL', 'https://carewheels.cecs.pdx.edu:8443')
 
-app.run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, User) {
+.run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, User) {
 
 //    window.localStorage['loginCredentials'] = null;
 
@@ -30,7 +30,7 @@ app.run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, User) {
         $state.go('login');
       }
     }
-  });
+  })
 
 
   $ionicPlatform.registerBackButtonAction(function (event) {
@@ -49,10 +49,10 @@ app.run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, User) {
     }
   });
 
-});
+})
 
 // API factory for making all php endpoints globally accessible.
-app.factory('API', function (BASE_URL) {
+.factory('API', function (BASE_URL) {
   var api = {
     userAndGroupInfo: BASE_URL + '/userandgroupmemberinfo.php',
     userInfo: BASE_URL + '/userinfo.php',
@@ -63,11 +63,11 @@ app.factory('API', function (BASE_URL) {
     creditUser: BASE_URL + '/credituser.php'
   };
   return api;
-});
+})
 
 // GroupInfo factory for global GroupInfo
 
-app.factory('GroupInfo', function () {
+.factory('GroupInfo', function () {
   var groupInfoService = {};
   var groupInfo = [];
   var memberSelected;
@@ -130,12 +130,10 @@ app.factory('GroupInfo', function () {
 
   return groupInfoService;
 
-});
+})
 
 // User factory
-
-app.factory('User', function (GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
-  console.log('hit User factory');
+.factory('User', function (GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
   var user = {};
   var userService = {};
   var failCount = 0;
@@ -203,9 +201,9 @@ app.factory('User', function (GroupInfo, BASE_URL, $http, API, $state, $httpPara
   };
 
   return userService;
-});
+})
 
-app.controller('menu', function ($scope, $state) {
+.controller('menu', function ($scope, $state) {
 
   $scope.clickGroup = function () {
     $state.go('app.groupStatus');
@@ -218,18 +216,10 @@ app.controller('menu', function ($scope, $state) {
   $scope.clickTests = function () {
     $state.go('app.tests');
   }
-});
-
-
-
-
-
-
-
+})
 
 //Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
-app.factory("notifications", function($log, $cordovaLocalNotification){
-  console.log('hit notification factory');//////////////////////ttesting
+.factory("notifications", function($log, $cordovaLocalNotification){
   var isAndroid = window.cordova!=undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
   var data;   //needs to be called outside the functions so it persists for all of them
 
