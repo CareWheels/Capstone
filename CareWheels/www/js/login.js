@@ -3,8 +3,8 @@
  *
  */
 angular.module('careWheels')
-
-  .controller('loginController', function($scope, $controller, User, $state, $ionicLoading, GroupInfo, $interval, notifications){
+  .controller('loginController',
+    function($scope, $controller, User, $state, $ionicLoading, GroupInfo, $interval, $watch, notifications){
 
     var DOWNLOAD_INTERVAL = 1000 * 60 * 5; // constant interval for download, 5mins
     var dataDownload = $scope.$new();
@@ -71,6 +71,7 @@ angular.module('careWheels')
               $interval.cancel(intervalPromise);  // break out of interval
               $ionicLoading.hide();               // kill the loading screen
               $state.reload();                    // reload the view (try again)
+              displayError(0);                    // pop-up error
             }
 
             // sweet we got data, lets break out of this interval
@@ -97,8 +98,30 @@ angular.module('careWheels')
         dataDownload.DownloadData();
         setTimeout(function(){
           dataAnalysis.AnalyzeData();
-        }, 1000 * 60 * 2); // give the download two mins before analyze
+        }, DOWNLOAD_INTERVAL / 2); // wait halfway through the interval, then analyze
       }, DOWNLOAD_INTERVAL ); // 5 min interval
+    }
+
+
+
+    // An error popup dialog
+    function displayError(errorString) {
+      var errorStrings = [
+        'Please try again, or contact a system administrator.',
+        'Unable to update. please check internet connectivity.'
+      ];
+
+      var alertPopup = $ionicPopup.alert({
+        title: '<div class="errorTitle">Unable to Connect With CareWheels</div>',
+        template: '<div class="errorTemplate">' + errorString + '</div>',
+        buttons: [{ // Array[Object] (optional). Buttons to place in the popup footer.
+          text: 'Okay',
+          type: 'button-calm'
+        }]
+      });
+      alertPopup.then(function (res) {
+
+      });
     }
 
 
