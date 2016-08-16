@@ -47,6 +47,15 @@ angular.module('careWheels')
           }
         }
       })
+      .state('app.settings', {
+        url: '/settings',
+        views: {
+          'menuContent': {
+            templateUrl: 'views/settings.html',
+            controller: 'settingsController'
+          }
+        }
+      })
       .state('app.tests', {
         url: '/tests',
         views: {

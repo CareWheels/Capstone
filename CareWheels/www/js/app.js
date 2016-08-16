@@ -59,8 +59,8 @@ angular.module('careWheels', [
     updateUserReminders: BASE_URL + '/updateuserreminders.php',
     groupMemberInfo: BASE_URL + '/groupmemberinfo.php',
     updateLastOwnership: BASE_URL + '/updatelastownershiptakentime.php',
-    dailyTrxHist: BASE_URL + '/dailytransactionhistory.php',
-    creditUser: BASE_URL + '/credituser.php'
+    creditUser: BASE_URL + '/credituser.php',
+    updateSettings:BASE_URL + '/updatesettings.php'
   };
   return api;
 })
@@ -176,7 +176,7 @@ angular.module('careWheels', [
       //response.data = "nothing";
       //
       console.log(response.status);
-      console.log(response.data); 
+      console.log(response.data);
 
 
       if (failCount >= 3)
@@ -198,28 +198,92 @@ angular.module('careWheels', [
     })
   };
 
-  userService.credentials = function () {
-    if (!user.username)
+    userService.credentials = function () {
+      if (!user.username)
+        return null;
+      return user;
+    };
+
+    userService.getVacationValue = function () {
+
+      var creds = userService.credentials();
+      var currentUserObject = GroupInfo.getMember(creds.username);
+      // console.log("currentUserobject is: " + currentUserObject);
+
+      for(var i = 0; i < currentUserObject.customValues.length; i++) {
+
+        if (currentUserObject.customValues[i].field.internalName == "onVacation") {
+          // console.log("Found custom field onVacation!");
+          //console.log("Setting value to: " + currentUserObject.customValues[i].booleanValue);
+           return currentUserObject.customValues[i].booleanValue;
+        }
+      }
+
       return null;
-    return user;
-  };
+    };
+
+    userService.setVacationValue = function (newValue) {
+
+      var creds = userService.credentials();
+      var currentUserObject = GroupInfo.getMember(creds.username);
+
+      // console.log("currentUserobject is: " + currentUserObject);
+
+      for(var i = 0; i < currentUserObject.customValues.length; i++) {
+
+        if (currentUserObject.customValues[i].field.internalName == "onVacation") {
+          // console.log("Found custom field onVacation!");
+          // console.log("Setting local value to: " + currentUserObject.customValues[i].booleanValue);
+          currentUserObject.customValues[i].booleanValue = newValue;
+          //console.log("Local value is now: " + currentUserObject.customValues[i].booleanValue);
+        }
+      }
+    };
+
+    userService.setOnVacation = function (uname, passwd, onVacationSetting) {
+      $ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
+        template: '<ion-spinner></ion-spinner>' +
+        '<p>Contacting Server...</p>'
+      });
+
+      return $http({
+        url: API.updateSettings,
+        method: 'POST',
+        data: $httpParamSerializerJQLike({
+          username: uname,
+          password: passwd,
+          usernametoupdate: uname,
+          onvacation: onVacationSetting
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }).then(function (response) {
+        console.log("Successfully updated vacation setting!");
+        $ionicLoading.hide();   //make sure to hide loading screen
+      })
+    };
 
   return userService;
 })
 
 .controller('menu', function ($scope, $state) {
 
-  $scope.clickGroup = function () {
-    $state.go('app.groupStatus');
-  };
+    $scope.clickGroup = function () {
+      $state.go('app.groupStatus');
+    };
 
-  $scope.clickReminders = function () {
-    $state.go('app.reminders');
-  };
+    $scope.clickReminders = function () {
+      $state.go('app.reminders');
+    };
 
-  $scope.clickTests = function () {
-    $state.go('app.tests');
-  }
+    $scope.clickSettings = function () {
+      $state.go('app.settings');
+    };
+
+    $scope.clickTests = function () {
+      $state.go('app.tests');
+    };
 })
 
 //Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
