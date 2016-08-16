@@ -56,6 +56,7 @@ angular.module('careWheels').controller('groupStatusController',
         username: '',
         status: '',
         image: '',
+        alertLevelColor: '',
         error: false
       },
       { // top right @ index 2
@@ -63,6 +64,7 @@ angular.module('careWheels').controller('groupStatusController',
         username: '',
         status: '',
         image: '',
+        alertLevelColor: '',
         error: false
       },
       { // bottom left @ index 3
@@ -70,6 +72,7 @@ angular.module('careWheels').controller('groupStatusController',
         username: '',
         status: '',
         image: '',
+        alertLevelColor: '',
         error: false
       },
       { // bottom right @ index 4
@@ -77,6 +80,7 @@ angular.module('careWheels').controller('groupStatusController',
         username: '',
         status: '',
         image: '',
+        alertLevelColor: '',
         error: false
       }
     ];
@@ -133,7 +137,7 @@ angular.module('careWheels').controller('groupStatusController',
           try {
             var fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
             var medsAlert = groupArray[i].analysisData.medsAlertLevel;
-            $scope.group[i].status = $scope.getAlertColor(fridgeAlert, medsAlert);
+            $scope.group[i].status = $scope.getAlertColor(fridgeAlert, medsAlert, i);
           }
           catch (Exception) {
             $scope.group[i].status = 'grey';
@@ -166,6 +170,7 @@ angular.module('careWheels').controller('groupStatusController',
 
     function clickUser(index) {
       if (!$scope.group[index].error) {
+        PaymentService.sensorDataView(0.1, $scope.group[index].alertLevelColor);
         $scope.group[0].userSelected = $scope.group[index].name;
         GroupInfo.setMember_new($scope.group[index].username);
         $state.go('app.individualStatus');
@@ -193,7 +198,7 @@ angular.module('careWheels').controller('groupStatusController',
      * alert level. This string is used with ng-class, to
      * append the color class onto the div
      * */
-    $scope.getAlertColor = function (fridgeAlert, medsAlert) {
+    $scope.getAlertColor = function (fridgeAlert, medsAlert, index) {
 
       // check for null params
       if (fridgeAlert == null || medsAlert == null)
@@ -207,12 +212,18 @@ angular.module('careWheels').controller('groupStatusController',
       if (meds < 0 || meds > 2 || fridge < 0 || fridge > 2)
         alertString = ''; // error state
       // check for null
-      else if (fridge == 2 || meds == 2)
+      else if (fridge == 2 || meds == 2){
         alertString = 'red';
-      else if (fridge == 1 || meds == 1)
+        $scope.group[index].alertLevelColor = 'red';
+      }
+      else if (fridge == 1 || meds == 1){
         alertString = 'yellow';
-      else if (fridge == 0 || meds == 0)
+        $scope.group[index].alertLevelColor = 'yellow';
+      }
+      else if (fridge == 0 || meds == 0){
         alertString = 'blue';
+        $scope.group[index].alertLevelColor = 'blue';
+      }
 
       return alertString;
     };
