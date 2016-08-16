@@ -175,13 +175,15 @@ angular.module('careWheels', [
       //response.status = 404;
       //response.data = "nothing";
       //
-      /* console.log(response.status);
-      console.log(response.data); */
+      console.log(response.status);
+      console.log(response.data); 
 
 
       if (failCount >= 3)
         errorMsg = "Exceeding invalid login attempts. Please Contact admin";
       else if (response.status == 400)
+        errorMsg = "Please check your credentials!";
+      else if (response.status == 401)
         errorMsg = "The entered username is incorrect.";
       else if (response.status == 404)
         errorMsg = "Unable to reach the server";
