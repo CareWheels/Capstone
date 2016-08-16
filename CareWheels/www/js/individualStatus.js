@@ -4,7 +4,7 @@
  */
 angular.module('careWheels')
 
-.controller('individualStatusController', function($scope, GroupInfo){
+.controller('individualStatusController', function($scope, GroupInfo, PaymentService){
 
   /**
    * grabs the analysis of the member selected on the previous view
@@ -13,6 +13,11 @@ angular.module('careWheels')
   //console.log(analysis); ////////////testing
 
   var timeNow = new Date().getHours();
+
+  // console.log("Calling Call Payment:");
+  // PaymentService.call(analysis.name, 1.0, 'Red');
+  // console.log("Calling sensorDataView Payment:");
+  // PaymentService.sensorDataView(1.0, 'Blue');
 
   /**
    * The following several functions are used to display text on the
