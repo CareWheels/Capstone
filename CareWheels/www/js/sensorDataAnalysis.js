@@ -385,7 +385,7 @@ angular.module('careWheels')
           // OR
           // The person was gone during one of the hours. Lets assume they
           // "did stuff" while they were gone.
-          if (sensorDataMatrix[w][z] > 0 || presenceByHourArray[w] == false) {
+          if (sensorDataMatrix[w][z] > 0) {
             pingDuringInterval = true;
           }
         }
@@ -406,7 +406,11 @@ angular.module('careWheels')
 
     // Now that we have passed the interval we can
     // increase the alert level if needed.
-    if ((currentHour >= intervalObject.intervalEndBeforeHour) && intervalObject.pointEscalation && !pingDuringInterval) {
+    // But only escalate if: a) There was no ping during the hour,
+    //                       b) The member was at home during that hour.
+    //                       c) This interval has point escalation set to true.
+    if ((currentHour >= intervalObject.intervalEndBeforeHour) && intervalObject.pointEscalation &&
+      !pingDuringInterval && presenceByHourArray[w] == true) {
 
       // Well if they didn't produce a ping during the interval,
       // and they didn't leave during that interval,
