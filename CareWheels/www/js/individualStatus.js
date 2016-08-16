@@ -77,7 +77,7 @@ angular.module('careWheels')
   $scope.showTime = function() {
     return timeNow;
   };
-  
+
   /**
    * This function returns the color for the call button.
    */
@@ -86,19 +86,21 @@ angular.module('careWheels')
 
     // check for null params
     if (analysis.analysisData.fridgeAlertLevel == null || analysis.analysisData.medsAlertLevel == null)
-      return 'button-calm';
+      return 'button-dark disableCallButton';
 
     var fridge = parseInt(analysis.analysisData.fridgeAlertLevel);
     var meds = parseInt(analysis.analysisData.medsAlertLevel);
 
     // check for acceptable bounds
     if (meds < 0 || meds > 2 || fridge < 0 || fridge > 2)
-      return 'button-calm'; // error state
+      return 'button-dark disableCallButton'; // error state
 
     else if (fridge == 2 || meds == 2)
       return  'button-assertive';
+    else if (fridge == 1 || meds == 1)
+      return 'button-energized';
     else
-      return 'button-positive';
+      return 'button-dark disableCallButton';
  };
 
   /**
@@ -889,9 +891,9 @@ angular.module('careWheels')
         return 'error';
     }
   };
-  
+
   /**
-   * This function takes the phone number string returned from Cyclos (which 
+   * This function takes the phone number string returned from Cyclos (which
    * us in the incorrect format), and it changes the string to a format
    * necessary for making a call. Note: if no phone number is put on the
    * Cyclos server, the number (000) 000-0000 will be inserted. This indicates
