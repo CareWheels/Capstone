@@ -19,6 +19,7 @@ angular.module('careWheels')
       })
 
       .state('app.groupStatus', {
+        cache: false,
         url: '/groupStatus',
         views: {
           'menuContent': {
@@ -29,7 +30,7 @@ angular.module('careWheels')
       })
 
       .state('app.individualStatus', {
-        cache:false,
+        cache: false,
         url: '/individualStatus',
         views: {
           'menuContent': {
