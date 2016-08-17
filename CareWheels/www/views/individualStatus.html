@@ -1,11 +1,11 @@
 <ion-view view-title="app.individualStatus" class="overflow-scroll">
   <ion-nav-title>Status: {{name}}
     <a href="{{getPhoneNumber()}}" class="blue">
-    <div id="callArea"
-         class="button"
-         ng-class="getCallButtonColor()">
+      <div id="callArea"
+           class="button"
+           ng-class="getCallButtonColor()">
         Call
-    </div>
+      </div>
     </a>
   </ion-nav-title>
 
@@ -13,174 +13,22 @@
   <!-- individual status content -->
   <ion-content class="moveDown">
     <ul class="row header">
-      <li class="col no_border col-25 blackFont"></li>
-      <li class="col no_border col-25 blackFont">presence</li>
-      <li class="col no_border col-25 blackFont">meals</li>
-      <li class="col no_border col-25 blackFont">meds</li>
+      <li class="col no_border col-25 col-center blackFont"></li>
+      <li class="col no_border col-25 col-center blackFont">presence</li>
+      <li class="col no_border col-25 col-center blackFont">meals</li>
+      <li class="col no_border col-25 col-center blackFont">meds</li>
     </ul>
-
-    <div class="row">
-      <div class="col blackFont">12am</div>
-      <div class="col" ng-class="getPresence('midnight')"></div>
-      <div class="col" ng-class="getMealsStatus('midnight')">{{getPings('midnight', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('midnight')">{{getPings('midnight', 'meds')}}</div>
+    <div class="row" ng-repeat="i in getNumber(24) track by $index">
+      <div ng-if="$index == 0" class="col blackFont">12am</div>
+      <div ng-if="$index == 12" class="col blackFont">12pm</div>
+      <div ng-if="$index < 12 && $index != 0" class="col blackFont">{{ $index }}</div>
+      <div ng-if="$index > 12" class="col blackFont">{{ $index - 12}}</div>
+      <div ng-if="$index <= currentHour" class="col" ng-class="data.presence.value[$index]"></div>
+      <div ng-if="$index > currentHour" class="col"></div>
+      <div ng-if="$index <= currentHour" class="col" ng-class="data.meals.value[$index]">{{data.meals.hits[$index]}}</div>
+      <div ng-if="$index > currentHour" class="col"></div>
+      <div ng-if="$index <= currentHour" class="col" ng-class="data.meds.value[$index]">{{data.meds.hits[$index]}}</div>
+      <div ng-if="$index > currentHour" class="col"></div>
     </div>
-    <div class="row">
-      <div class="col blackFont">1</div>
-      <div class="col" ng-class="getPresence('one')"></div>
-      <div class="col" ng-class="getMealsStatus('one')">{{getPings('one', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('one')">{{getPings('one', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">2</div>
-      <div class="col" ng-class="getPresence('two')"></div>
-      <div class="col" ng-class="getMealsStatus('two')">{{getPings('two', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('two')">{{getPings('two', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">3</div>
-      <div class="col" ng-class="getPresence('three')"></div>
-      <div class="col" ng-class="getMealsStatus('three')">{{getPings('three', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('three')">{{getPings('three', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">4</div>
-      <div class="col" ng-class="getPresence('four')"></div>
-      <div class="col" ng-class="getMealsStatus('four')">{{getPings('four', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('four')">{{getPings('four', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">5</div>
-      <div class="col" ng-class="getPresence('five')"></div>
-      <div class="col" ng-class="getMealsStatus('five')">{{getPings('five', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('five')">{{getPings('five', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">6</div>
-      <div class="col" ng-class="getPresence('six')"></div>
-      <div class="col" ng-class="getMealsStatus('six')">{{getPings('six', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('six')">{{getPings('six', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">7</div>
-      <div class="col" ng-class="getPresence('seven')"></div>
-      <div class="col" ng-class="getMealsStatus('seven')">{{getPings('seven', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('seven')">{{getPings('seven', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">8</div>
-      <div class="col" ng-class="getPresence('eight')"></div>
-      <div class="col" ng-class="getMealsStatus('eight')">{{getPings('eight', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('eight')">{{getPings('eight', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">9</div>
-      <div class="col" ng-class="getPresence('nine')"></div>
-      <div class="col" ng-class="getMealsStatus('nine')">{{getPings('nine', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('nine')">{{getPings('nine', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">10</div>
-      <div class="col" ng-class="getPresence('ten')"></div>
-      <div class="col" ng-class="getMealsStatus('ten')">{{getPings('ten', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('ten')">{{getPings('ten', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">11</div>
-      <div class="col" ng-class="getPresence('eleven')"></div>
-      <div class="col" ng-class="getMealsStatus('eleven')">{{getPings('eleven', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('eleven')">{{getPings('eleven', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">12pm</div>
-      <div class="col" ng-class="getPresence('twelve')"></div>
-      <div class="col" ng-class="getMealsStatus('twelve')">{{getPings('twelve', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('twelve')">{{getPings('twelve', 'meds')}}</div>
-    </div>
-
-    <div class="row">
-      <div class="col blackFont">1</div>
-      <div class="col" ng-class="getPresence('thirteen')"></div>
-      <div class="col" ng-class="getMealsStatus('thirteen')">{{getPings('thirteen', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('thirteen')">{{getPings('thirteen', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">2</div>
-      <div class="col" ng-class="getPresence('fourteen')"></div>
-      <div class="col" ng-class="getMealsStatus('fourteen')">{{getPings('fourteen', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('fourteen')">{{getPings('fourteen', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">3</div>
-      <div class="col" ng-class="getPresence('fifteen')"></div>
-      <div class="col" ng-class="getMealsStatus('fifteen')">{{getPings('fifteen', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('fifteen')">{{getPings('fifteen', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">4</div>
-      <div class="col" ng-class="getPresence('sixteen')"></div>
-      <div class="col" ng-class="getMealsStatus('sixteen')">{{getPings('sixteen', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('sixteen')">{{getPings('sixteen', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">5</div>
-      <div class="col" ng-class="getPresence('seventeen')"></div>
-      <div class="col" ng-class="getMealsStatus('seventeen')">{{getPings('seventeen', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('seventeen')">{{getPings('seventeen', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">6</div>
-      <div class="col" ng-class="getPresence('eighteen')"></div>
-      <div class="col" ng-class="getMealsStatus('eighteen')">{{getPings('eighteen', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('eighteen')">{{getPings('eighteen', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">7</div>
-      <div class="col" ng-class="getPresence('nineteen')"></div>
-      <div class="col" ng-class="getMealsStatus('nineteen')">{{getPings('nineteen', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('nineteen')">{{getPings('nineteen', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">8</div>
-      <div class="col" ng-class="getPresence('twenty')"></div>
-      <div class="col" ng-class="getMealsStatus('twenty')">{{getPings('twenty', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('twenty')">{{getPings('twenty', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">9</div>
-      <div class="col" ng-class="getPresence('twentyone')"></div>
-      <div class="col" ng-class="getMealsStatus('twentyone')">{{getPings('twentyone', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('twentyone')">{{getPings('twentyone', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">10</div>
-      <div class="col" ng-class="getPresence('twentytwo')"></div>
-      <div class="col" ng-class="getMealsStatus('twentytwo')">{{getPings('twentytwo', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('twentytwo')">{{getPings('twentytwo', 'meds')}}</div>
-    </div>
-    <div class="row">
-      <div class="col blackFont">11</div>
-      <div class="col" ng-class="getPresence('twentythree')"></div>
-      <div class="col" ng-class="getMealsStatus('twentythree')">{{getPings('twentythree', 'meals')}}</div>
-      <div class="col" ng-class="getMedsStatus('twentythree')">{{getPings('twentythree', 'meds')}}</div>
-    </div>
-
   </ion-content>
 </ion-view>
-
-<!--    Example of how to use ng-repeat
-
-<ul class="row" ng-repeat="data in userStats">
-  <li class="col">{{data.time}}</li>
-  <li class="col" ng-class="data.presence.status">
-    {{data.presence.pings}}
-  </li>
-  <li class="col" ng-class="data.meals.status">
-    {{data.meals.pings}}
-  </li>
-  <li class="col" ng-class="data.meds.status">
-    {{data.meds.pings}}
-  </li>
-</ul>
-
--->
