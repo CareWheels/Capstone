@@ -900,18 +900,18 @@ angular.module('careWheels')
    * that the number needs to be placed in the system.
    */
   $scope.getPhoneNumber = function() {
-    console.log('hit getPhoneNumber()');
-    console.log(analysis);
+    //console.log('hit getPhoneNumber()');
+    //console.log(analysis);
     var cyclosPhoneNumber = analysis.phoneNumber;
 
     if (cyclosPhoneNumber == null){
       cyclosPhoneNumber = "+00000000000"
     }
 
-    console.log(cyclosPhoneNumber);
+    //console.log(cyclosPhoneNumber);
     var callString = "tel:";
     callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) + "-" + cyclosPhoneNumber.substring(8);
-    console.log(callString);
+    //console.log(callString);
     return callString;
   };
 
