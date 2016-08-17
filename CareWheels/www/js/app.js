@@ -11,7 +11,7 @@ angular.module('careWheels', [
   'ngCordova',
   'FredrikSandell.worker-pool',
   'angularMoment',
-  'fileloggermodule'
+  'careWheels.fileloggermodule'
 ])
 
 

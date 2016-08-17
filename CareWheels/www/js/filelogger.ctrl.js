@@ -1,5 +1,5 @@
-angular.module('fileloggermodule', ['ionic', 'fileLogger'])
-  .service('fileloggerService', function ($fileLogger, $filter) {
+angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
+  .service('fileloggerService', function (BASE_URL, $fileLogger, $filter, $ionicPlatform, $cordovaFile, $cordovaFileTransfer) {
     var logFileName = "localLogFile.log";
 
     this.setLogLocation = function (fileName) {
@@ -10,14 +10,12 @@ angular.module('fileloggermodule', ['ionic', 'fileLogger'])
 
     this.getCurrentDate = function () {
       var today = new Date();
-      var formattedDate = $filter('date')(today, 'yyyy-MM-dd');
-      return formattedDate;
+      return $filter('date')(today, 'yyyy-MM-dd');
     };
 
     this.getCurrentDateTime = function () {
       var today = new Date();
-      var formattedDate = $filter('date')(today, 'yyyy-MM-dd-HH-mm-ss');
-      return formattedDate;
+      return $filter('date')(today, 'yyyy-MM-dd-HH-mm-ss');
     };
 
     // get log file name based on today date
@@ -29,7 +27,7 @@ angular.module('fileloggermodule', ['ionic', 'fileLogger'])
 
     this.initLogComponent = function () {
       this.setLogLocation(this.getLogFileName());
-      $fileLogger.setTimestampFormat('medium');
+      // $fileLogger.setTimestampFormat('medium');
     };
 
     this.someLog = function () {
@@ -44,21 +42,76 @@ angular.module('fileloggermodule', ['ionic', 'fileLogger'])
         $fileLogger.log('info', 'The log file ' + logFileName + ' is deleted!');
       });
     };
+
+    this.logUpload = function (usernameIn, passwordIn) {
+      var user = usernameIn;
+      var pass = passwordIn;
+
+      // save the "parent process" = "this"
+      var pp = this;
+
+      // will fix BASE_URL
+      var uri = encodeURI("https://carewheels.cecs.pdx.edu:8443/logupload.php");
+
+      $fileLogger.checkFile().then(function (d) {
+        var cpp = pp;
+
+        var fileURL = JSON.stringify(d.localURL);
+        fileURL = fileURL.replace(/"+/g, "");
+        console.log('debug', "fileURL: ", fileURL);
+
+        var currentDateTime = cpp.getCurrentDateTime();
+        var fileNameUp = user + '-' + currentDateTime + '.log';
+
+        var options = {
+          fileKey: "filetoupload",
+          fileName: fileNameUp,
+          mimeType: "text/plain",
+          params: {'username': user, 'password': pass, 'fileName': fileNameUp}
+        };
+        options.headers = {'headerParam': 'headerValue'};
+
+        $ionicPlatform.ready(function () {
+          $cordovaFileTransfer.upload(uri, fileURL, options).then(function (result) {
+            $fileLogger.log('info', "SUCCESS: " + JSON.stringify(result.response));
+            // $scope.data = JSON.stringify(result.response);
+
+            $fileLogger.log('debug', "Code = " + result.responseCode);
+            $fileLogger.log('debug', "Response = " + result.response);
+            $fileLogger.log('debug', "Sent = " + result.bytesSent);
+
+            // delete old log file and create a new one
+            cpp.deleteLogFile();
+            cpp.initLogComponent();
+            $fileLogger.info('-----New log file is created!');
+          }, function (error) {
+            $fileLogger.log('info', "ERROR: " + JSON.stringify(error));
+            // $scope.data = JSON.stringify(error);
+
+            $fileLogger.log('debug', "An error has occurred!");
+            $fileLogger.log('debug', "Code = " + error.code);
+            $fileLogger.log('debug', "Error source " + error.source);
+            $fileLogger.log('debug', "Error target " + error.target);
+          }, function (progress) {
+            // PROGRESS HANDLING GOES HERE
+          });
+        });
+      });
+    };
   })
-  .controller('fileloggerCtrl', ['$scope', '$fileLogger', '$interval', '$filter', 'fileloggerService', '$ionicPlatform', '$cordovaFile', '$cordovaFileTransfer', function ($scope, $fileLogger, $interval, $filter, fileloggerService, $ionicPlatform, $cordovaFile, $cordovaFileTransfer) {
+
+  .controller('fileloggerCtrl', ['$scope', '$fileLogger', 'fileloggerService', function ($scope, $fileLogger, fileloggerService) {
     $scope.inputDate = {text: ""};
 
     fileloggerService.initLogComponent();
 
     $scope.initLogCurrentDate = function () {
       var currentDate = fileloggerService.getCurrentDate();
-      logFileName = currentDate + '.log';
-      fileloggerService.setLogLocation(logFileName);
+      fileloggerService.setLogLocation(currentDate + '.log');
     };
 
     $scope.initLogCustomDate = function () {
-      logFileName = $scope.inputDate.text + '.log';
-      fileloggerService.setLogLocation(logFileName);
+      fileloggerService.setLogLocation($scope.inputDate.text + '.log');
     };
 
     $scope.someLog = function () {
@@ -93,58 +146,7 @@ angular.module('fileloggermodule', ['ionic', 'fileLogger'])
       fileloggerService.deleteLogFile();
     };
 
-    // $interval(function () {
-    //   $scope.initLogCurrentDate();
-    //   $scope.someLog();
-    //   $scope.deleteLogFile();
-    // }, 5000);
-
     $scope.logUpload = function (usernameIn, passwordIn) {
-      var user = usernameIn;
-      var pass = passwordIn;
-
-      var uri = encodeURI("http://carewheels.cecs.pdx.edu:8080/logupload.php");
-
-      $fileLogger.checkFile().then(function (d) {
-        var fileURL = JSON.stringify(d.localURL);
-        fileURL = fileURL.replace(/\"+/g, "");
-        console.log('debug', "fileURL: ", fileURL);
-
-        var fileNameUp = user + '-' + fileloggerService.getCurrentDateTime() + '.log';
-        var options = {
-          fileKey: "filetoupload",
-          fileName: fileNameUp,
-          mimeType: "text/plain",
-          params: {'username': user, 'password': pass, 'fileName': fileNameUp}
-        };
-        var headers = {'headerParam': 'headerValue'};
-        options.headers = headers;
-
-        $ionicPlatform.ready(function () {
-          $cordovaFileTransfer.upload(uri, fileURL, options).then(function (result) {
-            $fileLogger.log('info', "SUCCESS: " + JSON.stringify(result.response));
-            $scope.data = JSON.stringify(result.response);
-
-            $fileLogger.log('debug', "Code = " + result.responseCode);
-            $fileLogger.log('debug', "Response = " + result.response);
-            $fileLogger.log('debug', "Sent = " + result.bytesSent);
-
-            // delete old log file and create a new one
-            fileloggerService.deleteLogFile();
-            fileloggerService.initLogComponent();
-            $fileLogger.info('-----New log file is created!');
-          }, function (error) {
-            $fileLogger.log('info', "ERROR: " + JSON.stringify(error));
-            $scope.data = JSON.stringify(error);
-
-            $fileLogger.log('debug', "An error has occurred!");
-            $fileLogger.log('debug', "Code = " + error.code);
-            $fileLogger.log('debug', "Error source " + error.source);
-            $fileLogger.log('debug', "Error target " + error.target);
-          }, function (progress) {
-            // PROGRESS HANDLING GOES HERE
-          });
-        });
-      });
-    }
+      fileloggerService.logUpload(usernameIn, passwordIn);
+    };
   }]);
