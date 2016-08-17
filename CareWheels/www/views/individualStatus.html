@@ -1,11 +1,11 @@
 <ion-view view-title="app.individualStatus" class="overflow-scroll">
   <ion-nav-title>Status: {{name}}
     <a href="{{getPhoneNumber()}}" class="blue">
-      <div id="callArea"
-           class="button"
-           ng-class="getCallButtonColor()">
+    <div id="callArea"
+         class="button"
+         ng-class="getCallButtonColor()">
         Call
-      </div>
+    </div>
     </a>
   </ion-nav-title>
 
@@ -13,11 +13,12 @@
   <!-- individual status content -->
   <ion-content class="moveDown">
     <ul class="row header">
-      <li class="col no_border col-25 col-center blackFont"></li>
-      <li class="col no_border col-25 col-center blackFont">presence</li>
-      <li class="col no_border col-25 col-center blackFont">meals</li>
-      <li class="col no_border col-25 col-center blackFont">meds</li>
+      <li class="col no_border col-25 blackFont"></li>
+      <li class="col no_border col-25 blackFont">presence</li>
+      <li class="col no_border col-25 blackFont">meals</li>
+      <li class="col no_border col-25 blackFont">meds</li>
     </ul>
+
     <div class="row" ng-repeat="i in getNumber(24) track by $index">
       <div ng-if="$index == 0" class="col blackFont">12am</div>
       <div ng-if="$index == 12" class="col blackFont">12pm</div>
@@ -30,5 +31,6 @@
       <div ng-if="$index <= currentHour" class="col" ng-class="data.meds.value[$index]">{{data.meds.hits[$index]}}</div>
       <div ng-if="$index > currentHour" class="col"></div>
     </div>
+
   </ion-content>
 </ion-view>
