@@ -19,49 +19,353 @@ WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5
   //DATA DOWNLOAD FUNCTION
   /////////////////////////////////////////////////////////////////////////////////////////
 
-  $scope.DownloadData = function () {
+//this is the main function called after login
+$scope.DownloadData = function () {
 
-      /**
-      // This contains the worker body.
-      // The function must be self contained.
-      // The function body will be converted to source and passed to the worker.
-      // The input parameter is what will be passed to the worker when it is executed. It must be a serializable object.
-      // The output parameter is a promise and is what the worker will return to the main thread.
-      // All communication from the worker to the main thread is performed by resolving, rejecting or notifying the output promise.
-      // We may optionally depend on other angular services. These services can be used just as in the main thread.
-      // But be aware that no state changes in the angular services in the worker are propagates to the main thread. Workers run in fully isolated contexts.
-      // All communication must be performed through the output parameter.
-   */
-var theseMembers = GroupInfo.groupInfo();//returns all five group members with carebank data after login
+//this function spans the life one single worker thread (from input, to output back to main thread)
+//we need to wrap it in this function, or else worker threads cannot be created for each group member
+var workerCreation = function(member) {//input to workerCreation is a single group member
 
-for (var i = 0; i < theseMembers.length; i++){
-
+  //this is the creation of the worker thread promise (returned to main thread below)
   var workerPromise = WorkerService.createAngularWorker(['input', 'output', '$http', '$httpParamSerializerJQLike', function (input, output, $http, $httpParamSerializerJQLike) {
-    console.log("check in worker", input["accesstoken"]);
 
+  var prevDay = input['time'];
+  var presenceUids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
+  var fridgeUids = [];
+  var medUids = [];
+  var alertUids = [];
+  var presenceEvents = [];//this will store all events gathered from each presence UID
+  var fridgeEvents = [];
+  var medEvents = [];
+  var alertEvents = [];
+  var sensorData = {//this will attach to each member and be sent to analysis
+    "Presence": [],
+    "Fridge": [],
+    "Meds": [],
+    "Alert": []
+  };
+
+  //This function explores the response received from /nodes/
+  //and finds the appropriate uid's within the publishes array
+  //of the node object with the desired label (presence, med, fridge)
+  var getUids = function(arg){
+
+    var nodes = arg.data;
+    var objects = nodes.objects;
+    var objectsLength = objects.length;
+    for (var i = 0; i < objectsLength; i++){//iterate over all node objects on the returned page
+      console.log("CHECKING NODES...");
+        if (objects[i].label == "presenceCareBank"){//match label
+          console.log("added presence uid");
+          var presFeeds = objects[i].publishes
+          var presLength = presFeeds.length;
+          for (var j = 0; j < presLength; j++){//iterate over publishes[]
+            if (presFeeds[j].label == "Presence"){
+            presenceUids.push(presFeeds[j].uid);//add uid with the specified label "Presence" to array
+            }
+          };
+        }
+        if (objects[i].label == "fridgeCareBank"){
+          console.log("added fridge uid");
+          var fridgeFeeds = objects[i].publishes
+          var fridgeLength = fridgeFeeds.length;
+          for (var j = 0; j < fridgeLength; j++){
+            if (fridgeFeeds[j].label == "Motion"){
+            fridgeUids.push(fridgeFeeds[j].uid);
+            }
+          };
+        }
+        if (objects[i].label == "medsCareBank"){
+          console.log("added med uid");
+          var medFeeds = objects[i].publishes
+          var medLength = medFeeds.length;
+          for (var j = 0; j < medLength; j++){
+            if (medFeeds[j].label == "Motion"){
+            medUids.push(medFeeds[j].uid);
+            }
+          };
+        }
+        if (objects[i].label == "testtesttest"){//added this in case we need to find an alert uid
+          console.log("added alert uid");
+          var alertFeeds = objects[i].publishes
+          var alertLength = alertFeeds.length;
+          for (var j = 0; j < alertLength; j++){
+            if (alertFeeds[j].label == "Alert"){
+            alertUids.push(alertFeeds[j].uid);
+            }
+          };
+        }
+        else{
+          continue;
+        }
+      };
+    };
+
+  var getPresenceEvents = function(){//use appropriate uid array to make http request to /events/ endpoint
+    var presenceLength = presenceUids.length;
+    for (var i = 0; i < presenceLength; i++){//for each uid in uids array
+      $http({
+        url:"https://apis.sen.se/v2/feeds/"+presenceUids[i]+"/events/"+"?gt="+prevDay,
+        method:'GET',
+        headers: {
+          'Authorization': 'Bearer '+input["accesstoken"]
+        }
+      }).then(function(response) {
+        var presenceEventList = response.data;
+        var eventsLeftToAdd = presenceEventList.totalObjects;
+        if (eventsLeftToAdd < 100){
+          for (var j = 0; j < eventsLeftToAdd; j++){
+            sensorData.Presence.push(presenceEventList.objects[j]);
+          };
+        }
+        else{ // >100 event objects implies more than one page of data
+          for (var k = 0; k < 100; k++){
+            sensorData.Presence.push(presenceEventList.objects[k]);
+            eventsLeftToAdd = eventsLeftToAdd - 100;
+          };
+          var pages = Math.ceil(presenceEventList.totalObjects / 100);
+          return pages;
+        }
+        return sensorData.Presence;
+        
+      }, function error(response) {
+        console.log("request failed at /events/", response);
+        //log appropriate error
+
+      }).then(function(response) {
+
+        //HANDLE ADDITIONAL PAGES
+
+      }, function error(response) {
+        console.log("request failed at /events/", response);
+        //log appropriate error
+      })
+    }
+  };
+
+
+  var getMedEvents = function(){//use appropriate uid array to make http request to /events/ endpoint
+    var medLength = medUids.length;
+    for (var i = 0; i < medLength; i++){//for each uid in uids array
+      $http({
+        url:"https://apis.sen.se/v2/feeds/"+medUids[i]+"/events/"+"?gt="+prevDay,
+        method:'GET',
+        headers: {
+          'Authorization': 'Bearer '+input["accesstoken"]
+        }
+      }).then(function(response) {
+        var medEventList = response.data;
+        var eventsLeftToAdd = medEventList.totalObjects;
+        if (eventsLeftToAdd < 100){
+          for (var j = 0; j < eventsLeftToAdd; j++){
+            sensorData.Meds.push(medEventList.objects[j]);
+          };
+        }
+        else{ // >100 event objects implies more than one page of data
+          for (var k = 0; k < 100; k++){
+            sensorData.Meds.push(medEventList.objects[k]);
+            eventsLeftToAdd = eventsLeftToAdd - 100;
+          };
+          var pages = Math.ceil(medEventList.totalObjects / 100);
+          return pages;
+        }
+        return sensorData.Meds;
+        
+      }, function error(response) {
+        console.log("request failed at /events/", response);
+        //log appropriate error
+
+      }).then(function(response) {
+
+        //HANDLE ADDITIONAL PAGES
+
+      }, function error(response) {
+        console.log("request failed at /events/", response);
+        //log appropriate error
+      })
+    }
+  };
+
+
+  var getFridgeEvents = function(){//use appropriate uid array to make http request to /events/ endpoint
+    var fridgeLength = fridgeUids.length;
+    for (var i = 0; i < fridgeLength; i++){//for each uid in uids array
+      $http({
+        url:"https://apis.sen.se/v2/feeds/"+fridgeUids[i]+"/events/"+"?gt="+prevDay,
+        method:'GET',
+        headers: {
+          'Authorization': 'Bearer '+input["accesstoken"]
+        }
+      }).then(function(response) {
+        var fridgeEventList = response.data;
+        var eventsLeftToAdd = fridgeEventList.totalObjects;
+        if (eventsLeftToAdd < 100){
+          for (var j = 0; j < eventsLeftToAdd; j++){
+            sensorData.Fridge.push(fridgeEventList.objects[j]);
+          };
+        }
+        else{ // >100 event objects implies more than one page of data
+          for (var k = 0; k < 100; k++){
+            sensorData.Fridge.push(fridgeEventList.objects[k]);
+            eventsLeftToAdd = eventsLeftToAdd - 100;
+          };
+          var pages = Math.ceil(fridgeEventList.totalObjects / 100);
+          return pages;
+        }
+        return sensorData.Fridge;
+        
+      }, function error(response) {
+        console.log("request failed at /events/", response);
+        //log appropriate error
+
+      }).then(function(response) {
+
+        //HANDLE ADDITIONAL PAGES
+
+      }, function error(response) {
+        console.log("request failed at /events/", response);
+        //log appropriate error
+      })
+    }
+  };
+
+  var getAlertEvents = function(){//use appropriate uid array to make http request to /events/ endpoint
+    var alertLength = alertUids.length;
+    for (var i = 0; i < alertLength; i++){//for each uid in uids array
+      $http({
+        url:"https://apis.sen.se/v2/feeds/"+alertUids[i]+"/events/"+"?gt="+prevDay,
+        method:'GET',
+        headers: {
+          'Authorization': 'Bearer '+input["accesstoken"]
+        }
+      }).then(function(response) {
+        var alertEventList = response.data;
+        var eventsLeftToAdd = alertEventList.totalObjects;
+        if (eventsLeftToAdd < 100){
+          for (var j = 0; j < eventsLeftToAdd; j++){
+            sensorData.Alert.push(alertEventList.objects[j]);
+          };
+        }
+        else{ // >100 event objects implies more than one page of data
+          for (var k = 0; k < 100; k++){
+            sensorData.Alert.push(alertEventList.objects[k]);
+            eventsLeftToAdd = eventsLeftToAdd - 100;
+          };
+          var pages = Math.ceil(alertEventList.totalObjects / 100);
+          return pages;
+        }
+        return sensorData.Alert;
+        
+      }, function error(response) {
+        console.log("request failed at /events/", response);
+        //log appropriate error
+
+      }).then(function(response) {
+
+        //HANDLE ADDITIONAL PAGES
+
+      }, function error(response) {
+        console.log("request failed at /events/", response);
+        //log appropriate error
+      })
+    }
+  };
+
+  var refreshFunc = function(){//For when http request is denied due to 403 expired token
+  var refreshUrl = "https://apis.sen.se/v2/oauth2/refresh/";
+  $http({
+    url:refreshUrl,
+    method:'POST',
+    headers: {
+      'Authorization': 'Bearer '+refreshtoken
+    }
+  }).then(function(response) {
+      console.log("sen.se refresh request success", response);
+    }, function(response) {
+      console.log("sen.se refresh request fail", response);
+      }
+    )
+  };
 
   var dataUrl = "https://apis.sen.se/v2/nodes/";//get page of nodes for this user
     $http({
       url:dataUrl,
       method:'GET',
       headers: {
-        'Authorization': 'Bearer '+accesstoken
+        'Authorization': 'Bearer '+ input["accesstoken"]
       }
-    }).then(function(response) {
-      console.log("this is a thread for group member with accesstoken: ", accesstoken);
+    }).then(function(response) {//STAGE 1
+        console.log("/nodes/", response);
+        //GET UIDS FOR EACH 
+        return getUids(response);
 
-    })
+      }, function error(response) {
+        console.log("request failed at /nodes/", response);
+        //log appropriate error
 
+    }).then(function(response) {//STAGE 2
 
+        //GET EVENTS FOR EACH 
+        return getPresenceEvents();
+        //console.log(response);
 
-/////////////////////////////////////////////////////////////////////////////////////////
-//MAIN THREAD
-/////////////////////////////////////////////////////////////////////////////////////////
-//This is where we handle the returned promise by the worker thread
-//(this will be a javascript object containing sensor download data)
-/////////////////////////////////////////////////////////////////////////////////////////
+      }, function error(response) {
+        console.log("request failed at /events/", response);
+        //log appropriate error
 
-    workerPromise
+      }).then(function(response) {//STAGE 3
+
+        return getMedEvents();
+        //GET EVENTS FOR EACH 
+        //console.log(response);
+
+      }, function error(response) {
+
+        //log appropriate error
+      }).then(function(response) {//STAGE 4
+
+        return getFridgeEvents();
+        //GET EVENTS FOR EACH 
+        //console.log(response);
+
+      }, function error(response) {
+
+        //log appropriate error
+
+      }).then(function(response) {//STAGE 5
+
+        return getAlertEvents();
+        //GET EVENTS FOR EACH 
+        //console.log(response);
+
+      }, function error(response) {
+
+        //log appropriate error
+
+      }).then(function(response) {//STAGE 6
+        var thisMember = input["thisMember"];
+        thisMember.sensorData = sensorData;
+        console.log(sensorData);
+        output.notify(JSON.parse(JSON.stringify(thisMember)));
+        //OUTPUT.NOTIFY groupmember + sensorData back to main thread
+        //where it is added back into groupInfo()
+
+      }, function error(response) {
+
+        //log appropriate error
+      })
+
+//Use uids to make requests to appropriate /events/ endpoints
+
+//chain .then() for additional pages
+
+//save /events/ in appropriate arrays
+
+//return member object with sensorData via output.notify to main thread
+
+}]); //end of each worker thread promise
+
+    workerPromise//this is where we give our inputs to the worker thread
       .then(function success(angularWorker) {
 
         var date = new Date();//create new data object
@@ -74,13 +378,15 @@ for (var i = 0; i < theseMembers.length; i++){
 
         //input to worker thread will accept "thesemembers" array variable, which contains token credentials for user's
         //group members within his/her carewheel
-        theseMembers[i].index = i;
-        console.log("inputting values into worker thread ", theseMembers[i]);
+        //theseMembers[i].index = i;
+        console.log("inputting values into worker thread ", member);
         //theseMembers[i].customValues[1].stringValue, theseMembers[i].customValues[2].stringValue;
+        var accesstoken = member.customValues[1].stringValue;
+        var refreshtoken = member.customValues[2].stringValue;
         
-        return angularWorker.run({theseMembers: theseMembers, time: userTime, accesstoken: theseMembers[i].customValues[1].stringValue, refreshtoken: theseMembers[i].customValues[2].stringValue});
+        return angularWorker.run({thisMember: member, time: userTime, accesstoken: accesstoken, refreshtoken: refreshtoken});
 
-      }, function error(reason) {
+      }, function error(reason) {//this is where the worker thread returns
 
           console.log('callback error');
           console.log(reason);
@@ -98,7 +404,7 @@ for (var i = 0; i < theseMembers.length; i++){
           console.log('error');
           console.log(reason);
 
-        }, function notify(update) {
+        }, function notify(update) {//this is where we will receive our data once the worker thread has finished downloading
           //handle update
           $scope.data = update.data;
           $scope.status = update.status;
@@ -106,12 +412,24 @@ for (var i = 0; i < theseMembers.length; i++){
           console.log('Download Complete', update);
           $scope.msg = "Download Complete";
 
-        GroupInfo.addDataToGroup(update, update.index); //COMMENTED OUT DURING TESTING, ADD LATER
-        console.log("group info check after sensor download", GroupInfo.groupInfo());
-
+          GroupInfo.addDataToGroup(update, update.index); //COMMENTED OUT DURING TESTING, ADD LATER
+          console.log("group info check after sensor download", GroupInfo.groupInfo());
       });
-      ////end of for loop for each user
-  } //end of each worker thread promise
-]);
-}//for each group member
-}})
+}
+
+var theseMembers = GroupInfo.groupInfo();//returns all five group members with carebank data after login
+
+for (var i = 0; i < theseMembers.length; i++){//this is where we loop over each group member, check for keys, and create worker thread
+  theseMembers[i].index = i;
+  if (theseMembers[i].customValues[1].stringValue == "000" || theseMembers[i].customValues[1].stringValue == "" ||
+    theseMembers[i].customValues[2].stringValue == "000" || theseMembers[i].customValues[2].stringValue == "")
+    {
+      theseMembers[i].sensorData = null;
+      console.log("error, please obtain valid sen.se keys!");
+    }
+  else{
+    console.log("creating new worker thread and download data...");
+    workerCreation(theseMembers[i]);
+    };
+}
+}});
