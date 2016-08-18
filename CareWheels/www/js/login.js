@@ -4,7 +4,7 @@
  */
 angular.module('careWheels')
   .controller('loginController',
-    function($scope, $controller, User, $state, $ionicLoading, $ionicPopup, GroupInfo, $interval, notifications, onlineStatus){
+    function($scope, $controller, User, $state, $ionicLoading, $ionicPopup, GroupInfo, $interval, notifications, onlineStatus, VERSION_NUMBER){
 
     var DOWNLOAD_INTERVAL = 1000 * 60 * 5; // constant interval for download, 5 mins
     var dataDownload = $scope.$new();
@@ -14,6 +14,7 @@ angular.module('careWheels')
     var popupTemplate = '<ion-spinner></ion-spinner>' + '<p>Contacting Server...</p>';
     var info = '';
 
+
     var credentials = angular.fromJson(window.localStorage['loginCredentials']);
 
     $controller('DownloadCtrl', {$scope : dataDownload});
@@ -22,7 +23,7 @@ angular.module('careWheels')
     $scope.rememberMe = false;
     $scope.logoImage = 'img/CareWheelsLogo.png';
     $scope.connectionError = false;
-
+    $scope.versionNumber = VERSION_NUMBER;
 
 
     /**
