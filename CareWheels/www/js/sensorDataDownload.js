@@ -2,15 +2,9 @@ angular.module('careWheels')
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //Using angular-workers module
-//(also added to angular.module at top of app.js)
-//and added the angular-workers related js files in index.html
 /////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////
-//Sensor Data Download controller
-/////////////////////////////////////////////////////////////////////////////////////////
 .controller('DownloadCtrl', function($scope, $http, WorkerService, GroupInfo, User) {
-
 
 // The URL must be absolute because of the URL blob specification
 WorkerService.setAngularUrl("https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js");
@@ -101,41 +95,63 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
       };
     };
 
+  var getPages = function(res, sensorArray){
+    var url = res.data.links.next;
+    console.log("downloading next page...");
+        $http({
+          url: url,
+          method:'GET',
+          headers: {
+            'Authorization': 'Bearer '+input["accesstoken"]
+          }
+        }).then(function(response) {
+          if (response.data.links.next == null){
+            console.log("download last page of data for this uid...");
+            var objectCount = response.data.objects.length;
+            for (var j = 0; j < objectCount; j++){
+              sensorArray.push(response.data.objects[j]);
+              return sensorArray;
+            };
+          }
+          else{ // >100 event objects implies more than one page of data
+            for (var k = 0; k < 100; k++){//add the 100 events on first page
+              sensorArray.push(response.data.objects[k]);
+            };
+            return getPages(response, sensorArray);
+          }
+          //return sensorData.Presence;
+          
+        }, function error(response) {
+          console.log("request failed at /events/", response);
+          //log appropriate error
+        })
+  };
+
   var getPresenceEvents = function(){//use appropriate uid array to make http request to /events/ endpoint
     var presenceLength = presenceUids.length;
     for (var i = 0; i < presenceLength; i++){//for each uid in uids array
+      var currentUid = presenceUids[i];
       $http({
-        url:"https://apis.sen.se/v2/feeds/"+presenceUids[i]+"/events/"+"?gt="+prevDay,
+        url:"https://apis.sen.se/v2/feeds/"+currentUid+"/events/"+"?gt="+prevDay,
         method:'GET',
         headers: {
           'Authorization': 'Bearer '+input["accesstoken"]
         }
       }).then(function(response) {
-        var presenceEventList = response.data;
-        var eventsLeftToAdd = presenceEventList.totalObjects;
-        if (eventsLeftToAdd < 100){
-          for (var j = 0; j < eventsLeftToAdd; j++){
-            sensorData.Presence.push(presenceEventList.objects[j]);
+        if (response.data.links.next == null){
+          var objectCount = response.data.objects.length;
+          for (var j = 0; j < objectCount; j++){
+            sensorData.Presence.push(response.data.objects[j]);
           };
         }
         else{ // >100 event objects implies more than one page of data
-          for (var k = 0; k < 100; k++){
-            sensorData.Presence.push(presenceEventList.objects[k]);
-            eventsLeftToAdd = eventsLeftToAdd - 100;
+          for (var k = 0; k < 100; k++){//add the 100 events on first page
+            sensorData.Presence.push(response.data.objects[k]);
           };
-          var pages = Math.ceil(presenceEventList.totalObjects / 100);
-          return pages;
+          return getPages(response, sensorData.Presence);
         }
-        return sensorData.Presence;
+        //return sensorData.Presence;
         
-      }, function error(response) {
-        console.log("request failed at /events/", response);
-        //log appropriate error
-
-      }).then(function(response) {
-
-        //HANDLE ADDITIONAL PAGES
-
       }, function error(response) {
         console.log("request failed at /events/", response);
         //log appropriate error
@@ -147,38 +163,28 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
   var getMedEvents = function(){//use appropriate uid array to make http request to /events/ endpoint
     var medLength = medUids.length;
     for (var i = 0; i < medLength; i++){//for each uid in uids array
+      var currentUid = medUids[i];
       $http({
-        url:"https://apis.sen.se/v2/feeds/"+medUids[i]+"/events/"+"?gt="+prevDay,
+        url:"https://apis.sen.se/v2/feeds/"+currentUid+"/events/"+"?gt="+prevDay,
         method:'GET',
         headers: {
           'Authorization': 'Bearer '+input["accesstoken"]
         }
       }).then(function(response) {
-        var medEventList = response.data;
-        var eventsLeftToAdd = medEventList.totalObjects;
-        if (eventsLeftToAdd < 100){
-          for (var j = 0; j < eventsLeftToAdd; j++){
-            sensorData.Meds.push(medEventList.objects[j]);
+        if (response.data.links.next == null){
+          var objectCount = response.data.objects.length;
+          for (var j = 0; j < objectCount; j++){
+            sensorData.Meds.push(response.data.objects[j]);
           };
         }
         else{ // >100 event objects implies more than one page of data
-          for (var k = 0; k < 100; k++){
-            sensorData.Meds.push(medEventList.objects[k]);
-            eventsLeftToAdd = eventsLeftToAdd - 100;
+          for (var k = 0; k < 100; k++){//add the 100 events on first page
+            sensorData.Meds.push(response.data.objects[k]);
           };
-          var pages = Math.ceil(medEventList.totalObjects / 100);
-          return pages;
+          return getPages(response, sensorData.Meds);
         }
-        return sensorData.Meds;
+        //return sensorData.Presence;
         
-      }, function error(response) {
-        console.log("request failed at /events/", response);
-        //log appropriate error
-
-      }).then(function(response) {
-
-        //HANDLE ADDITIONAL PAGES
-
       }, function error(response) {
         console.log("request failed at /events/", response);
         //log appropriate error
@@ -190,38 +196,28 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
   var getFridgeEvents = function(){//use appropriate uid array to make http request to /events/ endpoint
     var fridgeLength = fridgeUids.length;
     for (var i = 0; i < fridgeLength; i++){//for each uid in uids array
+      var currentUid = fridgeUids[i];
       $http({
-        url:"https://apis.sen.se/v2/feeds/"+fridgeUids[i]+"/events/"+"?gt="+prevDay,
+        url:"https://apis.sen.se/v2/feeds/"+currentUid+"/events/"+"?gt="+prevDay,
         method:'GET',
         headers: {
           'Authorization': 'Bearer '+input["accesstoken"]
         }
       }).then(function(response) {
-        var fridgeEventList = response.data;
-        var eventsLeftToAdd = fridgeEventList.totalObjects;
-        if (eventsLeftToAdd < 100){
-          for (var j = 0; j < eventsLeftToAdd; j++){
-            sensorData.Fridge.push(fridgeEventList.objects[j]);
+        if (response.data.links.next == null){
+          var objectCount = response.data.objects.length;
+          for (var j = 0; j < objectCount; j++){
+            sensorData.Fridge.push(response.data.objects[j]);
           };
         }
         else{ // >100 event objects implies more than one page of data
-          for (var k = 0; k < 100; k++){
-            sensorData.Fridge.push(fridgeEventList.objects[k]);
-            eventsLeftToAdd = eventsLeftToAdd - 100;
+          for (var k = 0; k < 100; k++){//add the 100 events on first page
+            sensorData.Fridge.push(response.data.objects[k]);
           };
-          var pages = Math.ceil(fridgeEventList.totalObjects / 100);
-          return pages;
+          return getPages(response, sensorData.Fridge);
         }
-        return sensorData.Fridge;
+        //return sensorData.Presence;
         
-      }, function error(response) {
-        console.log("request failed at /events/", response);
-        //log appropriate error
-
-      }).then(function(response) {
-
-        //HANDLE ADDITIONAL PAGES
-
       }, function error(response) {
         console.log("request failed at /events/", response);
         //log appropriate error
@@ -232,38 +228,28 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
   var getAlertEvents = function(){//use appropriate uid array to make http request to /events/ endpoint
     var alertLength = alertUids.length;
     for (var i = 0; i < alertLength; i++){//for each uid in uids array
+      var currentUid = alertUids[i];
       $http({
-        url:"https://apis.sen.se/v2/feeds/"+alertUids[i]+"/events/"+"?gt="+prevDay,
+        url:"https://apis.sen.se/v2/feeds/"+currentUid+"/events/"+"?gt="+prevDay,
         method:'GET',
         headers: {
           'Authorization': 'Bearer '+input["accesstoken"]
         }
       }).then(function(response) {
-        var alertEventList = response.data;
-        var eventsLeftToAdd = alertEventList.totalObjects;
-        if (eventsLeftToAdd < 100){
-          for (var j = 0; j < eventsLeftToAdd; j++){
-            sensorData.Alert.push(alertEventList.objects[j]);
+        if (response.data.links.next == null){
+          var objectCount = response.data.objects.length;
+          for (var j = 0; j < objectCount; j++){
+            sensorData.Alert.push(response.data.objects[j]);
           };
         }
         else{ // >100 event objects implies more than one page of data
-          for (var k = 0; k < 100; k++){
-            sensorData.Alert.push(alertEventList.objects[k]);
-            eventsLeftToAdd = eventsLeftToAdd - 100;
+          for (var k = 0; k < 100; k++){//add the 100 events on first page
+            sensorData.Alert.push(response.data.objects[k]);
           };
-          var pages = Math.ceil(alertEventList.totalObjects / 100);
-          return pages;
+          return getPages(response, sensorData.Alert);
         }
-        return sensorData.Alert;
+        //return sensorData.Presence;
         
-      }, function error(response) {
-        console.log("request failed at /events/", response);
-        //log appropriate error
-
-      }).then(function(response) {
-
-        //HANDLE ADDITIONAL PAGES
-
       }, function error(response) {
         console.log("request failed at /events/", response);
         //log appropriate error
@@ -287,6 +273,7 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
     )
   };
 
+  //initial http request.  subsequent request will be chained as ".then()" callbacks
   var dataUrl = "https://apis.sen.se/v2/nodes/";//get page of nodes for this user
     $http({
       url:dataUrl,
@@ -310,7 +297,7 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
         //console.log(response);
 
       }, function error(response) {
-        console.log("request failed at /events/", response);
+        console.log("request failed at presence /events/", response);
         //log appropriate error
 
       }).then(function(response) {//STAGE 3
@@ -320,7 +307,7 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
         //console.log(response);
 
       }, function error(response) {
-
+        console.log("request failed at Med /events/", response);
         //log appropriate error
       }).then(function(response) {//STAGE 4
 
@@ -329,7 +316,7 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
         //console.log(response);
 
       }, function error(response) {
-
+        console.log("request failed at Fridge /events/", response);
         //log appropriate error
 
       }).then(function(response) {//STAGE 5
@@ -339,19 +326,22 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
         //console.log(response);
 
       }, function error(response) {
-
+        console.log("request failed at Alert /events/", response);
         //log appropriate error
 
       }).then(function(response) {//STAGE 6
         var thisMember = input["thisMember"];
         thisMember.sensorData = sensorData;
         console.log(sensorData);
+
+        setTimeout(function(){//this timeout is to allow time for download to finish/return before it is called by analysis
         output.notify(JSON.parse(JSON.stringify(thisMember)));
+        }, 10000);
         //OUTPUT.NOTIFY groupmember + sensorData back to main thread
         //where it is added back into groupInfo()
 
       }, function error(response) {
-
+        console.log("request failed while outputting data back to main thread", response);
         //log appropriate error
       })
 
@@ -395,8 +385,7 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
           //not all browsers support the HTML5 tech that is required, see below.
         }).then(function success(result) {
 
-          console.log('success');
-          console.log(result);
+          console.log('success', result);
 
         //handle result
       }, function error(reason) {
