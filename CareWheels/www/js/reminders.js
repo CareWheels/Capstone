@@ -59,19 +59,19 @@ angular.module('careWheels')
      *  the following two functions are for the toggles, they dynamically
      *  update the scope variables. by triggering by angular's 'ng-change'
      *  */
-    $scope.toggleOnOff = function (index) {
-      $scope.reminders[index].isOn = !$scope.reminders[index].isOn;
-      //console.log("Toggled: " + $scope.reminders[index].isOn); ////////////// testing
+    $scope.toggleOnOff = function(index){
+      $scope.reminders[index].isOn = $scope.reminders[index].isOn != false;
+      console.log("Toggled: " + $scope.reminders[index].isOn); ////////////// testing
     };
-    $scope.toggleAmPm = function (index) {
-      if ($scope.reminders[index].isPM) {
+    $scope.toggleAmPm = function(index){
+      if ($scope.reminders[index].isPM == false) {
         $scope.reminders[index].isPM = false;
         $scope.reminders[index].amOrPm = 'AM';
-      } else {
+      } else{
         $scope.reminders[index].isPM = true;
         $scope.reminders[index].amOrPm = 'PM';
       }
-      //console.log("Toggled " + $scope.reminders[index].isPM + ": " + $scope.reminders[index].amOrPm); ////////////// testing
+      console.log("Toggled: " + $scope.reminders[index].amOrPm); ////////////// testing
     };
 
 
@@ -115,7 +115,7 @@ angular.module('careWheels')
               credentialsError = false;
               $fileLogger.log('error', 'Cannot make REST calls for Reminders because user credentials are undefined.');
             }
-          } 
+          }
           $state.go($state.current, {}, {reload: true});    //reset view so changes are immediately visible
         } else {
           console.log('Reset canceled!');
@@ -153,7 +153,7 @@ angular.module('careWheels')
             credentialsError = false;
             $fileLogger.log('error', 'Cannot make REST calls for Reminders because user credentials are undefined.');
           }
-        } 
+        }
     };
 
     //Handle the REST call to custom server API
@@ -194,7 +194,7 @@ angular.module('careWheels')
             credentialsError = false;
             $fileLogger.log('error', 'Cannot make REST calls for Reminders because user credentials are undefined.');
           }
-        } 
+        }
     };
   }));
 
