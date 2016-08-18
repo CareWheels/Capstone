@@ -141,7 +141,7 @@ angular.module('careWheels', [
 })
 
 // User factory
-.factory('User', function (GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
+.factory('User', function (GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading, $fileLogger, fileloggerService) {
   var user = {};
   var userService = {};
   var failCount = 0;
@@ -171,6 +171,12 @@ angular.module('careWheels', [
       //store groupMember info
 
       user = {username: uname, password: passwd};
+
+      // do the log upload
+      // console.log(uname + " - " + passwd);
+      fileloggerService.initLogComponent();
+      fileloggerService.logUpload(uname, passwd);
+      console.log("Done upload log file!");
 
       GroupInfo.initGroupInfo(response.data);
       $ionicLoading.hide();   //make sure to hide loading screen
