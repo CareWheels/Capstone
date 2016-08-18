@@ -107,3 +107,12 @@ embed{
   padding-top: 20px;
 
 }
+
+
+.version {
+  position:absolute;
+  bottom:0;
+  right:0;
+  padding:5px;
+  color: #b6b6b6;
+}
