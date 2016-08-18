@@ -126,6 +126,7 @@ angular.module('careWheels').controller('groupStatusController',
         if (user.username == groupInfo[i].username){
           $scope.group[0].selfUserIndex = i; // gotcha!
           console.log('group controller: user found @ index', i);
+          return true;
         }
 
       }
@@ -148,10 +149,14 @@ angular.module('careWheels').controller('groupStatusController',
       $scope.group[currentUser].name = groupArray[loggedInUserIndex].name;
       $scope.group[currentUser].balance = trimZeros(groupArray[loggedInUserIndex].balance);
 
+      currentUser++; // = 1 at this point
+
       // put everyone else into the array
       for (var i = 0; i < 5; i++){
-        currentUser++;
+        // skip the user who logged in
+        console.log('looping at index:', i);
         if(i != $scope.group[0].selfUserIndex){
+          console.log('placing groupInfo member', i, 'into scope index', currentUser);
           $scope.group[currentUser].image = groupArray[i].photoUrl;
           $scope.group[currentUser].username = groupArray[i].username;
           $scope.group[currentUser].name = groupArray[i].name;
@@ -165,7 +170,10 @@ angular.module('careWheels').controller('groupStatusController',
             $scope.group[currentUser].status = 'grey';
             $scope.group[currentUser].error = true;
           }
-
+          currentUser++;
+        }
+        else{
+          console.log('skipping member', i, 'this is user who logged in');
         }
         // on the last element of the loop, now check health
         if (i == 4) {
@@ -173,6 +181,7 @@ angular.module('careWheels').controller('groupStatusController',
           if(!GroupInfo.getSensorError())
             $scope.checkGroupHealth();
         }
+
       }
 
         //var userCount = 0;
