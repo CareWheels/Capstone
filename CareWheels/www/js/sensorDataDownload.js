@@ -238,7 +238,7 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
 
         setTimeout(function(){//this timeout is to allow time for download to finish/return before it is called by analysis
         output.notify(JSON.parse(JSON.stringify(thisMember)));
-        }, 6000);
+        }, 5000);
         //OUTPUT.NOTIFY groupmember + sensorData back to main thread
         //where it is added back into groupInfo()
 
