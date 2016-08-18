@@ -82,4 +82,5 @@ angular.module('careWheels', [
     $scope.clickTests = function () {
       $state.go('app.tests');
     };
+
 });
