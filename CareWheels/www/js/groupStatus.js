@@ -5,16 +5,11 @@
 angular.module('careWheels').controller('groupStatusController',
   function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService) {
 
-    var groupArray = GroupInfo.groupInfo();
-
     // the groupInfo object is not available immediately, spin until available
     var initGroupInfo = setInterval(function () {
       var groupArray = GroupInfo.groupInfo();
-      //console.log(groupArray);
       if (groupArray[0] != null) {
         clearInterval(initGroupInfo);
-        // app on load
-        console.log('hit group controller');
         getLoggedInUser(groupArray);
         setGroupArray(groupArray);
       }
@@ -104,35 +99,23 @@ angular.module('careWheels').controller('groupStatusController',
     $scope.clickCareBank = function () {
     };
 
-    // console.log("Calling memberSummary Payment:");
-    // PaymentService.memberSummary(1.0);
-
     // lets figure out which user logged in at this point
     function getLoggedInUser(groupInfo) {
-      console.log('group controller: getloggedinuser()');
       var user = User.credentials();
       // error unable to load user object;
       if (user == null){
-        console.log('group controller: user not found');
         $scope.group[0].selfUserIndex = -1;
       }
 
       // loop through the groupInfo array to find the user who
       // logged in.
       for (var i = 0; i < groupInfo.length; i++) {
-        console.log('logged in as:', user.username, '  and comparing with:', groupInfo[i].username);
-
-
         if (user.username == groupInfo[i].username){
           $scope.group[0].selfUserIndex = i; // gotcha!
-          console.log('group controller: user found @ index', i);
           return true;
         }
-
       }
-
     }
-
 
     // now lets set the scope variables for the group view.
     function setGroupArray(groupArray) {
@@ -140,7 +123,6 @@ angular.module('careWheels').controller('groupStatusController',
       var fridgeAlert, medsAlert;
 
       var loggedInUserIndex = $scope.group[0].selfUserIndex;
-      console.log('setGroupArray, logged in user at index', loggedInUserIndex);
 
       // next lets set the data for the user that logged in,
       // this is reserved at index zero.
@@ -154,9 +136,7 @@ angular.module('careWheels').controller('groupStatusController',
       // put everyone else into the array
       for (var i = 0; i < 5; i++){
         // skip the user who logged in
-        console.log('looping at index:', i);
         if(i != $scope.group[0].selfUserIndex){
-          console.log('placing groupInfo member', i, 'into scope index', currentUser);
           $scope.group[currentUser].image = groupArray[i].photoUrl;
           $scope.group[currentUser].username = groupArray[i].username;
           $scope.group[currentUser].name = groupArray[i].name;
@@ -172,39 +152,13 @@ angular.module('careWheels').controller('groupStatusController',
           }
           currentUser++;
         }
-        else{
-          console.log('skipping member', i, 'this is user who logged in');
-        }
         // on the last element of the loop, now check health
         if (i == 4) {
-          console.log('on last element');
           if(!GroupInfo.getSensorError())
             $scope.checkGroupHealth();
         }
 
       }
-
-        //var userCount = 0;
-      //// first lets set the group up, at index 1-4
-      //for (var i = 0; i < 5; i++) {
-      //  userCount++;
-      //  if (i != $scope.group[0].selfUserIndex) {
-      //    $scope.group[userCount].image = groupArray[i].photoUrl;
-      //    $scope.group[userCount].username = groupArray[i].username;
-      //    $scope.group[userCount].name = groupArray[i].name;
-      //
-      //    try {
-      //      var fridgeAlert = groupArray[userCount].analysisData.fridgeAlertLevel;
-      //      var medsAlert = groupArray[userCount].analysisData.medsAlertLevel;
-      //      $scope.group[userCount].status = $scope.getAlertColor(fridgeAlert, medsAlert, i);
-      //    }
-
-
-      //  }
-      //
-      //}
-
-
     }
 
 
@@ -212,9 +166,7 @@ angular.module('careWheels').controller('groupStatusController',
     function trimZeros(input) {
       var number = parseFloat(input);
       return number.toString();
-
     }
-
 
     function clickUser(index) {
       if (!$scope.group[index].error) {
@@ -247,8 +199,6 @@ angular.module('careWheels').controller('groupStatusController',
      * append the color class onto the div
      * */
     $scope.getAlertColor = function (fridgeAlert, medsAlert, index) {
-      console.log('hit getAlertColor:', fridgeAlert, medsAlert, index);
-
       // check for null params
       if (fridgeAlert == null || medsAlert == null)
         return '';
@@ -272,7 +222,6 @@ angular.module('careWheels').controller('groupStatusController',
     };
 
     $scope.checkGroupHealth = function () {
-      console.log('hit checkGroupHealth();')
       //create a template string
       var errorList = [];
       var errorCount = 0;
@@ -288,8 +237,6 @@ angular.module('careWheels').controller('groupStatusController',
             GroupInfo.setSensorError(false);
             return true;
           }
-
-
           // error found! set the error variable
           if(errorCount > 0)
             GroupInfo.setSensorError(true);
@@ -308,7 +255,6 @@ angular.module('careWheels').controller('groupStatusController',
                 $scope.group[0].displayedError = true;
                 displayError(errorString);
               }
-
             }
           }
         }
