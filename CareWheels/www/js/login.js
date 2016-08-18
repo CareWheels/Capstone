@@ -3,10 +3,10 @@
  *
  */
 angular.module('careWheels')
+  .controller('loginController',
+    function($scope, $controller, User, $state, $ionicLoading, $ionicPopup, GroupInfo, $interval, notifications, onlineStatus){
 
-  .controller('loginController', function($scope, $controller, User, $state, $ionicLoading, GroupInfo, $interval, notifications){
-
-    var DOWNLOAD_INTERVAL = 1000 * 60 * 5; // constant interval for download, 5mins
+    var DOWNLOAD_INTERVAL = 1000 * 60;// * 5; // constant interval for download, 5mins
     var dataDownload = $scope.$new();
     var dataAnalysis = $scope.$new();
     var loginTimeout = false;
@@ -21,6 +21,7 @@ angular.module('careWheels')
 
     $scope.rememberMe = false;
     $scope.logoImage = 'img/CareWheelsLogo.png';
+    $scope.connectionError = false;
 
 
 
@@ -45,9 +46,6 @@ angular.module('careWheels')
           // do the data download
           dataDownload.DownloadData();
 
-
-
-
           // store the interval promise in this variable
           var intervalPromise = $interval( function(){
             // keep track of how many times we step through the interval
@@ -71,6 +69,7 @@ angular.module('careWheels')
               $interval.cancel(intervalPromise);  // break out of interval
               $ionicLoading.hide();               // kill the loading screen
               $state.reload();                    // reload the view (try again)
+              displayError(0);                    // pop-up error
             }
 
             // sweet we got data, lets break out of this interval
@@ -86,6 +85,17 @@ angular.module('careWheels')
       });
     };
 
+
+    /**
+     * Interval to check for internet connection.
+     * */
+    $interval(function(){
+      if (!onlineStatus.isOnline() && !$scope.connectionError){
+        $scope.connectionError = true;
+        displayError(1);
+      }
+    }, 100);
+
     /**
      * Schedule a download every on an interval:
      *      1. download data
@@ -93,12 +103,47 @@ angular.module('careWheels')
      *      3. analyze data
      * */
     function scheduleDownload(){
-      $interval(function(){
-        dataDownload.DownloadData();
-        setTimeout(function(){
-          dataAnalysis.AnalyzeData();
-        }, 1000 * 60 * 2); // give the download two mins before analyze
-      }, DOWNLOAD_INTERVAL ); // 5 min interval
+
+        $interval(function(){
+          //if(onlineStatus.isOnline()){
+            dataDownload.DownloadData();
+            setTimeout(function(){
+              dataAnalysis.AnalyzeData();
+            }, DOWNLOAD_INTERVAL / 2); // wait halfway through the interval, then analyze
+          //}
+          //else{
+            //displayError(1);
+          //}
+        }, DOWNLOAD_INTERVAL ); // 5 min interval
+
+    }
+
+
+
+    // An error popup dialog
+    function displayError(index) {
+      var errorStrings = [
+        'Please try again, or contact a system administrator.',
+        'Please check your internet connection.'
+      ];
+      var buttonText = [
+        'Okay',
+        'Retry'
+      ];
+
+      var alertPopup = $ionicPopup.alert({
+        title: '<div class="errorTitle">Unable to Connect With CareWheels</div>',
+        template: '<div class="errorTemplate">' + errorStrings[index] + '</div>',
+        buttons: [{ // Array[Object] (optional). Buttons to place in the popup footer.
+          text: buttonText[index],
+          type: 'button-calm'
+        }]
+      });
+      alertPopup.then(function (res) {
+        // only set this bool to false if its a connection error
+        if (index == 1)
+          $scope.connectionError = false;
+      });
     }
 
 
