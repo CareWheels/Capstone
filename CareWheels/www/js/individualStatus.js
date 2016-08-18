@@ -4,7 +4,7 @@
  */
 angular.module('careWheels')
 
-.controller('individualStatusController', function($scope, GroupInfo, PaymentService){
+.controller('individualStatusController', function($scope, $ionicPopup, GroupInfo, PaymentService){
 
   /**
    * grabs the analysis of the member selected on the previous view
@@ -78,8 +78,25 @@ angular.module('careWheels')
     return timeNow;
   };
 
+  // An error popup dialog
+    function displayError() {
+      var alertPopup = $ionicPopup.alert({
+        title: '<div class="errorTitle">There is no phone number for this member.</div>',
+        template: '<div class="errorTemplate">Please contact the system administrator.</div>',
+        buttons: [{ // Array[Object] (optional). Buttons to place in the popup footer.
+          text: 'Okay',
+          type: 'button-calm'
+        }]
+      });
+      alertPopup.then(function (res) {
+
+      });
+    }
+
   /**
-   * This function returns the color for the call button.
+   * This function returns the color for the call button. If there is no 
+   * current alert, then the function returns something that turns the 
+   * color grey and makes the call button unclickable.
    */
   $scope.getCallButtonColor = function() {
     //console.log("getCallButtonColor();", analysis);
@@ -92,15 +109,23 @@ angular.module('careWheels')
     var meds = parseInt(analysis.analysisData.medsAlertLevel);
 
     // check for acceptable bounds
-    if (meds < 0 || meds > 2 || fridge < 0 || fridge > 2)
+    if (meds < 0 || meds > 2 || fridge < 0 || fridge > 2) {
       return 'button-dark disableCallButton'; // error state
-
-    else if (fridge == 2 || meds == 2)
-      return  'button-assertive';
-    else if (fridge == 1 || meds == 1)
-      return 'button-energized';
-    else
+    }
+    else if (analysis.phoneNumber == null) {
+      displayError(); //error message
+      //call to tony's logging function
       return 'button-dark disableCallButton';
+    }
+    else if (fridge == 2 || meds == 2) {
+      return  'button-assertive';
+    }
+    else if (fridge == 1 || meds == 1) {
+      return 'button-energized';
+    }
+    else {
+      return 'button-energized';  //change this back to 'button-dark disableCallButton' after you have the calling stuff done          <===
+    }
  };
 
   /**
@@ -904,14 +929,15 @@ angular.module('careWheels')
     //console.log(analysis);
     var cyclosPhoneNumber = analysis.phoneNumber;
 
-    if (cyclosPhoneNumber == null){
-      cyclosPhoneNumber = "+00000000000"
+    if (cyclosPhoneNumber == null) {
+      cyclosPhoneNumber = "+00000000000";
     }
 
     //console.log(cyclosPhoneNumber);
     var callString = "tel:";
     callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) + "-" + cyclosPhoneNumber.substring(8);
     //console.log(callString);
+    //put crediting here                                                                       <===
     return callString;
   };
 
