@@ -36,7 +36,7 @@ angular.module('careWheels')
             }, function(error) {
                 var alertPopup = $ionicPopup.alert({
                     title: 'Error',
-                    template: "Could not launch Sen.se application."
+                    template: "Sen.se application not available"
                 });       
             })
         , false);
@@ -45,6 +45,7 @@ angular.module('careWheels')
     $scope.openCyclos = function () {
         document.addEventListener("deviceready", 
             startApp.set({
+                "application": "org.cyclos.mobile",
                 "action": "ACTION_MAIN",
                 "category": "CATEGORY_DEFAULT",
                 "package":"org.cyclos.mobile",
@@ -57,7 +58,7 @@ angular.module('careWheels')
             }, function(error) {
                 var alertPopup = $ionicPopup.alert({
                     title: 'Error',
-                    template: "Could not launch Cyclos application."
+                    template: "Cyclos application not available"
                 });            
             })
         , false);
