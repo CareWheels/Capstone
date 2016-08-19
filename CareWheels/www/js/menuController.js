@@ -34,7 +34,10 @@ angular.module('careWheels')
             .start(function() {
                 console.log("OK");
             }, function(error) {
-                alert(error);
+                var alertPopup = $ionicPopup.alert({
+                    title: 'Error',
+                    template: "Could not launch Sen.se application."
+                });       
             })
         , false);
     };
@@ -52,7 +55,10 @@ angular.module('careWheels')
             .start(function() {
                 console.log("OK");
             }, function(error) {
-                alert(error);
+                var alertPopup = $ionicPopup.alert({
+                    title: 'Error',
+                    template: "Could not launch Cyclos application."
+                });            
             })
         , false);
     };
