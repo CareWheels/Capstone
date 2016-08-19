@@ -8,9 +8,9 @@ angular.module('careWheels')
 
 
   notifications.getData = function(){
-    console.log('hit getData');
+    //console.log('hit getData');
     //data = angular.fromJson(window.localStorage['Reminders']);
-    console.log('data:', data);
+    //console.log('data:', data);
     return angular.fromJson(window.localStorage['Reminders']);
   };
 
@@ -27,7 +27,7 @@ angular.module('careWheels')
     data = angular.fromJson(window.localStorage['Reminders']);
     console.log(data);
     if(data==null){   //have notifications been initialized before?
-      console.log("Initializing Notifications from default");
+      //console.log("Initializing Notifications from default");
       data = [];    //data param needs to be initialized before indices can be added
       data[0] = new notifications.Time();
       data[1] = new notifications.Time();
@@ -36,7 +36,7 @@ angular.module('careWheels')
       notifications.Create_Notif(14,0,0,true,2);
       notifications.Create_Notif(19,0,0,true,3);
     } else {    //need to check if each reminder, as any/all of them could be deleted by user
-      console.log("Initializing Notifications from memory");
+      //console.log("Initializing Notifications from memory");
       notifications.Create_Notif(data[0].hours,data[0].minutes,data[0].seconds,data[0].on,1);
       notifications.Create_Notif(data[1].hours,data[1].minutes,data[1].seconds,data[1].on,2);
       notifications.Create_Notif(data[2].hours,data[2].minutes,data[2].seconds,data[2].on,3);
@@ -93,7 +93,7 @@ angular.module('careWheels')
   //Unschedules all local reminders; clears its index if it is a user reminder (id 1-3).
   notifications.Delete_Reminders = function(){   //NOTE: id corresponds to data array indices so it is off by one
     //data = angular.fromJson(window.localStorage['Reminders']);
-    console.log('hit delete reminders');
+    //console.log('hit delete reminders');
     if(isAndroid){
       for(i=1; i<4; ++i){
         $cordovaLocalNotification.clear(i, function() {
