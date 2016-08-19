@@ -22,15 +22,15 @@ angular.module('careWheels', [
 
 //    window.localStorage['loginCredentials'] = null;
 
-  $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
-    console.log('state change');
-    if (User.credentials() === null) {
-      if (next.name !== 'login') {
-        event.preventDefault();
-        $state.go('login');
-      }
-    }
-  });
+  // $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
+  //   console.log('state change');
+  //   if (User.credentials() === null) {
+  //     if (next.name !== 'login') {
+  //       event.preventDefault();
+  //       $state.go('login');
+  //     }
+  //   }
+  // });
 
 
   $ionicPlatform.registerBackButtonAction(function (event) {
