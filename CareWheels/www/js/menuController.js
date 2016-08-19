@@ -21,8 +21,7 @@ angular.module('careWheels')
       $state.go('app.tests');
     };
 
-    $scope.openSense = function () {
-
+    $scope.openSense = function () { 
         document.addEventListener("deviceready", 
             startApp.set({
                 "action": "ACTION_MAIN",
@@ -36,22 +35,25 @@ angular.module('careWheels')
                 console.log("OK");
             }, function(error) {
                 alert(error);
-            }), false);
+            })
+        , false);
     };
 
     $scope.openCyclos = function () {
-        startApp.set({
-            "action": "ACTION_MAIN",
-            "category": "CATEGORY_DEFAULT",
-            "package":"org.cyclos.mobile",
-            "flags": ["FLAG_ACTIVITY_CLEAR_TOP", "FLAG_ACTIVITY_CLEAR_TASK"],
-            "component": ["org.cyclos.mobile"],
-            "intentstart": "startActivity"
-        })
-        .start(function() {
-            console.log("OK");
-        }, function(error) {
-            alert(error);
-        });            
+        document.addEventListener("deviceready", 
+            startApp.set({
+                "action": "ACTION_MAIN",
+                "category": "CATEGORY_DEFAULT",
+                "package":"org.cyclos.mobile",
+                "flags": ["FLAG_ACTIVITY_CLEAR_TOP", "FLAG_ACTIVITY_CLEAR_TASK"],
+                "component": ["org.cyclos.mobile"],
+                "intentstart": "startActivity"
+            })
+            .start(function() {
+                console.log("OK");
+            }, function(error) {
+                alert(error);
+            })
+        , false);
     };
 });
