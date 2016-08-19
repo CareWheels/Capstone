@@ -9,7 +9,7 @@ angular.module('careWheels')
   /**
    * grabs the analysis of the member selected on the previous view
    */
-  var analysis = GroupInfo.getMember_new();
+  var analysis = GroupInfo.getSelectedMemberIndex();
   //console.log(analysis); ////////////testing
 
   var timeNow = new Date().getHours();
