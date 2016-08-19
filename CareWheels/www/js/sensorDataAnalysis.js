@@ -18,19 +18,20 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment, 
       // Create loop to analyze each members data.
       for(var z = 0; z < $scope.groupData.length; ++z ) {
 
-        if($scope.groupData[z].sensorData == null) {
+        var member = $scope.groupData[z];
+        var sensorData = GroupInfo.getSensorData(member.username);
 
-          $scope.groupData[z].analysisData = null;
-          memberObject = $scope.groupData[z];
-          console.log("member after analysis", memberObject);
-          GroupInfo.addDataToGroup(memberObject, z);
-          GroupInfo.groupInfo();
+        if(sensorData == null) {
+
+          GroupInfo.setAnalysisData(member.username, null)
+
+          console.log("member after analysis", member);
           continue;
         }
 
-        var presenceData = $scope.groupData[z].sensorData.Presence;
-        var fridgeData = $scope.groupData[z].sensorData.Fridge;
-        var medsData = $scope.groupData[z].sensorData.Meds;
+        var presenceData = sensorData.Presence;
+        var fridgeData = sensorData.Fridge;
+        var medsData = sensorData.Meds;
 
         // console.log("DATA FOR: " + $scope.groupData[z].username + "\n");
 
@@ -147,8 +148,11 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment, 
         var previousDayMedsRollingAlertLevelArray = [];
         var currentDayMedsRollingAlertLevelArray = [];
 
-        // Need to pull the custom fields for medication interval exclusion
-        // from the group info factory and then update the values in medsIntervalObjectArray
+        console.log("medsIntervalObjectArray: ", medsIntervalObjectArray);
+
+        medsIntervalObjectArray.medsIntervalObject2.pointEscalation = GroupInfo.getMedsInterval2(member.username);
+        medsIntervalObjectArray.medsIntervalObject3.pointEscalation = GroupInfo.getMedsInterval3(member.username);
+        medsIntervalObjectArray.medsIntervalObject4.pointEscalation = GroupInfo.getMedsInterval4(member.username);
 
         for(w in fridgeIntervalObjectArray) {
 
@@ -228,20 +232,9 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment, 
         // *******************************************************************************
 
 
-        $scope.groupData[z].analysisData = analysisData;
-        memberObject = $scope.groupData[z];
-        //var sensorData = $scope.groupData[z].sensorData;
-        // This is just a modification of what Zach has done.
-        //var memberObject = {
-        //  "name": memberName,
-        //  "sensorData": sensorData,
-        //  "analysisData": analysisData
-        //};
-        //DataService.addToGroup(memberObject);
-        console.log("member after analysis", memberObject);
-        GroupInfo.addDataToGroup(memberObject, z);
-        GroupInfo.groupInfo();
-        console.log("group after analysis", GroupInfo.groupInfo());
+        GroupInfo.setAnalysisData(member.username, analysisData);
+        console.log("member after analysis ", member);
+        console.log("group after analysis ", GroupInfo.groupInfo());
       }
     };
 
