@@ -38,7 +38,8 @@ module.exports = function(config) {
       './node_modules/angular-mocks/angular-mocks.js',
       './www/js/moment.js',
       './www/js/*.js',
-      './tests/*.test.js',
+      './www/js/services/*.js',
+      './tests/*.test.js'
     ],
 
 

@@ -5,16 +5,11 @@
 angular.module('careWheels').controller('groupStatusController',
   function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService) {
 
-    var groupArray = GroupInfo.groupInfo();
-
     // the groupInfo object is not available immediately, spin until available
     var initGroupInfo = setInterval(function () {
       var groupArray = GroupInfo.groupInfo();
-      //console.log(groupArray);
       if (groupArray[0] != null) {
         clearInterval(initGroupInfo);
-        // app on load
-        console.log('hit group controller');
         getLoggedInUser(groupArray);
         setGroupArray(groupArray);
       }
@@ -48,7 +43,7 @@ angular.module('careWheels').controller('groupStatusController',
         image: '',
         userSelected: '',
         displayedError: GroupInfo.getSensorError(),
-        selfUserIndex: 0
+        selfUserIndex: -1
 
       },
       { // top left @ index 1
@@ -104,59 +99,66 @@ angular.module('careWheels').controller('groupStatusController',
     $scope.clickCareBank = function () {
     };
 
-    // console.log("Calling memberSummary Payment:");
-    // PaymentService.memberSummary(1.0);
-
     // lets figure out which user logged in at this point
     function getLoggedInUser(groupInfo) {
       var user = User.credentials();
       // error unable to load user object;
-      if (user == null)
-        $scope.group[0].selfUserIndex = 0;
+      if (user == null){
+        $scope.group[0].selfUserIndex = -1;
+      }
+
       // loop through the groupInfo array to find the user who
       // logged in.
       for (var i = 0; i < groupInfo.length; i++) {
-        if (user.username == $scope.group[i].username)
+        if (user.username == groupInfo[i].username){
           $scope.group[0].selfUserIndex = i; // gotcha!
+          return true;
+        }
       }
-      $scope.group[0].selfUserIndex = 0; //error, user not found
     }
 
-
-    // now lets set the scope variables for all the page views.
+    // now lets set the scope variables for the group view.
     function setGroupArray(groupArray) {
+      var currentUser = 0;
+      var fridgeAlert, medsAlert;
+
       var loggedInUserIndex = $scope.group[0].selfUserIndex;
 
-      // first lets set the group up, at index 1-4
-      for (var i = 1; i < 5; i++) {
-        if (i != $scope.group[0].selfUserIndex) {
-          $scope.group[i].image = groupArray[i].photoUrl;
-          $scope.group[i].username = groupArray[i].username;
-          $scope.group[i].name = groupArray[i].name;
+      // next lets set the data for the user that logged in,
+      // this is reserved at index zero.
+      $scope.group[currentUser].image = groupArray[loggedInUserIndex].photoUrl;
+      $scope.group[currentUser].username = groupArray[loggedInUserIndex].username;
+      $scope.group[currentUser].name = groupArray[loggedInUserIndex].name;
+      $scope.group[currentUser].balance = trimZeros(groupArray[loggedInUserIndex].balance);
 
-          try {
-            var fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
-            var medsAlert = groupArray[i].analysisData.medsAlertLevel;
-            $scope.group[i].status = $scope.getAlertColor(fridgeAlert, medsAlert, i);
+      currentUser++; // = 1 at this point
+
+      // put everyone else into the array
+      for (var i = 0; i < 5; i++){
+        // skip the user who logged in
+        if(i != $scope.group[0].selfUserIndex){
+          $scope.group[currentUser].image = groupArray[i].photoUrl;
+          $scope.group[currentUser].username = groupArray[i].username;
+          $scope.group[currentUser].name = groupArray[i].name;
+
+          try{
+            fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
+            medsAlert = groupArray[i].analysisData.medsAlertLevel;
+            $scope.group[currentUser].status = $scope.getAlertColor(fridgeAlert, medsAlert, i);
           }
           catch (Exception) {
-            $scope.group[i].status = 'grey';
-            $scope.group[i].error = true;
+            $scope.group[currentUser].status = 'grey';
+            $scope.group[currentUser].error = true;
           }
-          // on the last element of the loop, now check health
-          if (i == groupArray.length - 1) {
-            if(!GroupInfo.getSensorError())
+          currentUser++;
+        }
+        // on the last element of the loop, now check health
+        if (i == 4) {
+          if(!GroupInfo.getSensorError())
             $scope.checkGroupHealth();
-          }
         }
 
       }
-      // sweet, next lets set the data for the user that logged in,
-      // this is reserved at index zero.
-      $scope.group[0].image = groupArray[loggedInUserIndex].photoUrl;
-      $scope.group[0].username = groupArray[loggedInUserIndex].username;
-      $scope.group[0].name = groupArray[loggedInUserIndex].name;
-      $scope.group[0].balance = trimZeros(groupArray[0].balance);
     }
 
 
@@ -164,9 +166,7 @@ angular.module('careWheels').controller('groupStatusController',
     function trimZeros(input) {
       var number = parseFloat(input);
       return number.toString();
-
     }
-
 
     function clickUser(index) {
       if (!$scope.group[index].error) {
@@ -199,7 +199,6 @@ angular.module('careWheels').controller('groupStatusController',
      * append the color class onto the div
      * */
     $scope.getAlertColor = function (fridgeAlert, medsAlert, index) {
-
       // check for null params
       if (fridgeAlert == null || medsAlert == null)
         return '';
@@ -212,19 +211,13 @@ angular.module('careWheels').controller('groupStatusController',
       if (meds < 0 || meds > 2 || fridge < 0 || fridge > 2)
         alertString = ''; // error state
       // check for null
-      else if (fridge == 2 || meds == 2){
+      else if (fridge == 2 || meds == 2)
         alertString = 'red';
-        $scope.group[index].alertLevelColor = 'red';
-      }
-      else if (fridge == 1 || meds == 1){
+      else if (fridge == 1 || meds == 1)
         alertString = 'yellow';
-        $scope.group[index].alertLevelColor = 'yellow';
-      }
-      else if (fridge == 0 || meds == 0){
+      else if (fridge == 0 || meds == 0)
         alertString = 'blue';
-        $scope.group[index].alertLevelColor = 'blue';
-      }
-
+      $scope.group[index].alertLevelColor = alertString;
       return alertString;
     };
 
@@ -244,8 +237,6 @@ angular.module('careWheels').controller('groupStatusController',
             GroupInfo.setSensorError(false);
             return true;
           }
-
-
           // error found! set the error variable
           if(errorCount > 0)
             GroupInfo.setSensorError(true);
@@ -264,7 +255,6 @@ angular.module('careWheels').controller('groupStatusController',
                 $scope.group[0].displayedError = true;
                 displayError(errorString);
               }
-
             }
           }
         }
