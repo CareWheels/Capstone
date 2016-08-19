@@ -13,8 +13,7 @@ angular.module('careWheels')
     //console.log(analysis); ////////////testing
 
     var timeNow = new Date().getHours();
-    var errorDisplayed = false;
-    var nullPhoneNumber = false;
+    var phoneNumberError = false;
 
     // console.log("Calling Call Payment:");
     // PaymentService.call(analysis.name, 1.0, 'Red');
@@ -100,23 +99,26 @@ angular.module('careWheels')
       var fridge = parseInt(analysis.analysisData.fridgeAlertLevel);
       var meds = parseInt(analysis.analysisData.medsAlertLevel);
 
-      // check for acceptable bounds
-      if (meds < 0 || meds > 2 || fridge < 0 || fridge > 2) {
-        return 'button-dark disableCallButton'; // error state
+      // this string must match the defined css class names
+      var returnString = '';
+
+      // check for acceptable bounds or null phone number disable button if true
+      if (meds < 0 || meds > 2 || fridge < 0 || fridge > 2 || analysis.phoneNumber == null) {
+        returnString += 'disableCallButton'; // error state
       }
-      else if (analysis.phoneNumber == null) {
-        //call to tony's logging function
-        return 'button-dark disableCallButton';
-      }
-      else if (fridge == 2 || meds == 2) {
-        return 'button-assertive';
+
+      // check for color status of button
+      if (fridge == 2 || meds == 2) {
+        returnString += ' button-assertive';
       }
       else if (fridge == 1 || meds == 1) {
-        return 'button-energized';
+        returnString += ' button-energized';
       }
       else {
-        return 'button-energized';  //change this back to 'button-dark disableCallButton' after you have the calling stuff done          <===
+        returnString += ' button-energized';  //change this back to 'button-dark disableCallButton' after you have the calling stuff done          <===
       }
+      // done
+      return returnString;
     };
 
     /**
@@ -922,9 +924,7 @@ angular.module('careWheels')
 
       if (cyclosPhoneNumber == null) {
         cyclosPhoneNumber = "+00000000000";
-        //errorDisplayed = true;             // this will trigger popup when phone button is pressed
-        if(!errorDisplayed)
-          displayError();
+        phoneNumberError = true;             // this will trigger popup when phone button is pressed
       }
 
       //console.log(cyclosPhoneNumber);
@@ -935,13 +935,19 @@ angular.module('careWheels')
       return callString;
     };
 
+    // button press event
+    $scope.checkPhoneError = function(){
+      if(phoneNumberError)
+        displayError();
+    };
+
     $scope.name = analysis.name;
     $scope.phoneNumber = analysis.phoneNumber;
 
 
     // An error popup dialog
     function displayError() {
-      errorDisplayed = true;
+      phoneNumberError = true;
       var alertPopup = $ionicPopup.alert({
         title: '<div class="errorTitle">There is no phone number for this member.</div>',
         template: '<div class="errorTemplate">Please contact the system administrator.</div>',
