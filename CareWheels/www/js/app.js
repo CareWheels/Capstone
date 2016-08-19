@@ -23,8 +23,6 @@ angular.module('careWheels', [
 
 .run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, $window, User) {
 
-//    window.localStorage['loginCredentials'] = null;
-
   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
     console.log('state change');
     if (User.credentials() === null) {
@@ -66,29 +64,4 @@ angular.module('careWheels', [
     updateSettings:BASE_URL + '/updatesettings.php'
   };
   return api;
-})
-
-
-  .controller('menu', function ($scope, $state, VERSION_NUMBER) {
-    $scope.versionNumber = VERSION_NUMBER;
-
-    $scope.clickGroup = function () {
-      $state.go('app.groupStatus');
-    };
-
-    $scope.clickReminders = function () {
-      $state.go('app.reminders');
-    };
-
-    $scope.clickSettings = function () {
-      $state.go('app.settings');
-    };
-
-    $scope.clickTests = function () {
-      $state.go('app.tests');
-    };
-
-
-
 });
-
