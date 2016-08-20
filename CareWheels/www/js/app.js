@@ -68,8 +68,22 @@ angular.module('careWheels', [
   return api;
 })
 
-  .controller('menu', function ($scope, $state, VERSION_NUMBER) {
+  .controller('menu', function ($scope, $state, $ionicHistory, VERSION_NUMBER) {
     $scope.versionNumber = VERSION_NUMBER;
+
+
+    $scope.navHistory = function() {
+
+      if($ionicHistory.backView() != null) {
+        return true;
+      }
+
+      return false;
+    }
+
+    $scope.goBack = function(){
+      $ionicHistory.goBack();
+    }
 
     $scope.clickGroup = function () {
       $state.go('app.groupStatus');
@@ -86,6 +100,6 @@ angular.module('careWheels', [
     $scope.clickTests = function () {
       $state.go('app.tests');
     };
-    
+
 });
 

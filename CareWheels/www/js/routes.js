@@ -71,11 +71,3 @@ angular.module('careWheels')
         $state.go("app.groupStatus");
       });
   })
-
-  .controller('goBackController', function($scope, $ionicHistory){
-
-    /* go back button */
-    $scope.goBack = function () {
-      $ionicHistory.goBack();
-    };
-  });
