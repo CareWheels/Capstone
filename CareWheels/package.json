@@ -27,10 +27,13 @@
   "cordovaPlugins": [
     "cordova-plugin-device",
     "cordova-plugin-console",
+    "cordova-plugin-file",
+    "cordova-plugin-file-transfer",
     "cordova-plugin-whitelist",
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
-    "ionic-plugin-keyboard"
+    "ionic-plugin-keyboard",
+    "de.appplant.cordova.plugin.local-notification@0.8.4"
   ],
   "cordovaPlatforms": [
     "android"

@@ -5,11 +5,10 @@
 angular.module('careWheels')
 
 .controller('individualStatusController', function($scope, GroupInfo, PaymentService){
-
-    /**
-    * grabs the analysis of the member selected on the previous view
-    */
-    var analysis = GroupInfo.getMember_new();
+  /**
+   * grabs the analysis of the member selected on the previous view
+   */
+  var analysis = GroupInfo.getSelectedMemberIndex();
   //console.log(analysis); ////////////testing
 
     var timeNow = new Date().getHours();
