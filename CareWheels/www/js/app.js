@@ -19,11 +19,9 @@ angular.module('careWheels', [
 .constant('BASE_URL', 'https://carewheels.cecs.pdx.edu:8443')
 
 // change the version number here
-.constant('VERSION_NUMBER', '0.04')
+.constant('VERSION_NUMBER', '0.06')
 
 .run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, $window, User) {
-
-//    window.localStorage['loginCredentials'] = null;
 
   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
     console.log('state change');
@@ -66,40 +64,4 @@ angular.module('careWheels', [
     updateSettings:BASE_URL + '/updatesettings.php'
   };
   return api;
-})
-
-  .controller('menu', function ($scope, $state, $ionicHistory, VERSION_NUMBER) {
-    $scope.versionNumber = VERSION_NUMBER;
-
-
-    $scope.navHistory = function() {
-
-      if($ionicHistory.backView() != null) {
-        return true;
-      }
-
-      return false;
-    }
-
-    $scope.goBack = function(){
-      $ionicHistory.goBack();
-    }
-
-    $scope.clickGroup = function () {
-      $state.go('app.groupStatus');
-    };
-
-    $scope.clickReminders = function () {
-      $state.go('app.reminders');
-    };
-
-    $scope.clickSettings = function () {
-      $state.go('app.settings');
-    };
-
-    $scope.clickTests = function () {
-      $state.go('app.tests');
-    };
-
 });
-
