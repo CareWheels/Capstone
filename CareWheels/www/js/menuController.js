@@ -2,6 +2,18 @@ angular.module('careWheels')
 
 .controller('menu', function ($scope, $state, $ionicPopup) {
 
+    $scope.versionNumber = VERSION_NUMBER;
+
+
+    $scope.navHistory = function() {
+
+      if($ionicHistory.backView() != null) {
+        return true;
+      }
+
+      return false;
+    };
+    
     // Functions for controlling the side menu buttons.  
     //
 

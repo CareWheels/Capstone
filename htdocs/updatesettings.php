@@ -52,6 +52,21 @@ try {
   echo("Error while performing user update: {$e->errorCode}");
   die();
 }
+
+# need php-fpm and apache fastcgi setup to get mail
+# done async.
+# fastcgi_finish_request();
+
+$to = ADMIN_EMAIL;
+$from = CAREBANK_EMAIL;
+$subject = "Vacation status changed for user " . $_POST['usernametoupdate'] . " to " . $_POST['onvacation']; 
+$message = "EOM";
+
+$headers = "From: $from"; 
+$ok = @mail($to, $subject, $message, $headers, "-f " . $from);  
+
+flush();
+
 // Return the user object as json.
 http_response_code(200);
 header('Content-type: application/json');

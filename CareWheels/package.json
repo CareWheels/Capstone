@@ -27,6 +27,8 @@
   "cordovaPlugins": [
     "cordova-plugin-device@1.1.2",
     "cordova-plugin-console@1.0.3",
+    "cordova-plugin-file",
+    "cordova-plugin-file-transfer",
     "cordova-plugin-whitelist",
     "cordova-plugin-splashscreen@3.2.2",
     "cordova-plugin-statusbar@2.1.3",

@@ -172,7 +172,7 @@ angular.module('careWheels').controller('groupStatusController',
       if (!$scope.group[index].error) {
         PaymentService.sensorDataView(0.1, $scope.group[index].alertLevelColor);
         $scope.group[0].userSelected = $scope.group[index].name;
-        GroupInfo.setMember_new($scope.group[index].username);
+        GroupInfo.setSelectedMemberIndex($scope.group[index].username);
         $state.go('app.individualStatus');
       }
     }
