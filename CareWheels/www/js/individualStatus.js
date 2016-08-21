@@ -3,15 +3,15 @@
  *
  */
 angular.module('careWheels')
-
-   .controller('individualStatusController', function ($scope, $ionicPopup, GroupInfo, PaymentService) {
-  /**
-   * grabs the analysis of the member selected on the previous view
-   */
-  var analysis = GroupInfo.getSelectedMemberIndex();
-  //console.log(analysis); ////////////testing
+  .controller('individualStatusController', function ($scope, $ionicPopup, GroupInfo, PaymentService) {
+    /**
+     * grabs the analysis of the member selected on the previous view
+     */
+    var analysis = GroupInfo.getSelectedMemberIndex();
+    //console.log(analysis); ////////////testing
 
     var timeNow = new Date().getHours();
+    var phoneNumberError = false;
 
     function convertMedsOrMealsAlertLevelToColor(sensorArray) {
 
@@ -167,26 +167,36 @@ angular.module('careWheels')
   /**
    * This function returns the color for the call button.
    */
-  $scope.getCallButtonColor = function() {
-    //console.log("getCallButtonColor();", analysis);
+ $scope.getCallButtonColor = function () {
+   //console.log("getCallButtonColor();", analysis);
 
-    // check for null params
-    if (analysis.analysisData.fridgeAlertLevel == null || analysis.analysisData.medsAlertLevel == null)
-      return 'button-dark disableCallButton';
+   // check for null params
+   if (analysis.analysisData.fridgeAlertLevel == null || analysis.analysisData.medsAlertLevel == null)
+     return 'button-dark disableCallButton';
 
-    var fridge = parseInt(analysis.analysisData.fridgeAlertLevel);
-    var meds = parseInt(analysis.analysisData.medsAlertLevel);
+   var fridge = parseInt(analysis.analysisData.fridgeAlertLevel);
+   var meds = parseInt(analysis.analysisData.medsAlertLevel);
 
-    // check for acceptable bounds
-    if (meds < 0 || meds > 2 || fridge < 0 || fridge > 2)
-      return 'button-dark disableCallButton'; // error state
+   // this string must match the defined css class names
+   var returnString = '';
 
-    else if (fridge == 2 || meds == 2)
-      return  'button-assertive';
-    else if (fridge == 1 || meds == 1)
-      return 'button-energized';
-    else
-      return 'button-dark disableCallButton';
+   // check for acceptable bounds or null phone number disable button if true
+   if (meds < 0 || meds > 2 || fridge < 0 || fridge > 2 || analysis.phoneNumber == null) {
+     returnString += 'disableCallButton'; // error state
+   }
+
+   // check for color status of button
+   if (fridge == 2 || meds == 2) {
+     returnString += ' button-assertive';
+   }
+   else if (fridge == 1 || meds == 1) {
+     returnString += ' button-energized';
+   }
+   else {
+     returnString += ' button-energized';  //change this back to 'button-dark disableCallButton' after you have the calling stuff done          <===
+   }
+   // done
+   return returnString;
  };
 
   /**
@@ -203,16 +213,40 @@ angular.module('careWheels')
 
     if (cyclosPhoneNumber == null){
       cyclosPhoneNumber = "+00000000000"
+      phoneNumberError = true;             // this will trigger popup when phone button is pressed
+     }
+
+      //console.log(cyclosPhoneNumber);
+      var callString = "tel:";
+      callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) + "-" + cyclosPhoneNumber.substring(8);
+      //console.log(callString);
+      //put crediting here                                                                       <===
+      return callString;
+    };
+
+    // button press event
+    $scope.checkPhoneError = function(){
+      if(phoneNumberError)
+        displayError();
+    };
+
+    $scope.name = analysis.name;
+    $scope.phoneNumber = analysis.phoneNumber;
+
+
+    // An error popup dialog
+    function displayError() {
+      phoneNumberError = true;
+      var alertPopup = $ionicPopup.alert({
+        title: '<div class="errorTitle">There is no phone number for this member.</div>',
+        template: '<div class="errorTemplate">Please contact the system administrator.</div>',
+        buttons: [{ // Array[Object] (optional). Buttons to place in the popup footer.
+          text: 'Okay',
+          type: 'button-calm'
+        }]
+      });
+      alertPopup.then(function (res) {
+
+      });
     }
-
-    //console.log(cyclosPhoneNumber);
-    var callString = "tel:";
-    callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) + "-" + cyclosPhoneNumber.substring(8);
-    //console.log(callString);
-    return callString;
-  };
-
-  $scope.name = analysis.name;
-  $scope.phoneNumber = analysis.phoneNumber;
-
-});
+  });
