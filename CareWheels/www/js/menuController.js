@@ -30,26 +30,55 @@ angular.module('careWheels')
       $state.go('app.tests');
     };
 
+    // ng-model for warning popup checkbox
+    $scope.isChecked = {
+        value: false
+    };
+
     $scope.clickPocketMother = function() {
-        $ionicPopup.confirm({
-            title: 'Open Pocketmother',
-            subTitle: 'You are leaving CareWheels'
-        })
-        .then(function(res) {
-            if (res)
-                openSense();
-        });
+        $scope.isChecked.value = false;
+        var noWarn = angular.fromJson(window.localStorage["noLeaveAppWarn"]);
+        if (!noWarn) {
+
+            $ionicPopup.confirm({
+                title: 'You are now leaving CareWheels',
+                template: '<ion-checkbox ng-model="isChecked.value" ng-checked="isChecked.value">Do not show again</ion-checkbox>',
+                scope: $scope
+            })
+            .then(function(res) {
+                if (res) {
+                    if ($scope.isChecked.value)
+                        window.localStorage["noLeaveAppWarn"] = angular.toJson($scope.isChecked.value);
+                    openSense();
+                }             
+            });
+
+        } 
+        else 
+            openSense();  
     };
 
     $scope.clickCyclos = function() {
-        $ionicPopup.confirm({
-            title: 'Open Cyclos',
-            subTitle: 'You are leaving CareWheels'
-        })
-        .then(function(res) {
-            if (res)
-                openCyclos();
-        });
+        $scope.isChecked.value = false;
+        var noWarn = angular.fromJson(window.localStorage["noLeaveAppWarn"]);
+        if (!noWarn) {
+
+            $ionicPopup.confirm({
+                title: 'You are now leaving CareWheels',
+                template: '<ion-checkbox ng-model="isChecked.value" ng-checked="isChecked.value">Do not show again</ion-checkbox>',
+                scope: $scope
+            })
+            .then(function(res) {
+                if (res) {
+                    if ($scope.isChecked.value)
+                        window.localStorage["noLeaveAppWarn"] = angular.toJson($scope.isChecked.value);
+                    openCyclos();
+                }
+            });
+
+        }
+        else 
+            openCyclos();
     };
 
     var openSense = function () { 
