@@ -56,18 +56,10 @@ angular.module('careWheels')
             controller: 'settingsController'
           }
         }
-      })
-      .state('app.tests', {
-        url: '/tests',
-        views: {
-          'menuContent': {
-            templateUrl: 'views/tests.html'
-          }
-        }
       });
 
       $urlRouterProvider.otherwise(function ($injector, $location) {
         var $state = $injector.get("$state");
         $state.go("app.groupStatus");
       });
-  })
+  });
