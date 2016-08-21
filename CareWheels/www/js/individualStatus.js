@@ -4,7 +4,7 @@
  */
 angular.module('careWheels')
 
-.controller('individualStatusController', function ($scope, $ionicPopup, GroupInfo, PaymentService) {
+   .controller('individualStatusController', function ($scope, $ionicPopup, GroupInfo, PaymentService) {
   /**
    * grabs the analysis of the member selected on the previous view
    */
