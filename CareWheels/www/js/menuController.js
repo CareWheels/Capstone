@@ -1,16 +1,13 @@
 angular.module('careWheels')
 
-.controller('menu', function ($scope, $state, $ionicPopup) {
+.controller('menu', function ($scope, $state, $ionicHistory, $ionicPopup, VERSION_NUMBER) {
 
     $scope.versionNumber = VERSION_NUMBER;
 
-
     $scope.navHistory = function() {
-
       if($ionicHistory.backView() != null) {
         return true;
       }
-
       return false;
     };
     
@@ -33,7 +30,29 @@ angular.module('careWheels')
       $state.go('app.tests');
     };
 
-    $scope.openSense = function () { 
+    $scope.clickPocketMother = function() {
+        $ionicPopup.confirm({
+            title: 'Open Pocketmother',
+            subTitle: 'You are leaving CareWheels'
+        })
+        .then(function(res) {
+            if (res)
+                openSense();
+        });
+    };
+
+    $scope.clickCyclos = function() {
+        $ionicPopup.confirm({
+            title: 'Open Cyclos',
+            subTitle: 'You are leaving CareWheels'
+        })
+        .then(function(res) {
+            if (res)
+                openCyclos();
+        });
+    };
+
+    var openSense = function () { 
         document.addEventListener("deviceready", 
             startApp.set({
                 "action": "ACTION_MAIN",
@@ -46,15 +65,15 @@ angular.module('careWheels')
             .start(function() {
                 console.log("OK");
             }, function(error) {
-                var alertPopup = $ionicPopup.alert({
+                $ionicPopup.alert({
                     title: 'Error',
-                    template: "Sen.se application not available"
+                    subTitle: "Sen.se application not available"
                 });       
             })
         , false);
     };
 
-    $scope.openCyclos = function () {
+    var openCyclos = function () {
         document.addEventListener("deviceready", 
             startApp.set({
                 "application": "org.cyclos.mobile",
@@ -68,11 +87,12 @@ angular.module('careWheels')
             .start(function() {
                 console.log("OK");
             }, function(error) {
-                var alertPopup = $ionicPopup.alert({
+                $ionicPopup.alert({
                     title: 'Error',
-                    template: "Cyclos application not available"
+                    subTitle: "Cyclos application not available"
                 });            
             })
         , false);
     };
+
 });
