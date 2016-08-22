@@ -234,15 +234,18 @@ angular.module('careWheels')
       else {
         alertLevel = 'red';
       }
-      PaymentService.call(analysis.name, 0.1, alertLevel);
       return callString;
     };
 
     // button press event
     $scope.checkPhoneError = function(){
-      if(phoneNumberError)
+      if(phoneNumberError) {
         displayError();
         $fileLogger.log('error', 'There is no phone number for ' + analysis.name);
+      }
+      else {
+        PaymentService.call(analysis.name, 0.1, alertLevel);
+      }
     };
 
     $scope.name = analysis.name;
