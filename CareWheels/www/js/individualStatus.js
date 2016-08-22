@@ -3,7 +3,10 @@
  *
  */
 angular.module('careWheels')
-  .controller('individualStatusController', function ($scope, $ionicPopup, GroupInfo, PaymentService) {
+  .controller('individualStatusController', function ($scope, $ionicPopup, GroupInfo, PaymentService, $fileLogger, fileloggerService) {
+
+    fileloggerService.initLogComponent();
+
     /**
      * grabs the analysis of the member selected on the previous view
      */
@@ -193,7 +196,7 @@ angular.module('careWheels')
      returnString += ' button-energized';
    }
    else {
-     returnString += ' button-energized';  //change this back to 'button-dark disableCallButton' after you have the calling stuff done          <===
+     returnString += ' button-dark disableCallButton';
    }
    // done
    return returnString;
@@ -220,7 +223,18 @@ angular.module('careWheels')
       var callString = "tel:";
       callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) + "-" + cyclosPhoneNumber.substring(8);
       //console.log(callString);
-      //put crediting here                                                                       <===
+      var alertNum = analysis.analysisData.fridgeAlertLevel;
+      if (analysis.analysisData.medsAlertLevel > alertNum) {
+        alertNum = analysis.analysisData.medsAlertLevel;
+      }
+      var alertLevel;
+      if (alertNum === 1) {
+        alertLevel = 'yellow';
+      } 
+      else {
+        alertLevel = 'red';
+      }
+      PaymentService.call(analysis.name, 0.1, alertLevel);
       return callString;
     };
 
@@ -228,6 +242,7 @@ angular.module('careWheels')
     $scope.checkPhoneError = function(){
       if(phoneNumberError)
         displayError();
+        $fileLogger.log('error', 'There is no phone number for ' + analysis.name);
     };
 
     $scope.name = analysis.name;
