@@ -24,6 +24,12 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
   var workerPromise = WorkerService.createAngularWorker(['input', 'output', '$http', '$httpParamSerializerJQLike', function (input, output, $http, $httpParamSerializerJQLike) {
 
   var prevDay = input['time'];
+  var today = input['yesttime'];
+  var username = input['thisMember'].username;
+  console.log("prevDay", prevDay);
+  console.log("today", today);
+  console.log("username", username);
+
   var presenceUids = [];//this will be used to store all of the uids for all feed objects, so we can access events urls later
   var fridgeUids = [];
   var medUids = [];
@@ -39,93 +45,16 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
     "Alert": []
   };
 
-  //This function explores the response received from /nodes/
-  //and finds the appropriate uid's within the publishes array
-  //of the node object with the desired label (presence, med, fridge)
+
   var getUids = function(arg){
 
-    var nodes = arg.data;
-    var objects = nodes.objects;
-    var objectsLength = objects.length;
-    for (var i = 0; i < objectsLength; i++){//iterate over all node objects on the returned page
-      console.log("CHECKING NODES...");
-        if (objects[i].label == "presenceCareBank"){//match label
-          console.log("added presence uid");
-          var presFeeds = objects[i].publishes
-          var presLength = presFeeds.length;
-          for (var j = 0; j < presLength; j++){//iterate over publishes[]
-            if (presFeeds[j].label == "Presence"){
-            presenceUids.push(presFeeds[j].uid);//add uid with the specified label "Presence" to array
-            }
-          };
-        }
-        if (objects[i].label == "fridgeCareBank"){
-          console.log("added fridge uid");
-          var fridgeFeeds = objects[i].publishes
-          var fridgeLength = fridgeFeeds.length;
-          for (var j = 0; j < fridgeLength; j++){
-            if (fridgeFeeds[j].label == "Motion"){
-            fridgeUids.push(fridgeFeeds[j].uid);
-            }
-          };
-        }
-        if (objects[i].label == "medsCareBank"){
-          console.log("added med uid");
-          var medFeeds = objects[i].publishes
-          var medLength = medFeeds.length;
-          for (var j = 0; j < medLength; j++){
-            if (medFeeds[j].label == "Motion"){
-            medUids.push(medFeeds[j].uid);
-            }
-          };
-        }
-        if (objects[i].label == "testtesttest"){//added this in case we need to find an alert uid
-          console.log("added alert uid");
-          var alertFeeds = objects[i].publishes
-          var alertLength = alertFeeds.length;
-          for (var j = 0; j < alertLength; j++){
-            if (alertFeeds[j].label == "Alert"){
-            alertUids.push(alertFeeds[j].uid);
-            }
-          };
-        }
-        else{
-          continue;
-        }
-      };
+
     };
 
   var getPages = function(res, sensorArray){
-    var url = res.data.links.next;
-    console.log("downloading next page...");
-        $http({
-          url: url,
-          method:'GET',
-          headers: {
-            'Authorization': 'Bearer '+input["accesstoken"]
-          }
-        }).then(function(response) {
-          if (response.data.links.next == null){
-            console.log("download last page of data for this uid...");
-            var objectCount = response.data.objects.length;
-            for (var j = 0; j < objectCount; j++){
-              sensorArray.push(response.data.objects[j]);
-              return sensorArray;
-            };
-          }
-          else{ // >100 event objects implies more than one page of data
-            for (var k = 0; k < 100; k++){//add the 100 events on first page
-              sensorArray.push(response.data.objects[k]);
-            };
-            return getPages(response, sensorArray);
-          }
-          //return sensorData.Presence;
-          
-        }, function error(response) {
-          console.log("request failed at /events/", response);
-          //log appropriate error
-        })
-  };
+
+
+};
 
   var getEvents = function(uidArray, sensorArray){//use appropriate uid array to make http request to /events/ endpoint
     var uidLength = uidArray.length;
@@ -159,76 +88,27 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
     }
   };
 
-  var refreshFunc = function(){//For when http request is denied due to 403 expired token
-  var refreshUrl = "https://apis.sen.se/v2/oauth2/refresh/";
-  $http({
-    url:refreshUrl,
-    method:'POST',
-    headers: {
-      'Authorization': 'Bearer '+refreshtoken
-    }
-  }).then(function(response) {
-      console.log("sen.se refresh request success", response);
-    }, function(response) {
-      console.log("sen.se refresh request fail", response);
-      }
-    )
-  };
 
   //initial http request.  subsequent request will be chained as ".then()" callbacks
-  var dataUrl = "https://apis.sen.se/v2/nodes/";//get page of nodes for this user
+  var dataUrl = "http://carewheels.cecs.pdx.edu:8080/getfeeds.php";//get page of nodes for this user
     $http({
-      url:dataUrl,
-      method:'GET',
+      url:dataUrl, 
+      method:'POST',    //all our custom REST endpoints have been designed to use POST
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
+        usernametofind:username,
+        gt:prevDay,
+        lt:today        
+      }), 
       headers: {
-        'Authorization': 'Bearer '+ input["accesstoken"]
+        'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
       }
     }).then(function(response) {//STAGE 1, get uids from all specified sensors
-        console.log("/nodes/", response);
-        //GET UIDS FOR EACH 
-        return getUids(response);
+        console.log("cecs data server", response);
+        // 
+        //return getEvents(response);
 
       }, function error(response) {
-        console.log("request failed at /nodes/", response);
-        //log appropriate error
-
-    }).then(function(response) {//STAGE 2, presence events
-
-        //GET EVENTS FOR EACH 
-        return getEvents(presenceUids, sensorData.Presence);
-        //console.log(response);
-
-      }, function error(response) {
-        console.log("request failed at presence /events/", response);
-        //log appropriate error
-
-      }).then(function(response) {//STAGE 3, med events
-
-        return getEvents(medUids, sensorData.Meds);
-        //GET EVENTS FOR EACH 
-        //console.log(response);
-
-      }, function error(response) {
-        console.log("request failed at Med /events/", response);
-        //log appropriate error
-      }).then(function(response) {//STAGE 4, fridge events
-
-        return getEvents(fridgeUids, sensorData.Fridge);
-        //GET EVENTS FOR EACH 
-        //console.log(response);
-
-      }, function error(response) {
-        console.log("request failed at Fridge /events/", response);
-        //log appropriate error
-
-      }).then(function(response) {//STAGE 5, alert events
-
-        return getEvents(alertUids, sensorData.Alert);
-        //GET EVENTS FOR EACH 
-        //console.log(response);
-
-      }, function error(response) {
-        console.log("request failed at Alert /events/", response);
+        console.log("request failed while outputting data back to main thread", response);
         //log appropriate error
 
       }).then(function(response) {//STAGE 6, send data back to main thread
@@ -247,13 +127,6 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
         //log appropriate error
       })
 
-//Use uids to make requests to appropriate /events/ endpoints
-
-//chain .then() for additional pages
-
-//save /events/ in appropriate arrays
-
-//return member object with sensorData via output.notify to main thread
 
 }]); //end of each worker thread promise
 
@@ -261,8 +134,12 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
       .then(function success(angularWorker) {
 
         var date = new Date();//create new data object
-        date.setDate(date.getDate()-2); //roll back date 48 hours (-2 days)
+        date.setDate(date.getDate()); //roll back date 48 hours (-2 days)
         var userTime = date.toISOString();
+
+        var yestdate = new Date();//create new data object
+        yestdate.setDate(yestdate.getDate()-2); //roll back date 48 hours (-2 days)
+        var yestTime = yestdate.toISOString();
 
         //make input object as arg for run()
         //we will need to include all properties which will be needed as params
@@ -276,7 +153,7 @@ var workerCreation = function(member) {//input to workerCreation is a single gro
         var accesstoken = member.customValues[1].stringValue;
         var refreshtoken = member.customValues[2].stringValue;
         
-        return angularWorker.run({thisMember: member, time: userTime, accesstoken: accesstoken, refreshtoken: refreshtoken});
+        return angularWorker.run({thisMember: member, time: userTime, yesttime: yestTime, accesstoken: accesstoken, refreshtoken: refreshtoken});
 
       }, function error(reason) {//this is where the worker thread returns
 
