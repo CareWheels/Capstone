@@ -4,10 +4,10 @@
  */
 angular.module('careWheels')
   .controller('loginController',
-    function($scope, $controller, User, $state, $ionicLoading, $ionicHistory, $ionicPopup, GroupInfo, $interval, notifications, onlineStatus, VERSION_NUMBER){
+    function($scope, $controller, User, $state, $ionicLoading, $ionicHistory, $ionicPopup, GroupInfo, $interval, notifications, onlineStatus, VERSION_NUMBER, Download){
 
     var DOWNLOAD_INTERVAL = 1000 * 60 * 5; // constant interval for download, 5 mins
-    var dataDownload = $scope.$new();
+    //var dataDownload = $scope.$new();
     var dataAnalysis = $scope.$new();
     var loginTimeout = false;
     var loginIntervalSteps = 0;
@@ -18,7 +18,7 @@ angular.module('careWheels')
 
     $ionicHistory.nextViewOptions({disableBack: true});
 
-    $controller('DownloadCtrl', {$scope : dataDownload});
+    //$controller('DownloadCtrl', {$scope : dataDownload});
     $controller('AnalysisCtrl', {$scope : dataAnalysis});
 
     $scope.rememberMe = false;
@@ -46,7 +46,7 @@ angular.module('careWheels')
           $ionicLoading.show({ template: popupTemplate });
 
           // do the data download
-          dataDownload.DownloadData();
+          Download.DownloadData();
 
           // store the interval promise in this variable
           var intervalPromise = $interval( function(){
@@ -108,7 +108,7 @@ angular.module('careWheels')
 
         $interval(function(){
           //if(onlineStatus.isOnline()){
-            dataDownload.DownloadData();
+            Download.DownloadData();
             setTimeout(function(){
               dataAnalysis.AnalyzeData();
             }, DOWNLOAD_INTERVAL / 2); // wait halfway through the interval, then analyze
