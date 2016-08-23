@@ -6,6 +6,7 @@ angular.module('careWheels').controller('groupStatusController',
   function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService) {
 
     // the groupInfo object is not available immediately, spin until available
+    // toDo: remove this once the callbacks for downland and analysis are set up
     var initGroupInfo = setInterval(function () {
       var groupArray = GroupInfo.groupInfo();
       if (groupArray[0] != null) {
@@ -14,6 +15,13 @@ angular.module('careWheels').controller('groupStatusController',
         setGroupArray(groupArray);
       }
     }, 50);
+
+    /**
+     * credit hte user for viewing the user summary
+     * this function is invoked with each state
+     * change to this view.
+     */
+    creditPageHit();
 
     /** automatically go through each user square, and
      *  find each 'red' alert, and fade that element in
@@ -94,10 +102,6 @@ angular.module('careWheels').controller('groupStatusController',
     $scope.clickBottomRight = function () {
       clickUser(4);
     };
-    $scope.clickCenter = function () {
-    };
-    $scope.clickCareBank = function () {
-    };
 
     // lets figure out which user logged in at this point
     function getLoggedInUser(groupInfo) {
@@ -159,6 +163,12 @@ angular.module('careWheels').controller('groupStatusController',
         }
 
       }
+    }
+
+    // this runs everytime that the user changes state to this view.
+    function creditPageHit() {
+      console.log('crediting user for group summary view.');
+      PaymentService.memberSummary(0.1);
     }
 
 
