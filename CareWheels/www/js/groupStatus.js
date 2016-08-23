@@ -5,6 +5,9 @@
 angular.module('careWheels').controller('groupStatusController',
   function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService) {
 
+    runOnStateChange();
+
+
     // the groupInfo object is not available immediately, spin until available
     // toDo: remove this once the callbacks for downland and analysis are set up
     var initGroupInfo = setInterval(function () {
@@ -16,12 +19,22 @@ angular.module('careWheels').controller('groupStatusController',
       }
     }, 50);
 
-    /**
-     * credit hte user for viewing the user summary
-     * this function is invoked with each state
-     * change to this view.
-     */
-    creditPageHit();
+      /**
+       *  this function is invoked with each state chang to this view.
+        */
+      function runOnStateChange(){
+        console.log('crediting user for group summary view.');
+        PaymentService.memberSummary(0.1);
+        checkVactionMode();
+      }
+
+    function checkVactionMode(){
+      if (User.getVacationValue())
+        $('#vacationMode').fadeIn(0);
+      else
+        $('#vacationMode').fadeOut(0);
+    }
+
 
     /** automatically go through each user square, and
      *  find each 'red' alert, and fade that element in
@@ -134,6 +147,7 @@ angular.module('careWheels').controller('groupStatusController',
       $scope.group[currentUser].username = groupArray[loggedInUserIndex].username;
       $scope.group[currentUser].name = groupArray[loggedInUserIndex].name;
       $scope.group[currentUser].balance = trimZeros(groupArray[loggedInUserIndex].balance);
+      //$scope.group[currentUser].onVacation = User.getVacationValue();
 
       currentUser++; // = 1 at this point
 
@@ -164,13 +178,6 @@ angular.module('careWheels').controller('groupStatusController',
 
       }
     }
-
-    // this runs everytime that the user changes state to this view.
-    function creditPageHit() {
-      console.log('crediting user for group summary view.');
-      PaymentService.memberSummary(0.1);
-    }
-
 
     //removes insignificant zeros
     function trimZeros(input) {
