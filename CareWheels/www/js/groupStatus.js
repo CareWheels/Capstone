@@ -6,6 +6,8 @@ angular.module('careWheels').controller('groupStatusController',
   function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService) {
 
 
+    runOnStateChange();
+
     // the groupInfo object is not available immediately, spin until available
     // toDo: remove this once the callbacks for downland and analysis are set up
     var initGroupInfo = setInterval(function () {
@@ -18,8 +20,6 @@ angular.module('careWheels').controller('groupStatusController',
       }
     }, 50);
 
-
-    runOnStateChange();
     /**
      *  this function is invoked with each state chang to this view.
      */
@@ -148,6 +148,7 @@ angular.module('careWheels').controller('groupStatusController',
       $scope.group[currentUser].username = groupArray[loggedInUserIndex].username;
       $scope.group[currentUser].name = groupArray[loggedInUserIndex].name;
       $scope.group[currentUser].balance = trimZeros(groupArray[loggedInUserIndex].balance);
+      //$scope.group[currentUser].onVacation = User.getVacationValue();
 
       currentUser++; // = 1 at this point
 
