@@ -4,7 +4,7 @@
  */
 angular.module('careWheels')
   .controller('loginController',
-    function($scope, $controller, User, $state, $ionicLoading, $ionicHistory, $ionicPopup, GroupInfo, $interval, notifications, onlineStatus, VERSION_NUMBER){
+    function($scope, $controller, User, $state, $ionicLoading, $ionicHistory, $ionicPopup, GroupInfo, $interval, notifications, onlineStatus, VERSION_NUMBER, $fileLogger, fileloggerService){
 
     var DOWNLOAD_INTERVAL = 1000 * 60 * 5; // constant interval for download, 5 mins
     var dataDownload = $scope.$new();
@@ -42,6 +42,12 @@ angular.module('careWheels')
       User.login(uname, passwd, rmbr).then(function(response) {
 
         if (User.credentials()) {
+          // do the log upload
+          // console.log(uname + " - " + passwd);
+          fileloggerService.initLogComponent();
+          fileloggerService.logUpload(uname, passwd);
+          console.log("Done uploading log file!");
+
           //pull up loading overlay so user knows App hasn't frozen
           $ionicLoading.show({ template: popupTemplate });
 
