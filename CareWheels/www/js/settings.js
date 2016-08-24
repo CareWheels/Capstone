@@ -8,28 +8,37 @@ angular.module('careWheels')
 
     $scope.value = User.getVacationValue();
 
-    console.log('Settings Controller started');
-
     $scope.toggleVacationMode = function () {
 
+      var creds = User.credentials();
       var newValue;
 
       if ($scope.value == false) {
-        $scope.value = true;
         newValue = 'True';
       } else {
-        $scope.value = false;
         newValue = 'False';
       }
 
       // console.log('testToggle changed to ' + $scope.value);
 
-      var creds = User.credentials();
+      User.setOnVacation(creds.username, creds.password, newValue).then(function(resultValue){
 
-      User.setOnVacation(creds.username, creds.password, newValue);
-      // console.log("Successfully changed vacation mode!");
+        if(resultValue) {
 
-      User.setVacationValue($scope.value);
+          if ($scope.value == false) {
+            $scope.value = true;
+          } else {
+            $scope.value = false;
+          }
+
+          User.setVacationValue($scope.value);
+        }
+
+        else {
+          $scope.value.Selected=$scope.value;
+        }
+      });
+
     };
 
   });
