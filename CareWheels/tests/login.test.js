@@ -19,7 +19,7 @@ describe('User factory', function() {
   });
 
   describe('Login Success', function() {
-    it('should call login on UserMock', function() {
+    it('should call login and return data', function() {
       User.login('testbilly', 'testbilly', true);
       var data = angular.fromJson(window.localStorage['loginCredentials']);
       expect(data).not.toBe(null);
@@ -27,7 +27,7 @@ describe('User factory', function() {
   });
 
   describe('Login failed', function() {
-    it('should call login on UserMock', function() {
+    it('should call login and fail.', function() {
       User.login('testbilly', 'teastbilly', true);
       var data = angular.fromJson(window.localStorage['loginCredentials'] || null);
       expect(data).toBe(null);
