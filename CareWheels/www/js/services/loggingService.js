@@ -1,6 +1,6 @@
 angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
   .service('fileloggerService', function (BASE_URL, $fileLogger, $filter, $ionicPlatform, $cordovaFile, $cordovaFileTransfer) {
-    var logFileName = "localLogFile.log";
+    var logFileName = "careWheelsLocalLogFile.log";
 
     this.setLogLocation = function (fileName) {
       $fileLogger.setStorageFilename(fileName);
@@ -26,7 +26,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
     };
 
     this.initLogComponent = function () {
-      this.setLogLocation(this.getLogFileName());
+      this.setLogLocation(logFileName);
       // $fileLogger.setTimestampFormat('medium');
     };
 
@@ -47,6 +47,8 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       var user = usernameIn;
       var pass = passwordIn;
 
+      this.initLogComponent();
+
       // save the "parent process" = "this"
       var pp = this;
 
@@ -61,6 +63,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         fileURL = fileURL.replace(/"+/g, "");
         console.log('debug', "fileURL: ", fileURL);
 
+        // generate file name for uploading base on current date and time
         var currentDateTime = cpp.getCurrentDateTime();
         var fileNameUp = user + '-' + currentDateTime + '.log';
 
