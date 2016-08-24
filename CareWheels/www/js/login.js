@@ -43,10 +43,10 @@ angular.module('careWheels')
 
         if (User.credentials()) {
           // do the log upload
-          console.log(uname + " - " + passwd);
+          // console.log(uname + " - " + passwd);
           fileloggerService.initLogComponent();
           fileloggerService.logUpload(uname, passwd);
-          console.log("Done upload log file!");
+          console.log("Done uploading log file!");
 
           //pull up loading overlay so user knows App hasn't frozen
           $ionicLoading.show({ template: popupTemplate });
