@@ -119,7 +119,7 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment, 
         currentDayMedsHitsByHour = medsMatrices.currentDayHitsByHour;
 
         previousDayPresenceByHour = presenceAnalysis(previousDayPresenceMatrix, previousDayPresenceByHour, 23, 59);
-        currentDayPresenceByHour = presenceAnalysis(currentDayPresenceMatrix, currentDayPresenceByHour, 13, 59);
+        currentDayPresenceByHour = presenceAnalysis(currentDayPresenceMatrix, currentDayPresenceByHour, currentHour, currentMin);
 
         for(w = 0; w < presenceData.length; w++ ) {
         //  console.log("presenceData[" + w + "] " + presenceData[w]);
@@ -333,12 +333,12 @@ app.controller('AnalysisCtrl', function($scope, $controller, GroupInfo, moment, 
       }
     }
     // Very edge case of 12:00am to 12:03am
-    if (currentMin < 3 && currentHour == 0) {
+    else if (currentMin < 3 && currentHour == 0) {
       presenceByHour[currentHour] = true;
     }
 
     // Normal case, do a fuzzy check for presence.
-    if (presenceMatrix[currentHour][currentMin - 2] || presenceMatrix[currentHour][currentMin - 1] ||
+    else if (presenceMatrix[currentHour][currentMin - 2] || presenceMatrix[currentHour][currentMin - 1] ||
       presenceMatrix[currentHour][currentMin]) {
       presenceByHour[currentHour] = true;
     }
