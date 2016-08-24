@@ -50,8 +50,9 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       // save the "parent process" = "this"
       var pp = this;
 
-      var uri = encodeURI(BASE_URL + "/logupload.php");
+      // var uri = encodeURI(BASE_URL + "/logupload.php");
       // var uri = encodeURI("https://carewheels.cecs.pdx.edu:8443/logupload.php");
+      var uri = encodeURI("http://carewheels.cecs.pdx.edu:8080/logupload.php");
 
       $fileLogger.checkFile().then(function (d) {
         var cpp = pp;
