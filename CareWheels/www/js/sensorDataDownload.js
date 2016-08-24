@@ -8,56 +8,21 @@ DownloadService.DownloadData = function () {
 
   var getData = function (member) {
 
-  var date = new Date();//create new data object
-  date.setDate(date.getDate()); 
-  var today = date.toISOString();
-  //today = "2016-08-22T23:59:59";//test data for http request. will delete later
-
-  var yestdate = new Date();
-  yestdate.setDate(yestdate.getDate()-1); //roll back date 24 hours (-1 days)
-  var yest = yestdate.toISOString();
-  //yest = "2016-08-21T00:00:00";//test data for http request. will delete later
 
   var usernametofind = member.username.toLowerCase();//for each group member
   var user = User.credentials();//from login
   var password = user.password;//credentials of logged in user
   var username = user.username;
   
-  var sensorData = {//this will attach to each member and will be analyzed
-    "Presence": [],
-    "Fridge": [],
-    "Meds": [],
-    "Alert": []
-  };
-
-  var getEvents = function(res){//use appropriate uid array to make http request to /events/ endpoint
-    for (var i = 0; i < res.data.length; i++){
-      if (res.data[i].feedType == "presence"){
-        sensorData.Presence.push(res.data[i]);
-      }
-      if (res.data[i].feedType == "meals"){
-        sensorData.Fridge.push(res.data[i]);
-      }
-      if (res.data[i].feedType == "medication"){
-        sensorData.Meds.push(res.data[i]);
-      }
-      else {
-        continue;
-      }
-    };
-  };
-
   //http request to carebank /getfeeds/ endpoint
-  var dataUrl = "https://carewheels.cecs.pdx.edu:8443/getfeeds.php";//get page of nodes for this user
+  var dataUrl = "https://carewheels.cecs.pdx.edu:8443/analysis.php";//get page of nodes for this user
     return $http({
       url:dataUrl, 
       method:'POST',    
       data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
         usernametofind:usernametofind,
         username:username,
-        password:password,
-        gt:yest,
-        lt:today        
+        password:password      
       }), 
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
@@ -65,13 +30,18 @@ DownloadService.DownloadData = function () {
     }).then(function(response) {
 
         console.log("cecs data server", response);
-        //run getevent function
-        getEvents(response);
 
         var thisMember = member;//each group member
-        thisMember.sensorData = sensorData;//add sensorData to group member object
-
+        thisMember.analysisData = response.data;//add sensorData to group member object
         GroupInfo.addDataToGroup(thisMember, thisMember.index); //add back to group
+
+        if(response.data.newMedsRollingAlertLevel >= 2) {
+          notifications.Create_Notif(0, 0, 0, false, 0);
+        }
+
+        if(response.data.newFridgeRollingAlertLevel >= 2) {
+          notifications.Create_Notif(0, 0, 0, false, 0);
+        }
 
       }, function error(response) {
         console.log("request failed ", response);
@@ -86,7 +56,7 @@ for (var i = 0; i < theseMembers.length; i++){//this is where we loop over each 
   if (theseMembers[i].customValues[1].stringValue == "000" || theseMembers[i].customValues[1].stringValue == "" ||
     theseMembers[i].customValues[2].stringValue == "000" || theseMembers[i].customValues[2].stringValue == "")
     {
-      theseMembers[i].sensorData = null;
+      //theseMembers[i].sensorData = null;
       console.log("error, please obtain valid sen.se keys!");
     }
   else{
@@ -96,3 +66,5 @@ for (var i = 0; i < theseMembers.length; i++){//this is where we loop over each 
 };
 return DownloadService;
 });
+
+

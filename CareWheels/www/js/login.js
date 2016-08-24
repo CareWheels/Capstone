@@ -8,7 +8,7 @@ angular.module('careWheels')
 
     var DOWNLOAD_INTERVAL = 1000 * 60 * 5; // constant interval for download, 5 mins
     //var dataDownload = $scope.$new();
-    var dataAnalysis = $scope.$new();
+    //var dataAnalysis = $scope.$new();
     var loginTimeout = false;
     var loginIntervalSteps = 0;
     var popupTemplate = '<ion-spinner></ion-spinner>' + '<p>Contacting Server...</p>';
@@ -19,7 +19,7 @@ angular.module('careWheels')
     $ionicHistory.nextViewOptions({disableBack: true});
 
     //$controller('DownloadCtrl', {$scope : dataDownload});
-    $controller('AnalysisCtrl', {$scope : dataAnalysis});
+    //$controller('AnalysisCtrl', {$scope : dataAnalysis});
 
     $scope.rememberMe = false;
     $scope.logoImage = 'img/CareWheelsLogo.png';
@@ -60,9 +60,9 @@ angular.module('careWheels')
 
             // alright, lets try to analyze the data
             // only run analyze if sensor data is present
-            if (info[4].sensorData != null){
-                dataAnalysis.AnalyzeData();
-            }
+            //if (info[4].sensorData != null){
+            //    dataAnalysis.AnalyzeData();
+            //}
 
             // were taking way to long, ABORT
             if (loginTimeout){
@@ -109,9 +109,9 @@ angular.module('careWheels')
         $interval(function(){
           //if(onlineStatus.isOnline()){
             Download.DownloadData();
-            setTimeout(function(){
-              dataAnalysis.AnalyzeData();
-            }, DOWNLOAD_INTERVAL / 2); // wait halfway through the interval, then analyze
+            //setTimeout(function(){
+            //  dataAnalysis.AnalyzeData();
+            //}, DOWNLOAD_INTERVAL / 2); // wait halfway through the interval, then analyze
           //}
           //else{
             //displayError(1);
