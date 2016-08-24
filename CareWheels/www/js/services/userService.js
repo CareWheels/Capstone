@@ -126,8 +126,27 @@ angular.module('careWheels')
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       }).then(function (response) {
-        console.log("Successfully updated vacation setting!");
-        $ionicLoading.hide();   //make sure to hide loading screen
+        console.log("Successfully updated setting!");
+        $ionicLoading.hide();
+        return true;
+      }, function (response) {
+
+        $ionicLoading.hide();
+        var errorMsg = "Unknown error.";
+        //
+        console.log(response.status);
+        console.log(response.data);
+
+        if (response.status != 200) {
+          errorMsg = "Unable to update settings on server!";
+        }
+
+        var alertPopup = $ionicPopup.alert({
+          title: 'Settings update failed!',
+          template: errorMsg
+        });
+
+        return false;
       })
     };
 
