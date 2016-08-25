@@ -71,12 +71,12 @@ DownloadService.DownloadData = function () {
 
         GroupInfo.setAnalysisData(usernametofind, response.data);//add new analysis data to group member
 
-        if(response.data.medsAlertLevel >= 2) { //handle notifications
+        if(response.data.medsAlertLevel >= 2) { //handle red alert notifications
           notifications.Create_Notif(0, 0, 0, false, 0);
           console.log("Meds notification created!");
         }
 
-        if(response.data.fridgeAlertLevel >= 1) {
+        if(response.data.fridgeAlertLevel >= 2) {  //handle *red alert* notifications
           notifications.Create_Notif(0, 0, 0, false, 0);
           console.log("Fridge notification created!")
         }
