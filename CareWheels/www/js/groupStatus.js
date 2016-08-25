@@ -225,7 +225,7 @@ angular.module('careWheels').controller('groupStatusController',
       var alertString = '';
 
       // check for acceptable bounds
-      if (meds < 0 || fridge < 0 || meds > 4 || fridge > 4)
+      if (meds < 0 || fridge < 0)
         alertString = ''; // error state
       // check for null
       else if (fridge >= 2 || meds >= 2)

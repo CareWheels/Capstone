@@ -64,8 +64,8 @@ describe('Controller: Group Status -', function () {
       // then assert that the status color is set to red
       $scope.group[1].status = $scope.getAlertColor(-1, 0, 1);
       $scope.group[2].status = $scope.getAlertColor(2, null, 2);
-      $scope.group[3].status = $scope.getAlertColor(5, 1, 3);
-      $scope.group[4].status = $scope.getAlertColor(2, 99999, 4);
+      $scope.group[3].status = $scope.getAlertColor(null, 1, 3);
+      $scope.group[4].status = $scope.getAlertColor(2, -99999, 4);
       expect($scope.group[1].status).toBe('');
       expect($scope.group[2].status).toBe('');
       expect($scope.group[3].status).toBe('');
