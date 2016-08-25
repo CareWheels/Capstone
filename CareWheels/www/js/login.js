@@ -54,9 +54,13 @@ angular.module('careWheels')
 
           notifications.Init_Notifs();        // initialize notifications
           // do the data download
-          Download.DownloadData();
+          Download.DownloadData(function(){
+            scheduleDownload();               // spin up a download/analyze scheduler
+            $ionicLoading.hide();             // hide loading screen
+            $state.go('app.groupStatus');     // go to group view
+          });
 
-          // store the interval promise in this variable
+          /*// store the interval promise in this variable
           var intervalPromise = $interval( function(){
             // keep track of how many times we step through the interval
             loginIntervalSteps++;
@@ -89,7 +93,7 @@ angular.module('careWheels')
               $state.go('app.groupStatus');       // go to group view
               $ionicLoading.hide();               // hide loading screen
             }
-          }, 500 );
+          }, 500 );*/
         }
       });
     };
@@ -112,17 +116,10 @@ angular.module('careWheels')
      *      3. analyze data
      * */
     function scheduleDownload(){
-
         $interval(function(){
-          //if(onlineStatus.isOnline()){
-            Download.DownloadData();
-            //setTimeout(function(){
-            //  dataAnalysis.AnalyzeData();
-            //}, DOWNLOAD_INTERVAL / 2); // wait halfway through the interval, then analyze
-          //}
-          //else{
-            //displayError(1);
-          //}
+          Download.DownloadData(function(){
+            console.log('download scheduler finished')
+          });
         }, DOWNLOAD_INTERVAL ); // 5 min interval
 
     }
