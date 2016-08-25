@@ -52,6 +52,7 @@ angular.module('careWheels')
           //pull up loading overlay so user knows App hasn't frozen
           $ionicLoading.show({ template: popupTemplate });
 
+          notifications.Init_Notifs();        // initialize notifications
           // do the data download
           Download.DownloadData();
 
@@ -84,7 +85,6 @@ angular.module('careWheels')
             // sweet we got data, lets break out of this interval
             if (info[4].analysisData != null){
               $interval.cancel(intervalPromise);  // break out of interval
-              notifications.Init_Notifs();        // initialize notifications
               scheduleDownload();                 // spin up a download/analyze scheduler
               $state.go('app.groupStatus');       // go to group view
               $ionicLoading.hide();               // hide loading screen

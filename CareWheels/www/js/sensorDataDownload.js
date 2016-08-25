@@ -1,6 +1,6 @@
 angular.module('careWheels')
 
-.factory('Download', function($http, $httpParamSerializerJQLike, WorkerService, GroupInfo, User) {
+.factory('Download', function($http, $httpParamSerializerJQLike, WorkerService, GroupInfo, User, notifications) {
   var DownloadService = {};
 
 //this is the main function called after login
@@ -18,21 +18,50 @@ DownloadService.DownloadData = function () {
   var medsInterval3 = GroupInfo.getMedsInterval3(usernametofind)
   var medsInterval4 = GroupInfo.getMedsInterval4(usernametofind)
   var onVacation = GroupInfo.getOnVacation(usernametofind)
-  
+
+    if(medsInterval2) {
+      medsInterval2 = 'True';
+    }
+    else {
+      medsInterval2 = 'False';
+    }
+
+    if(medsInterval3) {
+      medsInterval3 = 'True';
+    }
+    else {
+      medsInterval3 = 'False';
+    }
+
+    if(medsInterval4) {
+      medsInterval4 = 'True';
+    }
+    else {
+      medsInterval4 = 'False';
+    }
+
+    if(onVacation) {
+      onVacation = 'True';
+    }
+    else {
+      onVacation = 'False';
+    }
+
+
   //http request to carebank /getfeeds/ endpoint
   var dataUrl = "https://carewheels.cecs.pdx.edu:8443/analysis.php";//get page of nodes for this user
     return $http({
-      url:dataUrl, 
-      method:'POST',    
-      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
+      url:dataUrl,
+      method:'POST',
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
         usernametofind:usernametofind,
         username:username,
         password:password,
         medsinterval2:medsInterval2,
         medsinterval3:medsInterval3,
         medsinterval4:medsInterval4,
-        onvacation:onVacation    
-      }), 
+        onvacation:onVacation
+      }),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
       }
@@ -42,18 +71,23 @@ DownloadService.DownloadData = function () {
 
         GroupInfo.setAnalysisData(usernametofind, response.data);//add new analysis data to group member
 
-        if(response.data.newMedsRollingAlertLevel >= 2) { //handle notifications
+        if(response.data.medsAlertLevel >= 2) { //handle notifications
           notifications.Create_Notif(0, 0, 0, false, 0);
+          console.log("Meds notification created!");
         }
 
-        if(response.data.newFridgeRollingAlertLevel >= 2) {
+        if(response.data.fridgeAlertLevel >= 1) {
           notifications.Create_Notif(0, 0, 0, false, 0);
+          console.log("Fridge notification created!")
         }
 
-      }, function error(response) {
+      console.log("Group after downloading sensor data: ", GroupInfo.groupInfo());
+
+    }, function error(response) {
         console.log("request failed ", response);
         //log appropriate error
       })
+
 };
 
 var theseMembers = GroupInfo.groupInfo();//returns all five group members with carebank data after login
