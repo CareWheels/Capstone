@@ -10,8 +10,12 @@ angular.module('careWheels')
       }
       return false;
     };
-    
-    // Functions for controlling the side menu buttons.  
+
+    $scope.goBack = function(){
+      $ionicHistory.goBack();
+    }
+
+    // Functions for controlling the side menu buttons.
     //
 
     $scope.clickGroup = function () {
@@ -50,12 +54,12 @@ angular.module('careWheels')
                     if ($scope.isChecked.value)
                         window.localStorage["noLeaveAppWarn"] = angular.toJson($scope.isChecked.value);
                     openSense();
-                }             
+                }
             });
 
-        } 
-        else 
-            openSense();  
+        }
+        else
+            openSense();
     };
 
     $scope.clickCyclos = function() {
@@ -77,12 +81,12 @@ angular.module('careWheels')
             });
 
         }
-        else 
+        else
             openCyclos();
     };
 
-    var openSense = function () { 
-        document.addEventListener("deviceready", 
+    var openSense = function () {
+        document.addEventListener("deviceready",
             startApp.set({
                 "action": "ACTION_MAIN",
                 "category": "CATEGORY_DEFAULT",
@@ -97,13 +101,13 @@ angular.module('careWheels')
                 $ionicPopup.alert({
                     title: 'Error',
                     subTitle: "Sen.se application not available"
-                });       
+                });
             })
         , false);
     };
 
     var openCyclos = function () {
-        document.addEventListener("deviceready", 
+        document.addEventListener("deviceready",
             startApp.set({
                 "application": "org.cyclos.mobile",
                 "action": "ACTION_MAIN",
@@ -119,7 +123,7 @@ angular.module('careWheels')
                 $ionicPopup.alert({
                     title: 'Error',
                     subTitle: "Cyclos application not available"
-                });            
+                });
             })
         , false);
     };
