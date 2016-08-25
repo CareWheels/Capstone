@@ -35,7 +35,7 @@ DownloadService.DownloadData = function () {
         thisMember.analysisData = response.data;//add sensorData to group member object
         GroupInfo.addDataToGroup(thisMember, thisMember.index); //add back to group
 
-        if(response.data.newMedsRollingAlertLevel >= 2) {
+        if(response.data.newMedsRollingAlertLevel >= 2) { 
           notifications.Create_Notif(0, 0, 0, false, 0);
         }
 

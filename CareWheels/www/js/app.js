@@ -19,7 +19,7 @@ angular.module('careWheels', [
 .constant('BASE_URL', 'https://carewheels.cecs.pdx.edu:8443')
 
 // change the version number here
-.constant('VERSION_NUMBER', '0.07')
+.constant('VERSION_NUMBER', '0.08')
 
 .run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, $window, User) {
 
