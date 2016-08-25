@@ -110,8 +110,9 @@ angular.module('careWheels')
         getData(theseMembers[1], function(){
           getData(theseMembers[2], function(){
             getData(theseMembers[3], function(){
-              getData(theseMembers[4], function(){});
+              getData(theseMembers[4], function(){
                 return finalCallback();
+              });
             });
           });
         });
