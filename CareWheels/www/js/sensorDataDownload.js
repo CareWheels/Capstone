@@ -1,5 +1,4 @@
 angular.module('careWheels')
-
   .factory('Download', function ($http, $httpParamSerializerJQLike, WorkerService, GroupInfo, User, notifications) {
     var DownloadService = {};
 
