@@ -4,11 +4,12 @@
  */
 angular.module('careWheels')
   .controller('loginController',
-    function($scope, $controller, User, $state, $ionicLoading, $ionicHistory, $ionicPopup, GroupInfo, $interval, notifications, onlineStatus, VERSION_NUMBER, $fileLogger, fileloggerService){
+
+    function($scope, $controller, User, $state, $ionicLoading, $ionicHistory, $ionicPopup, GroupInfo, $interval, notifications, onlineStatus, VERSION_NUMBER, Download, $fileLogger, fileloggerService){
 
     var DOWNLOAD_INTERVAL = 1000 * 60 * 5; // constant interval for download, 5 mins
-    var dataDownload = $scope.$new();
-    var dataAnalysis = $scope.$new();
+    //var dataDownload = $scope.$new();
+    //var dataAnalysis = $scope.$new();
     var loginTimeout = false;
     var loginIntervalSteps = 0;
     var popupTemplate = '<ion-spinner></ion-spinner>' + '<p>Contacting Server...</p>';
@@ -18,8 +19,8 @@ angular.module('careWheels')
 
     $ionicHistory.nextViewOptions({disableBack: true});
 
-    $controller('DownloadCtrl', {$scope : dataDownload});
-    $controller('AnalysisCtrl', {$scope : dataAnalysis});
+    //$controller('DownloadCtrl', {$scope : dataDownload});
+    //$controller('AnalysisCtrl', {$scope : dataAnalysis});
 
     $scope.rememberMe = false;
     $scope.logoImage = 'img/CareWheelsLogo.png';
@@ -51,8 +52,9 @@ angular.module('careWheels')
           //pull up loading overlay so user knows App hasn't frozen
           $ionicLoading.show({ template: popupTemplate });
 
+          notifications.Init_Notifs();        // initialize notifications
           // do the data download
-          dataDownload.DownloadData();
+          Download.DownloadData();
 
           // store the interval promise in this variable
           var intervalPromise = $interval( function(){
@@ -66,9 +68,9 @@ angular.module('careWheels')
 
             // alright, lets try to analyze the data
             // only run analyze if sensor data is present
-            if (info[4].sensorData != null){
-                dataAnalysis.AnalyzeData();
-            }
+            //if (info[4].sensorData != null){
+            //    dataAnalysis.AnalyzeData();
+            //}
 
             // were taking way to long, ABORT
             if (loginTimeout){
@@ -83,7 +85,6 @@ angular.module('careWheels')
             // sweet we got data, lets break out of this interval
             if (info[4].analysisData != null){
               $interval.cancel(intervalPromise);  // break out of interval
-              notifications.Init_Notifs();        // initialize notifications
               scheduleDownload();                 // spin up a download/analyze scheduler
               $state.go('app.groupStatus');       // go to group view
               $ionicLoading.hide();               // hide loading screen
@@ -114,10 +115,10 @@ angular.module('careWheels')
 
         $interval(function(){
           //if(onlineStatus.isOnline()){
-            dataDownload.DownloadData();
-            setTimeout(function(){
-              dataAnalysis.AnalyzeData();
-            }, DOWNLOAD_INTERVAL / 2); // wait halfway through the interval, then analyze
+            Download.DownloadData();
+            //setTimeout(function(){
+            //  dataAnalysis.AnalyzeData();
+            //}, DOWNLOAD_INTERVAL / 2); // wait halfway through the interval, then analyze
           //}
           //else{
             //displayError(1);

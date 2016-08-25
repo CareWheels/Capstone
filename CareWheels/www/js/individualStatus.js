@@ -30,7 +30,7 @@ angular.module('careWheels')
           coloredArray[i] = "yellow";
         }
 
-        if(sensorArray[i] == 2) {
+        if(sensorArray[i] >= 2) {
           coloredArray[i] = "red";
         }
       }
@@ -230,7 +230,7 @@ angular.module('careWheels')
       var alertLevel;
       if (alertNum === 1) {
         alertLevel = 'yellow';
-      } 
+      }
       else {
         alertLevel = 'red';
       }
