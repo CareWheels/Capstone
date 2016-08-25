@@ -184,12 +184,12 @@ angular.module('careWheels')
    var returnString = '';
 
    // check for acceptable bounds or null phone number disable button if true
-   if (meds < 0 || meds > 2 || fridge < 0 || fridge > 2 || analysis.phoneNumber == null) {
+   if (meds < 0 || meds > 5 || fridge < 0 || fridge > 5 || analysis.phoneNumber == null) {
      returnString += 'disableCallButton'; // error state
    }
 
    // check for color status of button
-   if (fridge == 2 || meds == 2) {
+   if (fridge >= 2 || meds >= 2) {
      returnString += ' button-assertive';
    }
    else if (fridge == 1 || meds == 1) {
