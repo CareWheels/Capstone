@@ -8,11 +8,16 @@ DownloadService.DownloadData = function () {
 
   var getData = function (member) {
 
-
-  var usernametofind = member.username.toLowerCase();//for each group member
+  var usernametofind = member.username; //.toLowerCase();//for each group member
   var user = User.credentials();//from login
-  var password = user.password;//credentials of logged in user
+  var password = user.password;//credentials of logged in user, from USER service
   var username = user.username;
+
+  //get variable values from groupinfo
+  var medsInterval2 = GroupInfo.getMedsInterval2(usernametofind)
+  var medsInterval3 = GroupInfo.getMedsInterval3(usernametofind)
+  var medsInterval4 = GroupInfo.getMedsInterval4(usernametofind)
+  var onVacation = GroupInfo.getOnVacation(usernametofind)
   
   //http request to carebank /getfeeds/ endpoint
   var dataUrl = "https://carewheels.cecs.pdx.edu:8443/analysis.php";//get page of nodes for this user
@@ -22,7 +27,11 @@ DownloadService.DownloadData = function () {
       data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
         usernametofind:usernametofind,
         username:username,
-        password:password      
+        password:password,
+        medsinterval2:medsInterval2,
+        medsinterval3:medsInterval3,
+        medsinterval4:medsInterval4,
+        onvacation:onVacation    
       }), 
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
@@ -31,11 +40,9 @@ DownloadService.DownloadData = function () {
 
         console.log("cecs data server", response);
 
-        var thisMember = member;//each group member
-        thisMember.analysisData = response.data;//add sensorData to group member object
-        GroupInfo.addDataToGroup(thisMember, thisMember.index); //add back to group
+        GroupInfo.setAnalysisData(usernametofind, response.data);//add new analysis data to group member
 
-        if(response.data.newMedsRollingAlertLevel >= 2) { 
+        if(response.data.newMedsRollingAlertLevel >= 2) { //handle notifications
           notifications.Create_Notif(0, 0, 0, false, 0);
         }
 
