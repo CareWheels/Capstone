@@ -8,12 +8,10 @@ angular.module('careWheels')
     function($scope, $controller, User, $state, $ionicLoading, $ionicHistory, $ionicPopup, GroupInfo, $interval, notifications, onlineStatus, VERSION_NUMBER, Download, $fileLogger, fileloggerService){
 
     var DOWNLOAD_INTERVAL = 1000 * 60 * 5; // constant interval for download, 5 mins
-    //var dataDownload = $scope.$new();
-    //var dataAnalysis = $scope.$new();
+    var LOGIN_TIMEOUT = 1000 * 60;         // timeout for login
     var loginTimeout = false;
-    var loginIntervalSteps = 0;
+
     var popupTemplate = '<ion-spinner></ion-spinner>' + '<p>Contacting Server...</p>';
-    var info = '';
 
     var credentials = angular.fromJson(window.localStorage['loginCredentials']);
 
@@ -53,47 +51,25 @@ angular.module('careWheels')
           $ionicLoading.show({ template: popupTemplate });
 
           notifications.Init_Notifs();        // initialize notifications
+
+          var loginPromise = setTimeout(function(){
+            loginTimeout = true;
+            $ionicLoading.hide();               // kill the loading screen
+            $state.reload();                    // reload the view (try again)
+            displayError(0);                    // pop-up error
+          }, LOGIN_TIMEOUT);
+
+
           // do the data download
           Download.DownloadData(function(){
-            scheduleDownload();               // spin up a download/analyze scheduler
-            $ionicLoading.hide();             // hide loading screen
-            $state.go('app.groupStatus');     // go to group view
+            clearTimeout(loginPromise);       // resolve timeout promise
+            if (!loginTimeout){
+              scheduleDownload();               // spin up a download/analyze scheduler
+              $ionicLoading.hide();             // hide loading screen
+              $state.go('app.groupStatus');     // go to group view
+            }
           });
 
-          /*// store the interval promise in this variable
-          var intervalPromise = $interval( function(){
-            // keep track of how many times we step through the interval
-            loginIntervalSteps++;
-            info = GroupInfo.groupInfo();
-
-            // its taking to long, timeout of the interval
-            if (loginIntervalSteps > 120) // 120 * 500 = 1.5 min timeout
-              loginTimeout = true;
-
-            // alright, lets try to analyze the data
-            // only run analyze if sensor data is present
-            //if (info[4].sensorData != null){
-            //    dataAnalysis.AnalyzeData();
-            //}
-
-            // were taking way to long, ABORT
-            if (loginTimeout){
-              loginTimeout = false;               // reset timeout flag
-              loginIntervalSteps = 0;             // reset step count
-              $interval.cancel(intervalPromise);  // break out of interval
-              $ionicLoading.hide();               // kill the loading screen
-              $state.reload();                    // reload the view (try again)
-              displayError(0);                    // pop-up error
-            }
-
-            // sweet we got data, lets break out of this interval
-            if (info[4].analysisData != null){
-              $interval.cancel(intervalPromise);  // break out of interval
-              scheduleDownload();                 // spin up a download/analyze scheduler
-              $state.go('app.groupStatus');       // go to group view
-              $ionicLoading.hide();               // hide loading screen
-            }
-          }, 500 );*/
         }
       });
     };
