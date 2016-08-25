@@ -5,28 +5,27 @@
 angular.module('careWheels').controller('groupStatusController',
   function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService) {
 
-
     runOnStateChange();
 
-    // the groupInfo object is not available immediately, spin until available
-    // toDo: remove this once the callbacks for downland and analysis are set up
-    var initGroupInfo = setInterval(function () {
-      var groupArray = GroupInfo.groupInfo();
-      if (groupArray[0] != null) {
-        clearInterval(initGroupInfo);
-        getLoggedInUser(groupArray);
-        setGroupArray(groupArray);
-        checkVacationMode();
-      }
-    }, 50);
 
     /**
-     *  this function is invoked with each state chang to this view.
+     *  this function is invoked with each state change to this view.
      */
     function runOnStateChange() {
       console.log('crediting user for group summary view.');
       PaymentService.memberSummary(0.1);
-      //checkVacationMode();
+
+      // the groupInfo object is not available immediately, spin until available
+      // toDo: remove this once the callbacks for downland and analysis are set up
+      var initGroupInfo = setInterval(function () {
+        var groupArray = GroupInfo.groupInfo();
+        if (groupArray[0] != null) {
+          clearInterval(initGroupInfo);
+          getLoggedInUser(groupArray);
+          setGroupArray(groupArray);
+          checkVacationMode();
+        }
+      }, 50);
     }
 
     function checkVacationMode() {
@@ -226,7 +225,7 @@ angular.module('careWheels').controller('groupStatusController',
       var alertString = '';
 
       // check for acceptable bounds
-      if (meds < 0 || fridge < 0)
+      if (meds < 0 || fridge < 0 || meds > 4 || fridge > 4)
         alertString = ''; // error state
       // check for null
       else if (fridge >= 2 || meds >= 2)
