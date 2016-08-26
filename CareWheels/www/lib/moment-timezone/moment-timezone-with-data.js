@@ -9,7 +9,7 @@
 
 	/*global define*/
 	if (typeof define === 'function' && define.amd) {
-		define(['../moment/moment'], factory);                 // AMD
+		define(['moment'], factory);                 // AMD
 	} else if (typeof module === 'object' && module.exports) {
 		module.exports = factory(require('moment')); // Node
 	} else {
