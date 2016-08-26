@@ -1,6 +1,6 @@
-angular.module('FredrikSandell.worker-pool', []).service('WorkerService', [
-  '$q',
-  function ($q) {
+angular.module('FredrikSandell.worker-pool', [])
+
+  .service('WorkerService', ['$q', function ($q) {
     var that = {};
     var urlToAngular;
     var serviceToUrlMap = {};
