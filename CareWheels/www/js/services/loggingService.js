@@ -1,6 +1,8 @@
 angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
   .service('fileloggerService', function (BASE_URL, $fileLogger, $filter, $ionicPlatform, $cordovaFile, $cordovaFileTransfer) {
     var logFileName = "careWheelsLocalLogFile.log";
+    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
+    var isAndroid = window.cordova!=undefined;
 
     this.setLogLocation = function (fileName) {
       $fileLogger.setStorageFilename(fileName);
@@ -66,40 +68,41 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         // generate file name for uploading base on current date and time
         var currentDateTime = cpp.getCurrentDateTime();
         var fileNameUp = user + '-' + currentDateTime + '.log';
+        if(isAndroid){
+          var options = {
+            fileKey: "filetoupload",
+            fileName: fileNameUp,
+            mimeType: "text/plain",
+            params: {'username': user, 'password': pass, 'fileName': fileNameUp}
+          };
+          options.headers = {'headerParam': 'headerValue'};
 
-        var options = {
-          fileKey: "filetoupload",
-          fileName: fileNameUp,
-          mimeType: "text/plain",
-          params: {'username': user, 'password': pass, 'fileName': fileNameUp}
-        };
-        options.headers = {'headerParam': 'headerValue'};
+          $ionicPlatform.ready(function () {
+            $cordovaFileTransfer.upload(uri, fileURL, options).then(function (result) {
+              $fileLogger.log('info', "SUCCESS: " + JSON.stringify(result.response));
+              // $scope.data = JSON.stringify(result.response);
 
-        $ionicPlatform.ready(function () {
-          $cordovaFileTransfer.upload(uri, fileURL, options).then(function (result) {
-            $fileLogger.log('info', "SUCCESS: " + JSON.stringify(result.response));
-            // $scope.data = JSON.stringify(result.response);
+              $fileLogger.log('debug', "Code = " + result.responseCode);
+              $fileLogger.log('debug', "Response = " + result.response);
+              $fileLogger.log('debug', "Sent = " + result.bytesSent);
 
-            $fileLogger.log('debug', "Code = " + result.responseCode);
-            $fileLogger.log('debug', "Response = " + result.response);
-            $fileLogger.log('debug', "Sent = " + result.bytesSent);
+              // delete old log file and create a new one
+              cpp.deleteLogFile();
+              cpp.initLogComponent();
+              $fileLogger.info('-----New log file is created!');
+            }, function (error) {
+              $fileLogger.log('info', "ERROR: " + JSON.stringify(error));
+              // $scope.data = JSON.stringify(error);
 
-            // delete old log file and create a new one
-            cpp.deleteLogFile();
-            cpp.initLogComponent();
-            $fileLogger.info('-----New log file is created!');
-          }, function (error) {
-            $fileLogger.log('info', "ERROR: " + JSON.stringify(error));
-            // $scope.data = JSON.stringify(error);
-
-            $fileLogger.log('debug', "An error has occurred!");
-            $fileLogger.log('debug', "Code = " + error.code);
-            $fileLogger.log('debug', "Error source " + error.source);
-            $fileLogger.log('debug', "Error target " + error.target);
-          }, function (progress) {
-            // PROGRESS HANDLING GOES HERE
+              $fileLogger.log('debug', "An error has occurred!");
+              $fileLogger.log('debug', "Code = " + error.code);
+              $fileLogger.log('debug', "Error source " + error.source);
+              $fileLogger.log('debug', "Error target " + error.target);
+            }, function (progress) {
+              // PROGRESS HANDLING GOES HERE
+            });
           });
-        });
+        }
       });
     };
   })
