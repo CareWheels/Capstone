@@ -16,21 +16,23 @@ angular.module('careWheels')
     var timeNow = new Date().getHours();
     var phoneNumberError = false;
 
+    $scope.alertLevel = '';
+
     function convertMedsOrMealsAlertLevelToColor(sensorArray) {
 
       var coloredArray = [];
 
-      for(var i = 0; i < sensorArray.length; i++) {
+      for (var i = 0; i < sensorArray.length; i++) {
 
-        if(sensorArray[i] == 0) {
+        if (sensorArray[i] == 0) {
           coloredArray[i] = "blue";
         }
 
-        if(sensorArray[i] == 1) {
+        if (sensorArray[i] == 1) {
           coloredArray[i] = "yellow";
         }
 
-        if(sensorArray[i] >= 2) {
+        if (sensorArray[i] >= 2) {
           coloredArray[i] = "red";
         }
       }
@@ -42,13 +44,13 @@ angular.module('careWheels')
 
       var coloredArray = [];
 
-      for(var i = 0; i < sensorArray.length; i++) {
+      for (var i = 0; i < sensorArray.length; i++) {
 
-        if(sensorArray[i] == false) {
+        if (sensorArray[i] == false) {
           coloredArray[i] = "grey";
         }
 
-        if(sensorArray[i] == true) {
+        if (sensorArray[i] == true) {
           coloredArray[i] = "blue";
         }
       }
@@ -61,10 +63,10 @@ angular.module('careWheels')
       var stringArray = [];
       var asterisks = "";
 
-      for(var i = 0; i < hitsArray.length; i++) {
+      for (var i = 0; i < hitsArray.length; i++) {
 
-        for(var j = 0; j < hitsArray[i]; j++) {
-          if(j > 5) {
+        for (var j = 0; j < hitsArray[i]; j++) {
+          if (j > 5) {
             break;
           }
 
@@ -79,7 +81,7 @@ angular.module('careWheels')
     }
 
     $scope.currentHour = new Date().getHours();
-    $scope.getNumber = function(num) {
+    $scope.getNumber = function (num) {
       return new Array(num);
     }
 
@@ -102,122 +104,121 @@ angular.module('careWheels')
     };
 
 
+    // console.log("Calling Call Payment:");
+    // PaymentService.call(analysis.name, 1.0, 'Red');
+    // console.log("Calling sensorDataView Payment:");
+    // PaymentService.sensorDataView(1.0, 'Blue');
 
-  // console.log("Calling Call Payment:");
-  // PaymentService.call(analysis.name, 1.0, 'Red');
-  // console.log("Calling sensorDataView Payment:");
-  // PaymentService.sensorDataView(1.0, 'Blue');
+    /**
+     * The following several functions are used to display text on the
+     * individualStatus page. This is so that you can check if the page
+     * is populating as expected based on the data that was analyzed.
+     * To use them paste the following in indiviualStatus.html within
+     * the ion-content tag:
+     *  <p>{{showMacguffin()}}</p>
+     *  <p>{{showName()}}</p>
+     *  <p>{{showPhoneNumber()}}</p>
+     *  <p>{{showPresence()}}</p>
+     *  <p>{{showMeals()}}</p>
+     *  <p>{{showMeds()}}</p>
+     *  <p>{{showFridgeHits()}}</p>
+     *  <p>{{showMedsHits()}}</p>
+     *  <p>{{showTime()}}</p>
+     */
+    $scope.showMacguffin = function () {
+      return analysis;
+    };
 
-  /**
-   * The following several functions are used to display text on the
-   * individualStatus page. This is so that you can check if the page
-   * is populating as expected based on the data that was analyzed.
-   * To use them paste the following in indiviualStatus.html within
-   * the ion-content tag:
-   *  <p>{{showMacguffin()}}</p>
-   *  <p>{{showName()}}</p>
-   *  <p>{{showPhoneNumber()}}</p>
-   *  <p>{{showPresence()}}</p>
-   *  <p>{{showMeals()}}</p>
-   *  <p>{{showMeds()}}</p>
-   *  <p>{{showFridgeHits()}}</p>
-   *  <p>{{showMedsHits()}}</p>
-   *  <p>{{showTime()}}</p>
-   */
-  $scope.showMacguffin = function() {
-    return analysis;
-  };
+    $scope.showName = function () {
+      var test = analysis.name;
+      return test;
+    };
 
-  $scope.showName = function() {
-    var test = analysis.name;
-    return test;
-  };
+    $scope.showPhoneNumber = function () {
+      var test = analysis.phoneNumber;
+      return test;
+    };
 
-  $scope.showPhoneNumber = function() {
-    var test = analysis.phoneNumber;
-    return test;
-  };
+    $scope.showPresence = function () {
+      var test = analysis.analysisData.presenceByHour;
+      return test;
+    };
 
-  $scope.showPresence = function() {
-    var test = analysis.analysisData.presenceByHour;
-    return test;
-  };
+    $scope.showMeals = function () {
+      var test = analysis.analysisData.fridgeRollingAlertLevel;
+      return test;
+    };
 
-  $scope.showMeals = function() {
-    var test = analysis.analysisData.fridgeRollingAlertLevel;
-    return test;
-  };
+    $scope.showMeds = function () {
+      var test = analysis.analysisData.medsRollingAlertLevel;
+      return test;
+    };
 
-  $scope.showMeds = function() {
-    var test = analysis.analysisData.medsRollingAlertLevel;
-    return test;
-  };
+    $scope.showFridgeHits = function () {
+      var test = analysis.analysisData.fridgeHitsByHour;
+      return test;
+    };
 
-  $scope.showFridgeHits = function() {
-    var test = analysis.analysisData.fridgeHitsByHour;
-    return test;
-  };
+    $scope.showMedsHits = function () {
+      var test = analysis.analysisData.medsHitsByHour;
+      return test;
+    };
 
-  $scope.showMedsHits = function() {
-    var test = analysis.analysisData.medsHitsByHour;
-    return test;
-  };
+    $scope.showTime = function () {
+      return timeNow;
+    };
 
-  $scope.showTime = function() {
-    return timeNow;
-  };
+    /**
+     * This function returns the color for the call button.
+     */
+    $scope.getCallButtonColor = function () {
+      //console.log("getCallButtonColor();", analysis);
 
-  /**
-   * This function returns the color for the call button.
-   */
- $scope.getCallButtonColor = function () {
-   //console.log("getCallButtonColor();", analysis);
+      // check for null params
+      if (analysis.analysisData.fridgeAlertLevel == null || analysis.analysisData.medsAlertLevel == null)
+        return 'button-dark disableCallButton';
 
-   // check for null params
-   if (analysis.analysisData.fridgeAlertLevel == null || analysis.analysisData.medsAlertLevel == null)
-     return 'button-dark disableCallButton';
+      var fridge = parseInt(analysis.analysisData.fridgeAlertLevel);
+      var meds = parseInt(analysis.analysisData.medsAlertLevel);
 
-   var fridge = parseInt(analysis.analysisData.fridgeAlertLevel);
-   var meds = parseInt(analysis.analysisData.medsAlertLevel);
+      // this string must match the defined css class names
+      var returnString = '';
 
-   // this string must match the defined css class names
-   var returnString = '';
+      // check for acceptable bounds or null phone number disable button if true
+      if (meds < 0 || fridge < 0 || analysis.phoneNumber == null) {
+        returnString += 'disableCallButton'; // error state
+      }
 
-   // check for acceptable bounds or null phone number disable button if true
-   if (meds < 0 || meds > 2 || fridge < 0 || fridge > 2 || analysis.phoneNumber == null) {
-     returnString += 'disableCallButton'; // error state
-   }
+      // check for color status of button
+      if (fridge >= 2 || meds >= 2) {
+        returnString += ' button-assertive';
+      }
+      else if (fridge == 1 || meds == 1) {
+        returnString += ' button-energized';
+      }
+      else {
+        returnString += ' button-dark disableCallButton';
+      }
+      // done
+      return returnString;
+    };
 
-   // check for color status of button
-   if (fridge == 2 || meds == 2) {
-     returnString += ' button-assertive';
-   }
-   else if (fridge == 1 || meds == 1) {
-     returnString += ' button-energized';
-   }
-   else {
-     returnString += ' button-dark disableCallButton';
-   }
-   // done
-   return returnString;
- };
+    /**
+     * This function takes the phone number string returned from Cyclos (which
+     * us in the incorrect format), and it changes the string to a format
+     * necessary for making a call. Note: if no phone number is put on the
+     * Cyclos server, the number (000) 000-0000 will be inserted. This indicates
+     * that the number needs to be placed in the system.
+     */
+    $scope.getPhoneNumber = function () {
+      //console.log('hit getPhoneNumber()');
+      //console.log(analysis);
+      var cyclosPhoneNumber = analysis.phoneNumber;
 
-  /**
-   * This function takes the phone number string returned from Cyclos (which
-   * us in the incorrect format), and it changes the string to a format
-   * necessary for making a call. Note: if no phone number is put on the
-   * Cyclos server, the number (000) 000-0000 will be inserted. This indicates
-   * that the number needs to be placed in the system.
-   */
-  $scope.getPhoneNumber = function() {
-    //console.log('hit getPhoneNumber()');
-    //console.log(analysis);
-    var cyclosPhoneNumber = analysis.phoneNumber;
-
-    if (cyclosPhoneNumber == null){
-      cyclosPhoneNumber = "+00000000000"
-      phoneNumberError = true;             // this will trigger popup when phone button is pressed
-     }
+      if (cyclosPhoneNumber == null) {
+        cyclosPhoneNumber = "+00000000000";
+        phoneNumberError = true;             // this will trigger popup when phone button is pressed
+      }
 
       //console.log(cyclosPhoneNumber);
       var callString = "tel:";
@@ -227,24 +228,25 @@ angular.module('careWheels')
       if (analysis.analysisData.medsAlertLevel > alertNum) {
         alertNum = analysis.analysisData.medsAlertLevel;
       }
-      var alertLevel;
-      if (alertNum === 1) {
+      var alertLevel = '';
+      if (alertNum >= 2) {
         alertLevel = 'yellow';
       }
-      else {
+      else if (alertNum == 1){
         alertLevel = 'red';
       }
+      $scope.alertLevel = alertLevel;
       return callString;
     };
 
     // button press event
-    $scope.checkPhoneError = function(){
-      if(phoneNumberError) {
+    $scope.checkPhoneError = function () {
+      if (phoneNumberError) {
         displayError();
         $fileLogger.log('error', 'There is no phone number for ' + analysis.name);
       }
-      else {
-        PaymentService.call(analysis.name, 0.1, alertLevel);
+      else if ($scope.alertLevel != '') {
+        PaymentService.call(analysis.name, 0.1, $scope.alertLevel);
       }
     };
 
