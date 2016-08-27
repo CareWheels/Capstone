@@ -34,9 +34,11 @@ module.exports = function(config) {
       './www/lib/ngCordova/dist/ng-cordova.js',
       './www/lib/angular/angular.js',
       './www/lib/angular-ui-router/release/angular-ui-router.js',
-      './www/lib/filelogger.min.js',
+      './www/lib/fileLogger/filelogger.min.js',
       './node_modules/angular-mocks/angular-mocks.js',
-      './www/js/moment.js',
+      './www/lib/angular-workers/angular-workers.js',
+      './www/lib/moment/moment.js',
+      './www/lib/angular-moment/angular-moment.js',
       './www/js/*.js',
       './www/js/services/*.js',
       './tests/*.test.js'

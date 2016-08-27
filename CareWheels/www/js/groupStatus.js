@@ -5,15 +5,36 @@
 angular.module('careWheels').controller('groupStatusController',
   function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService) {
 
-    // the groupInfo object is not available immediately, spin until available
-    var initGroupInfo = setInterval(function () {
-      var groupArray = GroupInfo.groupInfo();
-      if (groupArray[0] != null) {
-        clearInterval(initGroupInfo);
-        getLoggedInUser(groupArray);
-        setGroupArray(groupArray);
-      }
-    }, 50);
+    runOnStateChange();
+
+
+    /**
+     *  this function is invoked with each state change to this view.
+     */
+    function runOnStateChange() {
+      console.log('crediting user for group summary view.');
+      PaymentService.memberSummary(0.1);
+
+      // the groupInfo object is not available immediately, spin until available
+      // toDo: remove this once the callbacks for downland and analysis are set up
+      var initGroupInfo = setInterval(function () {
+        var groupArray = GroupInfo.groupInfo();
+        if (groupArray[0] != null) {
+          clearInterval(initGroupInfo);
+          getLoggedInUser(groupArray);
+          setGroupArray(groupArray);
+          checkVacationMode();
+        }
+      }, 50);
+    }
+
+    function checkVacationMode() {
+      if (User.getVacationValue())
+        $('#vacationMode').fadeIn(0);
+      else
+        $('#vacationMode').fadeOut(0);
+    }
+
 
     /** automatically go through each user square, and
      *  find each 'red' alert, and fade that element in
@@ -94,23 +115,19 @@ angular.module('careWheels').controller('groupStatusController',
     $scope.clickBottomRight = function () {
       clickUser(4);
     };
-    $scope.clickCenter = function () {
-    };
-    $scope.clickCareBank = function () {
-    };
 
     // lets figure out which user logged in at this point
     function getLoggedInUser(groupInfo) {
       var user = User.credentials();
       // error unable to load user object;
-      if (user == null){
+      if (user == null) {
         $scope.group[0].selfUserIndex = -1;
       }
 
       // loop through the groupInfo array to find the user who
       // logged in.
       for (var i = 0; i < groupInfo.length; i++) {
-        if (user.username == groupInfo[i].username){
+        if (user.username == groupInfo[i].username) {
           $scope.group[0].selfUserIndex = i; // gotcha!
           return true;
         }
@@ -130,18 +147,19 @@ angular.module('careWheels').controller('groupStatusController',
       $scope.group[currentUser].username = groupArray[loggedInUserIndex].username;
       $scope.group[currentUser].name = groupArray[loggedInUserIndex].name;
       $scope.group[currentUser].balance = trimZeros(groupArray[loggedInUserIndex].balance);
+      //$scope.group[currentUser].onVacation = User.getVacationValue();
 
       currentUser++; // = 1 at this point
 
       // put everyone else into the array
-      for (var i = 0; i < 5; i++){
+      for (var i = 0; i < 5; i++) {
         // skip the user who logged in
-        if(i != $scope.group[0].selfUserIndex){
+        if (i != $scope.group[0].selfUserIndex) {
           $scope.group[currentUser].image = groupArray[i].photoUrl;
           $scope.group[currentUser].username = groupArray[i].username;
           $scope.group[currentUser].name = groupArray[i].name;
 
-          try{
+          try {
             fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
             medsAlert = groupArray[i].analysisData.medsAlertLevel;
             $scope.group[currentUser].status = $scope.getAlertColor(fridgeAlert, medsAlert, i);
@@ -154,13 +172,12 @@ angular.module('careWheels').controller('groupStatusController',
         }
         // on the last element of the loop, now check health
         if (i == 4) {
-          if(!GroupInfo.getSensorError())
+          if (!GroupInfo.getSensorError())
             $scope.checkGroupHealth();
         }
 
       }
     }
-
 
     //removes insignificant zeros
     function trimZeros(input) {
@@ -208,10 +225,10 @@ angular.module('careWheels').controller('groupStatusController',
       var alertString = '';
 
       // check for acceptable bounds
-      if (meds < 0 || meds > 2 || fridge < 0 || fridge > 2)
+      if (meds < 0 || fridge < 0)
         alertString = ''; // error state
       // check for null
-      else if (fridge == 2 || meds == 2)
+      else if (fridge >= 2 || meds >= 2)
         alertString = 'red';
       else if (fridge == 1 || meds == 1)
         alertString = 'yellow';
@@ -233,12 +250,12 @@ angular.module('careWheels').controller('groupStatusController',
         // on the last element now
         if (i == $scope.group.length - 1) {
           // no errors? then return
-          if (errorCount == 0){
+          if (errorCount == 0) {
             GroupInfo.setSensorError(false);
             return true;
           }
           // error found! set the error variable
-          if(errorCount > 0)
+          if (errorCount > 0)
             GroupInfo.setSensorError(true);
 
           //lets craft up a string to be displayed
