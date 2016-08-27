@@ -33,6 +33,7 @@ $query->groups = $groupInternalName;
 $query->pageSize = 9999;
 
 if($groupInternalName == "") {
+  http_response_code(401);
   echo("User is not in a group!");
   die();
 }

@@ -12,18 +12,14 @@
 include('login.php');
 
 $target_dir = "loguploads/";
+#$target_file = $target_dir . $_POST['username'] . "-" . date("Y-m-dTH:i:s");
 $target_file = $target_dir . basename($_FILES["filetoupload"]["name"]);
 $uploadOk = 1;
-$uploadFileType = pathinfo($target_file,PATHINFO_EXTENSION);
+$uploadFileType = pathinfo($target_file, PATHINFO_EXTENSION);
 
  // Check file size
 if ($_FILES["filetoupload"]["size"] > 500000) {
     echo "Sorry, your file is too large.";
-    die();
-}
-// Allow certain file formats
-if($uploadFileType != "log" ) {
-    echo "Sorry, only log files are allowed.";
     die();
 }
 
