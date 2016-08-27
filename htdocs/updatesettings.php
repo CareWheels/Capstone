@@ -53,9 +53,13 @@ try {
   die();
 }
 
-# need php-fpm and apache fastcgi setup to get mail
-# done async.
-# fastcgi_finish_request();
+// Return the user object as json.
+http_response_code(200);
+header('Content-type: application/json');
+$json = json_encode( $userInfo );
+echo($json);
+
+fastcgi_finish_request();
 
 $to = ADMIN_EMAIL;
 $from = CAREBANK_EMAIL;
@@ -64,13 +68,5 @@ $message = "EOM";
 
 $headers = "From: $from"; 
 $ok = @mail($to, $subject, $message, $headers, "-f " . $from);  
-
-flush();
-
-// Return the user object as json.
-http_response_code(200);
-header('Content-type: application/json');
-$json = json_encode( $userInfo );
-echo($json);
 
 ?>

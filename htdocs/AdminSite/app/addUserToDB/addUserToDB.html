@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"> 
+    <script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular.min.js"></script> 
+</head>
+<body ng-app="myApp">
+<div class="container">
+<div class="col-sm-8 col-sm-offset-2">
+    <div class="page-header"><h1>Add User</h1></div>
+    <!-- FORM -->
+    <form name="userForm" ng-submit="submitForm()">
+    <div class="form-group">
+        <label>Sense Username</label>
+        <input type="text" name="senseUsername" class="form-control" ng-model="user.senseUsername">
+        <span ng-show="errorSenseUsername">{{errorSenseUsername}}</span>
+    </div>
+    <div class="form-group">
+        <label>Sense Password</label>
+        <input type="text" name="sensePassword" class="form-control" ng-model="user.sensePassword">
+        <span ng-show="errorSensePassword">{{errorSensePassword}}</span>
+    </div>
+    <div class="form-group">
+        <label>Sense Gateway URL</label>
+        <input type="text" name="senseGatewayURL" class="form-control" ng-model="user.senseGatewayURL">
+        <span ng-show="errorSenseGatewayURL">{{errorSenseGatewayURL}}</span>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <br>
+    <div ng-show="message"><h4> {{message}} </h4></div>
+</div>
+</div>
+</body>
+</html>
