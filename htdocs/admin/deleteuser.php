@@ -1,40 +1,59 @@
 <?php
-    include("../mysql_constants.php");
 
-    echo("Enter Sen.se Username: ");
-    $line = fgets(STDIN);
-    $senseUsername = trim($line);
+include("../mysql_constants.php");
 
-    // Create connection
-    $conn = new mysqli($servername, $username, $password);
+$errors = array();
+$data = array();
 
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+// Getting posted data and decodeing json
+$_POST = json_decode(file_get_contents('php://input'), true);
 
-    mysqli_query($conn, "USE carebank");
+// checking for blank values.
+if (empty($_POST['senseUsername']))
+  $errors['senseUsername'] = 'Sense username is required.';
 
-    mysqli_query($conn, "DELETE EventData
-                         FROM EventData
-                         JOIN Users
-                           ON Users.gatewayNodeUid = EventData.gatewayNodeUid
-                         WHERE Users.username = '". $senseUsername ."' "
-    );
+if (!empty($errors)) {
+  $data['errors'] = $errors;
+  echo(json_encode($data));
+  die();
+}
 
-    mysqli_query($conn, "DELETE FeedInfo 
-                         FROM FeedInfo 
-                         JOIN Users
-                           ON Users.gatewayNodeUid = FeedInfo.gatewayNodeUid
-                         WHERE Users.username = '". $senseUsername ."' "
-    );
+$senseUsername = $_POST['senseUsername'];
 
-    mysqli_query($conn, "DELETE 
-                         FROM Users
-                         WHERE username = '". $senseUsername ."' "
-    );
+// Create connection
+$conn = new mysqli($servername, $username, $password);
+
+// Check connection
+if ($conn->connect_error) {
+    $data['message'] = "Connection failed: " . $conn->connect_error;
+    echo(json_encode($data));
+    die();
+}
+
+mysqli_query($conn, "USE carebank");
+
+mysqli_query($conn, "DELETE EventData
+                     FROM EventData
+                     JOIN Users
+                       ON Users.gatewayNodeUid = EventData.gatewayNodeUid
+                     WHERE Users.username = '". $senseUsername ."' "
+);
+
+mysqli_query($conn, "DELETE FeedInfo 
+                     FROM FeedInfo 
+                     JOIN Users
+                       ON Users.gatewayNodeUid = FeedInfo.gatewayNodeUid
+                     WHERE Users.username = '". $senseUsername ."' "
+);
+
+mysqli_query($conn, "DELETE 
+                     FROM Users
+                     WHERE username = '". $senseUsername ."' "
+);
        
-    mysqli_close($conn);
+mysqli_close($conn);
 
-    echo("\nUser " . $senseUsername . " deleted from sensor feed database.\n");
+$data['message'] = "User " . $senseUsername . " deleted from sensor feed database.";
+echo(json_encode($data));
+    
 ?>

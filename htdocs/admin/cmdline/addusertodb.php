@@ -1,27 +1,5 @@
 <?php
 
-$errors = array();
-$data = array();
-
-// Getting posted data and decodeing json
-$_POST = json_decode(file_get_contents('php://input'), true);
-
-// checking for blank values.
-if (empty($_POST['senseUsername']))
-  $errors['senseUsername'] = 'Sense username is required.';
-
-if (empty($_POST['sensePassword']))
-  $errors['sensePassword'] = 'Sense password is required.';
-
-if (empty($_POST['senseGatewayURL']))
-  $errors['senseGatewayURL'] = 'Sense Gateway URL is required.';
-
-if (!empty($errors)) {
-  $data['errors']  = $errors;
-  echo(json_encode($data));
-  die();
-}
-
 $senseUserUrl = 'https://apis.sen.se/v2/user/';
 $subscriptionsUrl = 'https://apis.sen.se/v2/subscriptions/';
 $motherLabel = 'Carewheels';
@@ -39,9 +17,18 @@ $presenceFeedType = 'presence';
 $fridgeFeedType = 'meal';
 $medsFeedType = 'medication';
 
-$username = $_POST['senseUsername'];
-$password = $_POST['sensePassword'];
-$subscriptionGateway = $_POST['senseGatewayURL'];
+
+echo("Enter Sen.se Username: ");
+$line = fgets(STDIN);
+$username = trim($line);
+
+echo("Enter Sen.se Password: ");
+$line = fgets(STDIN);
+$password = trim($line);
+
+echo("Enter Sen.se Gateway URL for subscription: ");
+$line = fgets(STDIN);
+$subscriptionGateway = trim($line);
 
 $userPage = getSensePage($senseUserUrl, $username, $password);
 $deviceArray = $userPage->devices;
@@ -55,9 +42,7 @@ for($x = 0; $x < count($deviceArray); $x++) {
 }
 
 if(!isset($motherUid)) {
-    $data['message'] = "Unable to locate mother, aborting adding of user to database.";
-    echo(json_encode($data));
-    die();
+    echo("Unable to locate mother, aborting adding of user to database.");
 }
 
 
@@ -106,20 +91,21 @@ for($x = 0; $x < count($subscriptionArray); $x++) {
 if(!isset($presenceNodeUid) || !isset($presenceFeedUid) ||
    !isset($fridgeNodeUid) || !isset($fridgeFeedUid) ||
    !isset($medsNodeUid) || !isset($medsFeedUid)) {
-
-    $data['message'] = "Unable to get all sensor data, aborting insert into database!";
-    echo(json_encode($data));
-    die();
+    echo ("Unable to get all sensor data, aborting insert into database! \n");
+    echo('$presenceNodeUid: ' . $presenceNodeUid ."\n");
+    echo('$presenceFeedUid: ' . $presenceFeedUid ."\n");
+    echo('$fridgeNodeUid: ' . $fridgeNodeUid ."\n");
+    echo('$fridgeFeedUid: ' . $fridgeFeedUid ."\n");
+    echo('$medsNodeUid: ' . $medsNodeUid ."\n");
+    echo('$medsFeedUid: ' . $medsFeedUid ."\n");
+    exit;
 }
 
 insertToUserTable($username, $motherUid);
 insertToFeedInfoTable($motherUid, $presenceNodeUid, $presenceFeedUid, $presenceFeedType);
 insertToFeedInfoTable($motherUid, $fridgeNodeUid, $fridgeFeedUid, $fridgeFeedType);
 insertToFeedInfoTable($motherUid, $medsNodeUid, $medsFeedUid, $medsFeedType);
-
-$data['message'] = "Successfully added " . $username . " to the Carebank sensor feed database.";
-echo(json_encode($data));
-
+echo("Successfully added " . $username . " to the Carebank sensor feed database.");
 
 function insertToFeedInfoTable($motherUid, $nodeUid, $feedUid, $feedType) {
 

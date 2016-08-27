@@ -1,24 +1,7 @@
 <?php
 
-$errors = array();
-$data = array();
-
-// Getting posted data and decodeing json
-$_POST = json_decode(file_get_contents('php://input'), true);
-
-// checking for blank values.
-if (empty($_POST['senseUsername']))
-  $errors['senseUsername'] = 'Sense username is required.';
-
-if (!empty($errors)) {
-  $data['errors'] = $errors;
-  echo(json_encode($data));
-  die();
-}
-
-
 date_default_timezone_set("UTC");
-$senseUsername = $_POST['senseUsername'];
+$senseUsername = "testabc";
 $motherUid = $senseUsername . "-mother";
 $mealNodeUid = $senseUsername . "-fridgeNode";
 $mealFeedUid = $senseUsername . "-fridgeFeed";
@@ -99,9 +82,7 @@ insertDataToEventsTable($motherUid, $medsNodeUid, $medsFeedUid, $currentDayMedsD
 insertDataToEventsTable($motherUid, $presenceNodeUid, $presenceFeedUid, $previousDayPresenceData);
 insertDataToEventsTable($motherUid, $presenceNodeUid, $presenceFeedUid, $currentDayPresenceData);
 
-$data['message'] = "Successfully added test user " . $senseUsername . " to the sensor feed database!";
-echo(json_encode($data));
-
+echo("\n". "Successfully added test user " . $senseUsername . " to the sensor feed database!" . "\n");
 
 function createFridgeOrMedsTestData($feedByHour, $pastDay) {
      
@@ -176,9 +157,7 @@ function insertDataToEventsTable($motherUid, $nodeUid, $feedUid, $sensorDataArra
 
     // Check connection
     if ($conn->connect_error) {
-       $data['message'] = "Connection failed: " . $conn->connect_error;
-       echo(json_encode($data));
-       die();
+        die("Connection failed: " . $conn->connect_error);
     }
 
     mysqli_query($conn, "USE carebank");
@@ -209,9 +188,7 @@ function insertDataToFeedInfoTable($motherUid, $nodeUid, $feedUid, $feedType) {
 
     // Check connection
     if ($conn->connect_error) {
-       $data['message'] = "Connection failed: " . $conn->connect_error;
-       echo(json_encode($data));
-       die();
+        die("Connection failed: " . $conn->connect_error);
     }
 
     mysqli_query($conn, "USE carebank");
@@ -232,9 +209,7 @@ function insertDataToUserTable($senseUsername, $motherUid) {
 
     // Check connection
     if ($conn->connect_error) {
-       $data['message'] = "Connection failed: " . $conn->connect_error;
-       echo(json_encode($data));
-       die();
+        die("Connection failed: " . $conn->connect_error);
     }
 
     mysqli_query($conn, "USE carebank");
@@ -266,9 +241,7 @@ function deleteUserFromDB($senseUsername) {
 
     // Check connection
     if ($conn->connect_error) {
-       $data['message'] = "Connection failed: " . $conn->connect_error;
-       echo(json_encode($data));
-       die();
+        die("Connection failed: " . $conn->connect_error);
     }
 
     mysqli_query($conn, "USE carebank");
