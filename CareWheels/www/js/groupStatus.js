@@ -49,7 +49,7 @@ angular.module('careWheels').controller('groupStatusController',
         $('#bottomRightAlert')
       ];
       for (var i = 0; i < alertArray.length; i++) {
-        if (alertArray[i].css('background-color') === 'rgb(255, 0, 0)') {
+        if (alertArray[i].css('background-color') === 'rgb(239, 71, 58)') {
           alertArray[i].fadeOut("slow");
           alertArray[i].fadeIn("slow");
         }
