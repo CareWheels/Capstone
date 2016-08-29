@@ -9,11 +9,330 @@
     <div class="col-sm-8 col-sm-offset-2">
         <div class="page-header"><h1>Add Test User</h1></div>
         <!-- FORM -->
+        <span us-spinner="{radius:30, width:8, length: 16}"></span>
         <form name="userForm" ng-submit="submitForm()">
             <div class="form-group">
-                <label>Sense Username</label>
-                <input type="text" name="senseUsername" class="form-control" ng-model="user.senseUsername">
-                <span ng-show="errorSenseUsername">{{errorSenseUsername}}</span>
+                <div class="w3-container">
+                    <table class="w3-table w3-bordered w3-striped">
+                        <div>
+                            <label>Sense Username</label>
+                            <input type="text" name="senseUsername" class="form-control" ng-model="user.senseUsername">
+                            <span ng-show="errorSenseUsername">{{errorSenseUsername}}</span>
+                        </div><br>
+                        <tr>
+                            <th>Previous Day</th>
+                            <th>Presence</th>
+                            <th>Medication</th>
+                            <th>Meal</th>
+                        </tr>
+                        <tr>
+                            <th>Hour</th>
+                            <th>True/False</th>
+                            <th>Integer</th>
+                            <th>Integer</th>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[0]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[0]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[0]"></td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[1]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[1]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[1]"></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[2]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[2]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[2]"></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[3]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[3]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[3]"></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[4]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[4]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[4]"></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[5]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[5]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[5]"></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[6]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[6]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[6]"></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[7]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[7]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[7]"></td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[8]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[8]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[8]"></td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[9]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[9]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[9]"></td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[10]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[10]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[10]"></td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[11]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[11]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[11]"></td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[12]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[12]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[12]"></td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[13]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[13]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[13]"></td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[14]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[14]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[14]"></td>
+                        </tr>
+                        <tr>
+                            <td>15</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[15]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[15]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[15]"></td>
+                        </tr>
+                        <tr>
+                            <td>16</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[16]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[16]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[16]"></td>
+                        </tr>
+                        <tr>
+                            <td>17</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[17]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[17]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[17]"></td>
+                        </tr>
+                        <tr>
+                            <td>18</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[18]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[18]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[18]"></td>
+                        </tr>
+                        <tr>
+                            <td>19</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[19]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[19]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[19]"></td>
+                        </tr>
+                        <tr>
+                            <td>20</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[20]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[20]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[20]"></td>
+                        </tr>
+                        <tr>
+                            <td>21</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[21]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[21]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[21]"></td>
+                        </tr>
+                        <tr>
+                            <td>22</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[22]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[22]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[22]"></td>
+                        </tr>
+                        <tr>
+                            <td>23</td>
+                            <td><input type="checkbox" ng-model="user.previousDayPresence[23]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeds[23]"></td>
+                            <td><input type="text" ng-model="user.previousDayMeal[23]"></td>
+                        </tr>
+                        <tr>
+                            <th>Current Day</th>
+                            <th>Presence</th>
+                            <th>Medication</th>
+                            <th>Meal</th>
+                        </tr>
+                        <tr>
+                            <th>Hour</th>
+                            <th>True/False</th>
+                            <th>Integer</th>
+                            <th>Integer</th>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[0]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[0]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[0]"></td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[1]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[1]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[1]"></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[2]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[2]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[2]"></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[3]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[3]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[3]"></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[4]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[4]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[4]"></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[5]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[5]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[5]"></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[6]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[6]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[6]"></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[7]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[7]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[7]"></td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[8]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[8]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[8]"></td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[9]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[9]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[9]"></td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[10]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[10]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[10]"></td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[11]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[11]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[11]"></td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[12]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[12]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[12]"></td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[13]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[13]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[13]"></td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[14]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[14]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[14]"></td>
+                        </tr>
+                        <tr>
+                            <td>15</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[15]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[15]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[15]"></td>
+                        </tr>
+                        <tr>
+                            <td>16</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[16]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[16]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[16]"></td>
+                        </tr>
+                        <tr>
+                            <td>17</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[17]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[17]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[17]"></td>
+                        </tr>
+                        <tr>
+                            <td>18</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[18]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[18]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[18]"></td>
+                        </tr>
+                        <tr>
+                            <td>19</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[19]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[19]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[19]"></td>
+                        </tr>
+                        <tr>
+                            <td>20</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[20]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[20]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[20]"></td>
+                        </tr>
+                        <tr>
+                            <td>21</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[21]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[21]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[21]"></td>
+                        </tr>
+                        <tr>
+                            <td>22</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[22]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[22]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[22]"></td>
+                        </tr>
+                        <tr>
+                            <td>23</td>
+                            <td><input type="checkbox" ng-model="user.currentDayPresence[23]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeds[23]"></td>
+                            <td><input type="text" ng-model="user.currentDayMeal[23]"></td>
+                        </tr>
+                    </table>
+                </div>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>

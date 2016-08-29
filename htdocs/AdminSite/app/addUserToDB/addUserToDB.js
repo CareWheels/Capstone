@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('myApp.addUserToDB', ['ngRoute'])
+angular.module('myApp.addUserToDB', ['ngRoute', 'ngLoadingSpinner'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/addUserToDB', {

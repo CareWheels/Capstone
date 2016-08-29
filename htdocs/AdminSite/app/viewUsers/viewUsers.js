@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('myApp.viewUsers', ['ngRoute'])
+angular.module('myApp.viewUsers', ['ngRoute', 'ngLoadingSpinner'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/viewUsers', {

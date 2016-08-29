@@ -9,6 +9,7 @@ angular.module('myApp', [
     'myApp.cleanEventDataTable',
     'myApp.addUserToDB',
     'myApp.addTestUser',
+    'myApp.viewEventData',
     'myApp.version'
 ]).
 config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {

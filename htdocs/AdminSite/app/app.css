@@ -1,5 +1,9 @@
 /* app css stylesheet */
 
+th {
+    background-color:lightblue;
+}
+
 .menu {
   list-style: none;
   border-bottom: 0.1em solid black;

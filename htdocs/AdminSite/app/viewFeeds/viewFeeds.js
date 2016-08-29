@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('myApp.viewFeeds', ['ngRoute'])
+angular.module('myApp.viewFeeds', ['ngRoute', 'ngLoadingSpinner'])
 
     .config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/viewFeeds', {

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('myApp.cleanEventDataTable', ['ngRoute'])
+angular.module('myApp.cleanEventDataTable', ['ngRoute', 'ngLoadingSpinner'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/cleanEventDataTable', {
