@@ -6,6 +6,7 @@
 </head>
 <body ng-app="myApp">
 <span us-spinner="{radius:30, width:8, length: 16}"></span>
+<div class="alert alert-info" ng-show="message">{{message}}</div>
 <div class="container">
 <div class="col-sm-8 col-sm-offset-2">
     <div class="page-header"><h1>Add User</h1></div>
@@ -29,7 +30,6 @@
     <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     <br>
-    <div ng-show="message"><h4> {{message}} </h4></div>
 </div>
 </div>
 </body>
