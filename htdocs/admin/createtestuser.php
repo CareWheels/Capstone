@@ -34,7 +34,7 @@ $currentDayPresence = $_POST['currentDayPresence'];
 $previousDayMeal = $_POST['previousDayMeal'];
 $currentDayMeal = $_POST['currentDayMeal'];
 $previousDayMeds = $_POST['previousDayMeds'];
-$currentDayMeads = $_POST['currentDayMeds'];
+$currentDayMeds = $_POST['currentDayMeds'];
 
 
 $previousDayFridgeHitsByHour = array($previousDayMeal[0], $previousDayMeal[1], $previousDayMeal[2],
