@@ -1,6 +1,5 @@
 <?php
 
-    $senseUsername = 'testabc';
     include("../mysql_constants.php");
 
     // Create connection
@@ -13,8 +12,11 @@
 
     mysqli_query($conn, "USE carebank");
 
-    $result = mysqli_query($conn, "SELECT *
-                                   FROM FeedInfo");
+    $result = mysqli_query($conn, "SELECT username, FeedInfo.gatewayNodeUid, nodeUid, feedId, feedType
+                                   FROM FeedInfo
+                                   JOIN Users
+                                     ON Users.gatewayNodeUid = FeedInfo.gatewayNodeUid
+                                   ");
     
     $column = mysqli_fetch_fields($result);
 
@@ -30,7 +32,9 @@
         $tempRow = array("$columnNames[0]"=>$row[0], 
                          "$columnNames[1]"=>$row[1], 
                          "$columnNames[2]"=>$row[2], 
-                         "$columnNames[3]"=>$row[3]);
+                         "$columnNames[3]"=>$row[3],
+                         "$columnNames[4]"=>$row[4]
+                  );
         array_push($rows, $tempRow);
     }
 

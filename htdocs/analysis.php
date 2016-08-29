@@ -8,58 +8,38 @@
 
    usernametofind - string of the Carebank user to get analyzed data for.
 
-   medsinterval2 - string of 'True' or 'False' representing the Carebank 
-                   medsInterval2 value for the user that is having their sensor data analyzed
-                   
-   medsinterval3 - string of 'True' or 'False' representing the Carebank
-                   medsInterval3 value for the user that is having their sensor data analyzed
-
-   medsinterval4 - string of 'True' or 'False' representing the Carebank
-                   medsinterval4 value for the user that is having their sensor data analyzed
-
-   onvacation - string of 'True' or 'False' representing the Carebank
-                OnVacation value for the user that is having their sensor data analyzed
-
-
 */
 
-include("login.php");
 
-analyzeData();
+$userInfo = getUserInfo();
+analyzeData($userInfo);
 
-function analyzeData() {
+function analyzeData($userInfo) {
     http_response_code(400);
     date_default_timezone_set("UTC");
 
-    if($_POST['medsinterval2'] == "" || $_POST['medsinterval3'] == "" 
-       || $_POST['medsinterval4'] == "" || $_POST['onvacation'] == "") {
-       echo("Missing parameter!");
-       die();
-    }
-
-
-    if($_POST['medsinterval2'] == 'True') {
+    if($userInfo['medsInterval2'] == 1) {
        $customMedsInterval2 = true;
     }
     else {
        $customMedsInterval2 = false;
     }
 
-    if($_POST['medsinterval3'] == 'True') {
+    if($userInfo['medsInterval3'] == 1) {
        $customMedsInterval3 = true;
     }
     else {
        $customMedsInterval3 = false;
     }
 
-    if($_POST['medsinterval4'] == 'True') {
+    if($userInfo['medsInterval4'] == 1) {
        $customMedsInterval4 = true;
     }
     else {
        $customMedsInterval4 = false;
     }
 
-    if($_POST['onvacation'] == 'True') {
+    if($userInfo['onVacation'] == 1) {
        $onVacation = true;
     }
     else {
@@ -129,15 +109,7 @@ function analyzeData() {
 
     if($onVacation == true) {
 
-        $analysisData = array('medsAlertLevel'=>0,
-                              'medsRollingAlertLevel'=>0,
-                              'medsHitsByHour'=>$currentDayMedsHitsByHour,
-                              'fridgeAlertLevel'=>0,
-                              'fridgeRollingAlertLevel'=>0,
-                              'fridgeHitsByHour'=>$currentDayFridgeHitsByHour,
-                              'presenceByHour'=>$currentDayPresenceByHour
-                        );
-
+        $analysisData = json_encode (new stdClass);
         http_response_code(200);
         header('Content-type: application/json');
         $json = json_encode( $analysisData );
@@ -249,6 +221,52 @@ function analyzeData() {
     $json = json_encode( $analysisData );
     echo($json);
 }
+
+function getUserInfo() {
+
+    include('login.php');
+
+    $userService = new Cyclos\UserService();
+    $locator = new stdclass();
+    $locator->username = $_POST['usernametofind'];
+
+    try {
+
+        $user = $userService->locate($locator);
+        $userInfo = $userService->load($user->id);
+    } catch (Cyclos\ServiceException $e) {
+        echo("Error while performing user search: {$e->errorCode}");
+        die();
+    }
+
+        // Get medsInterval2, medsInterval3, medsInterval4, onVacation and return it.
+        for($x = 0; $x < count($userInfo->customValues); $x++) {
+        
+            if($userInfo->customValues[$x]->field->internalName == 'medsInterval2') {
+                $medsInterval2 = $userInfo->customValues[$x]->booleanValue;
+            }
+
+            if($userInfo->customValues[$x]->field->internalName == 'medsInterval3') {
+                $medsInterval3 = $userInfo->customValues[$x]->booleanValue;
+            }
+
+            if($userInfo->customValues[$x]->field->internalName == 'medsInterval4') {
+                $medsInterval4 = $userInfo->customValues[$x]->booleanValue;
+            }
+
+            if($userInfo->customValues[$x]->field->internalName == 'onVacation') {
+                $onVacation = $userInfo->customValues[$x]->booleanValue;
+            }   
+        }
+
+    return array('medsInterval2'=>$medsInterval2,
+                 'medsInterval3'=>$medsInterval3,
+                 'medsInterval4'=>$medsInterval4,
+                 'onVacation'=>$onVacation
+           );    
+
+}
+
 
 function getData() {
 
@@ -438,7 +456,7 @@ function presenceAnalysis($presenceMatrix, $presenceByHour, $currentHour, $curre
     }
 
     // Normal case, do a fuzzy check for presence.
-    else if ($currentMin >= 3 && $currentHour != 0) {
+    else if ($currentMin >= 3) {
 
          if($presenceMatrix[$currentHour][$currentMin - 3] || $presenceMatrix[$currentHour][$currentMin - 2] 
             || $presenceMatrix[$currentHour][$currentMin - 1] || $presenceMatrix[$currentHour][$currentMin]) {
@@ -448,6 +466,7 @@ function presenceAnalysis($presenceMatrix, $presenceByHour, $currentHour, $curre
          }
          else {
              $presenceByHour[$currentHour] = false;
+             #echo("\n" . '$presenceByHour[' . $x . "] " . $presenceByHour[$x] . "\n");
          }
 
     }
