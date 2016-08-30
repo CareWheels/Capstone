@@ -4,29 +4,31 @@
 
 #**Capstone Project - Portland State University**
 
-insert project objective here...
+Given the choice, most of us would prefer to live in our own homes, 
+rooted in our own communities, as we grow older. We desire to continue 
+living safely, independently and comfortably, regardless of age, income 
+or ability level.
+
 
 ___
 
 ####Table of Contents
-- [Installation Instructions](#Installation)
-    - Linux & Mac
-    - Windows
-- [Build and Run](#Build)
-    - Android
-- [About](#about)
+- [Installation](#Installation)
+- [Build](#Build)
+- [Run](#Run)
+- [License](#License)
+
 
 ___
 
 
-###Installation
+####Installation
 
-#####Linux & Mac
 1.  Download and install node.js and npm [here](https://nodejs.org/en/download/). Node and npm is used to install
     the dependencies that ionic requires. Now make sure that the following is installed properly by running this 
     command in your terminal 
     ``` 
-    $ node -v && npm -v
+    node -v && npm -v
     ```
     This shows a correct output (different version numbers are okay):
     ```
@@ -37,7 +39,7 @@ ___
 2.  Install the Java Development Kit (JDK) 
     Ionic and Cordova requires JDK 7.0 or later, first check to see what version you currently have (if any).
     ```
-    $ java -version
+    java -version
     ```
       
     If this outputs anything less than 1.7.0... then you need to update your JDK, which can be found 
@@ -54,34 +56,34 @@ ___
     make sure to swap out the path for your actual path to the android-sdk dev tools. Now reload the terminal
     window to make these paths available, or run the the following command for the same effect. 
     ```
-    $ source ~/.bashrc
+    source ~/.bashrc
     ```
        
 4.  Install Cordova and Ionic  
     ```
-    $ npm install -g cordova ionic
+    npm install -g cordova ionic
     ```
        
 5.  Now we are finally ready to clone the repository to your local machine. Change your directory to where you 
     wish to have the project located at, then run the following command. 
     ```
-    $ git clone https://github.com/CareWheels/Capstone.git
+    git clone https://github.com/CareWheels/Capstone.git
     ```
     
-#####Windows
-1.  Download and install node.js and npm [here](https://nodejs.org/en/download/)
 
----
-
-####Build And Run The Project With Ionic
-#####Android Build
-If everything is setup properly then creating an apk with ionic is very easy. Simple just run this command
+####Build
+Before the app can be built the plugins and dependencies need to be installed.
 ```
-$ ionic build android
+npm install
+ionic state reset
+ionic build android
+
 ```
 This will build the project and create an apk file called `android-demo.apk` file in
 `/platforms/android/build/outputs/apk`.
 
+
+####Run
 #####Emulate Android (optional Step)
 This step can be avoided by copying the apk onto your mobile android device. Just use any android file explorer app,
 navigate to the apk location and use the app to install the app. Ionic provides support to run an Android Virtual 
@@ -94,13 +96,16 @@ In order to download genymotion, you need to create a free account with them
 [here](https://www.genymotion.com/download/). After you installed genymotion, launch the program, and create an
 android emulation device. Start the emulator and enter this into the console to run the app. 
 ```
-$ ionic run android
+ionic run android
 ```
 
 ######AVD Setup
 Android does not provide any default emulator, so we will need to create one. In the terminal run the command  
 ```
-$ android
+android
 ```
 This will open up a new window, click `tools` then click `Manage AVD's`. Now you can create a mobile device
 
+
+####Run
+[MIT](./LICENSE)
